@@ -39,11 +39,11 @@ export async function GET(request: Request) {
         }
         
         if (isLocalEnv) {
-          return NextResponse.redirect(`${origin}/documents`)
+          return NextResponse.redirect(`${origin}/dashboard`)
         } else if (forwardedHost) {
-          return NextResponse.redirect(`https://${forwardedHost}/documents`)
+          return NextResponse.redirect(`https://${forwardedHost}/dashboard`)
         } else {
-          return NextResponse.redirect(`${origin}/documents`)
+          return NextResponse.redirect(`${origin}/dashboard`)
         }
       }
     }

@@ -47,16 +47,16 @@ export default function Register() {
         }
 
         // User has a valid session, redirect to documents
-        router.replace('/documents');
+        router.replace('/dashboard');
 
         if (user.email_confirmed_at) {
           toast.success("You're already logged in! Redirecting to dashboard.", {
-            duration: 3000,
+            duration: 5000,
             position: "bottom-right"
           });
         } else {
           toast.info("You've already registered. Please check your email to verify your account.", {
-            duration: 3000,
+            duration: 5000,
             position: "bottom-right"
           });
         }
@@ -105,9 +105,9 @@ export default function Register() {
     } catch (err: any) {
       const message = err?.error || err?.message || "Registration failed";
       if (err?.status === 409 || message.toLowerCase().includes('already exists')) {
-        toast.error("Email already exists. Please use a different email address.", { duration: 3000, position: "bottom-right" });
+        toast.error("Email already exists. Please use a different email address.", { duration: 5000, position: "bottom-right" });
       } else {
-        toast.error(message, { duration: 3000, position: "bottom-right" });
+        toast.error(message, { duration: 5000, position: "bottom-right" });
       }
     }
   }
@@ -136,7 +136,7 @@ export default function Register() {
       }
     } catch (err: any) {
       const message = err?.error || err?.message || "Google sign-up failed";
-      toast.error(message, { duration: 3000, position: "bottom-right" });
+      toast.error(message, { duration: 5000, position: "bottom-right" });
       setIsGoogleLoading(false);
     }
   }

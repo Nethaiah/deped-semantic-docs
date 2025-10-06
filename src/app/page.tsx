@@ -1,48 +1,18 @@
-"use client";
-
 import Link from "next/link";
 import {
   FileText,
-  Network,
   Search,
   Sparkles,
   ArrowRight,
   BookOpen,
   Layers,
+  Network,
 } from "lucide-react";
+import Header from "@/components/header"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="fixed top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Network className="h-7 w-7 text-indigo-600" />
-              <div className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-emerald-400"></div>
-            </div>
-            <span className="text-lg font-semibold tracking-tight text-gray-900">
-              Naninani〜
-            </span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/register"
-              className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition"
-            >
-              Try it free
-            </Link>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero Section - Asymmetric Layout */}
       <section className="mx-auto max-w-6xl px-6 pt-32 pb-20">
         <div className="grid gap-12 lg:grid-cols-12 items-center">

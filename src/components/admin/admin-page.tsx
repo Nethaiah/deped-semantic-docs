@@ -1,93 +1,136 @@
-"use client"
+"use client";
 
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { ArrowRight } from "lucide-react";
+import { useCurrentTime } from "@/lib/time-utils";
 
 export default function AdminDocuments() {
-  const router = useRouter();
-  const supabase = createClient();
+  const { formattedTime, formattedDate } = useCurrentTime();
 
-  async function signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error("Logout failed");
-    } else {
-      toast.success("Logged out successfully");
-      router.push("/login");
-    }
-  }
+  const issuances = [
+    {
+      id: 1,
+      code: "DO 022, s. 2023",
+      status: "NEW",
+      title: "Implementing Guidelines on the School Calendar",
+      category: "Policy",
+      time: "2 hours ago",
+    },
+    {
+      id: 2,
+      code: "DM-CI-2023-001",
+      status: "URGENT",
+      title: "National Learning Camp Guidelines",
+      category: "Curriculum",
+      time: "5 hours ago",
+    },
+    {
+      id: 3,
+      code: "DO 034, s. 2022",
+      status: "UPDATED",
+      title: "School Calendar for SY 2022-2023",
+      category: "Policy",
+      time: "1 day ago",
+    },
+    {
+      id: 4,
+      code: "DM-CI-2023-001",
+      status: "NEW",
+      title: "Implementing Guidelines on the School Calendar",
+      category: "Policy",
+      time: "2 hours ago",
+    },
+  ];
+
+  const recentlyViewed = [
+    { id: 1, code: "DM-CI-2023-001", title: "National Learning Camp..." },
+    { id: 2, code: "DM-CI-2023-001", title: "National Learning Camp..." },
+    { id: 3, code: "DM-CI-2023-001", title: "National Learning Camp..." },
+    { id: 4, code: "DM-CI-2023-001", title: "National Learning Camp..." },
+  ];
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Admin Documents</h1>
-          <p className="text-gray-600 mt-2">Full access to all documents and management features</p>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-[#CCD9FF] via-[#9BA9E6] to-[#333DAD] text-white px-8 py-8 rounded-3xl mb-6">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-black text-4xl font-bold mb-2">Welcome Back, Admin!</h1>
+            <p className="text-black text-sm">
+              Stay informed with the latest orders and memoranda from your organization.
+            </p>
+          </div>
+          <div className="text-right">
+            <div className="text-3xl font-bold">{formattedTime}</div>
+            <div className="text-sm text-white/90">{formattedDate}</div>
+          </div>
         </div>
-        <button
-          onClick={signOut}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-        >
-          Logout
-        </button>
       </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Document Management Section */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900">Document Management</h2>
-          <div className="space-y-4">
-            <div className="p-4 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
-              <h3 className="font-medium text-gray-900">All Documents</h3>
-              <p className="text-sm text-gray-600 mt-1">View and manage all system documents</p>
-            </div>
-            <div className="p-4 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
-              <h3 className="font-medium text-gray-900">Upload Documents</h3>
-              <p className="text-sm text-gray-600 mt-1">Upload new documents to the system</p>
-            </div>
-            <div className="p-4 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
-              <h3 className="font-medium text-gray-900">Document Analytics</h3>
-              <p className="text-sm text-gray-600 mt-1">View usage statistics and insights</p>
-            </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-8 rounded-2xl text-center border-l-4 border-yellow-400 shadow-sm">
+          <div className="text-5xl font-bold text-gray-900 mb-2">13</div>
+          <div className="text-sm text-gray-700 font-medium">Bookmarked</div>
+        </div>
+        <div className="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-2xl text-center border-l-4 border-green-400 shadow-sm">
+          <div className="text-5xl font-bold text-gray-900 mb-2">13</div>
+          <div className="text-sm text-gray-700 font-medium">Bookmarked</div>
+        </div>
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-2xl text-center border-l-4 border-purple-400 shadow-sm">
+          <div className="text-5xl font-bold text-gray-900 mb-2">13</div>
+          <div className="text-sm text-gray-700 font-medium">Bookmarked</div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Latest Issuances */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
+          <h2 className="text-xl font-bold mb-5 text-gray-900">Latest Issuances</h2>
+          <div className="space-y-3">
+            {issuances.map((doc) => (
+              <div
+                key={doc.id}
+                className="p-4 rounded-xl bg-[#F5FBFF] border-l-4 border-indigo-500 hover:shadow-md transition-shadow cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-[#333DAD] text-base">{doc.code}</span>
+                  {doc.status && (
+                    <span
+                      className={`text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase ${
+                        doc.status === "NEW"
+                          ? "bg-[#DDF4FF] text-[#333DAD]"
+                          : doc.status === "URGENT"
+                          ? "bg-[#FFD2D2] text-[#AE2D2D]"
+                          : "bg-[#C2FFBA] text-[#048918]"
+                      }`}
+                    >
+                      {doc.status}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-[#848080] mb-1">{doc.title} | {doc.category} • {doc.time}</p>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* User Management Section */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900">User Management</h2>
-          <div className="space-y-4">
-            <div className="p-4 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
-              <h3 className="font-medium text-gray-900">User List</h3>
-              <p className="text-sm text-gray-600 mt-1">Manage system users and permissions</p>
-            </div>
-            <div className="p-4 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
-              <h3 className="font-medium text-gray-900">Role Assignment</h3>
-              <p className="text-sm text-gray-600 mt-1">Assign and modify user roles</p>
-            </div>
-            <div className="p-4 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
-              <h3 className="font-medium text-gray-900">Activity Logs</h3>
-              <p className="text-sm text-gray-600 mt-1">Review user activity and audit trails</p>
-            </div>
-          </div>
-        </div>
-
-        {/* System Settings Section */}
-        <div className="bg-white p-6 rounded-lg shadow lg:col-span-2">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900">System Settings</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
-              <h3 className="font-medium text-gray-900">GNN Configuration</h3>
-              <p className="text-sm text-gray-600 mt-1">Configure graph neural network settings</p>
-            </div>
-            <div className="p-4 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
-              <h3 className="font-medium text-gray-900">Semantic Analysis</h3>
-              <p className="text-sm text-gray-600 mt-1">Adjust semantic analysis parameters</p>
-            </div>
-            <div className="p-4 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
-              <h3 className="font-medium text-gray-900">System Backup</h3>
-              <p className="text-sm text-gray-600 mt-1">Manage backups and restore points</p>
-            </div>
+        {/* Recently Viewed */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-xl font-bold mb-5 text-gray-900">Recently Viewed</h2>
+          <div className="space-y-3">
+            {recentlyViewed.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between p-4 rounded-xl bg-[#F5F5F5] hover:bg-gray-100 hover:shadow-md transition-colors cursor-pointer"
+              >
+                <div>
+                  <p className="font-bold text-[#333DAD] text-base mb-1">{item.code}</p>
+                  <p className="text-sm text-[#848080]">{item.title}</p>
+                </div>
+                <ArrowRight className="w-5 h-5 text-[#333DAD]" />
+              </div>
+            ))}
           </div>
         </div>
       </div>

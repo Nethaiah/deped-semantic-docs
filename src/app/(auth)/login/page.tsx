@@ -27,13 +27,13 @@ export default function Login() {
   // Check for email verification success and existing session
   useEffect(() => {
     if (searchParams.get('verified') === 'true') {
-      toast.success("Email verified successfully! You can now sign in.", { duration: 3000, position: "bottom-right" });
+      toast.success("Email verified successfully! You can now sign in.", { duration: 5000, position: "bottom-right" });
     }
 
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        router.replace("/documents");
+        router.replace("/dashboard");
       }
     };
     checkSession();
@@ -66,9 +66,9 @@ export default function Login() {
       }
 
       // Refresh the page to get the updated session
-      window.location.href = "/documents";
+      window.location.href = "/dashboard";
     } catch (err: any) {
-      toast.error(err?.message || "Login failed", { duration: 3000, position: "bottom-right" });
+      toast.error(err?.message || "Login failed", { duration: 5000, position: "bottom-right" });
     }
   }
 
@@ -96,7 +96,7 @@ export default function Login() {
       }
     } catch (err: any) {
       const message = err?.message || "Google sign-in failed";
-      toast.error(message, { duration: 3000, position: "bottom-right" });
+      toast.error(message, { duration: 5000, position: "bottom-right" });
       setIsGoogleLoading(false);
     }
   }
