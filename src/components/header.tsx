@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Network } from "lucide-react";
 import { useUserRole } from "@/hooks/useUserRole";
 import UserMenu from "./user-menu";
 import { Spinner } from "@/components/ui/spinner";
@@ -14,10 +13,6 @@ export default function Header() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="relative">
-            <Network className="h-7 w-7 text-indigo-600" />
-            <div className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-emerald-400"></div>
-          </div>
           <span className="text-lg font-semibold tracking-tight text-gray-900">
             Naninani〜
           </span>
