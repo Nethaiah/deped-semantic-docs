@@ -13,31 +13,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch user data from the database
-    const { data: userData, error: fetchError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('uid', user.id)
-      .single();
-
-    if (fetchError) {
-      console.error('Error fetching user data:', fetchError);
-      return NextResponse.json({ 
-        error: "Failed to fetch user data",
-        details: fetchError.message 
-      }, { status: 500 });
-    }
-
-    // Combine auth data with database data
-    const responseData = {
-      id: user.id,
-      email: user.email,
-      ...userData,
-      user_metadata: user.user_metadata,
-      raw_user_meta_data: user.user_metadata
-    };
-
-    return NextResponse.json(responseData);
+    // Return the complete user object from Supabase auth
+    return NextResponse.json(user);
 
   } catch (err) {
     console.error('User fetch error:', err);
