@@ -29,13 +29,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user } } = await supabase.auth.getUser();
 
   // Get role on the server to avoid client flash
   const { data: userData } = await supabase
     .from('users')
     .select('role')
-    .eq('uid', session?.user.id)
+    .eq('uid', user?.id)
     .single();
 
   const role = userData?.role || 'user';
@@ -46,7 +46,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Header />
-        { session ? (
+        { user ? (
           <Sidebar role={role}>
             {children}
             <Toaster/>

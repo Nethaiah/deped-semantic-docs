@@ -4,8 +4,8 @@ import UserMenu from "./user-menu";
 
 export default async function Header() {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  const isAuthenticated = !!session;
+  const { data: { user } } = await supabase.auth.getUser();
+  const isAuthenticated = !!user;
 
   const containerClass = isAuthenticated
     ? "flex items-center justify-between px-6 py-4"
@@ -22,7 +22,7 @@ export default async function Header() {
         {/* Navigation Actions */}
         <div className="flex items-center gap-4">
           {isAuthenticated ? (
-            <UserMenu name={session.user.user_metadata.full_name} email={session.user.user_metadata.email} image={session.user.user_metadata.avatar_url}/>
+            <UserMenu name={user.user_metadata.full_name} email={user.user_metadata.email} image={user.user_metadata.avatar_url}/>
           ) : (
             <>
               <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
