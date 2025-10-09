@@ -31,35 +31,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createClient } from "@/lib/supabase/client";
-import { UserData, getDisplayName, getAvatarUrl, getUserInitials } from "@/lib/user-utils";
 
-export default function UserMenu() {
+type UserMenuProps = {
+  name: string;
+  email: string;
+  image: string;
+}
+
+export default function UserMenu({ name, email, image }: UserMenuProps) {
   const router = useRouter();
   const supabase = createClient();
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/user');
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-        
-        const data = await response.json();
-        setUserData(data);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-  }, []);
 
 
   async function handleSignOut() {
@@ -69,7 +50,6 @@ export default function UserMenu() {
         toast.error("Logout failed");
       } else {
         // Clear any local state
-        setUserData(null);
         // Force a full page reload to ensure all components re-render
         window.location.href = '/';
         toast.success("Logged out successfully");
@@ -85,18 +65,18 @@ export default function UserMenu() {
   //   );
   // }
 
-  const displayName = getDisplayName(userData);
-  const avatarUrl = getAvatarUrl(userData);
-  const initials = getUserInitials(userData);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
           <Avatar className="size-8">
-            {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName} />}
+            {image && <AvatarImage src={image} alt={name} />}
             <AvatarFallback className="text-xs bg-gray-100">
-              {initials}
+              {name.split(' ')
+              .map((n: string) => n[0])
+              .join('')
+              .toUpperCase()
+              .substring(0, 2)}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -104,10 +84,10 @@ export default function UserMenu() {
       <DropdownMenuContent className="w-64">
         <DropdownMenuLabel className="flex min-w-0 flex-col">
           <span className="text-foreground truncate text-sm font-medium">
-            {displayName}
+            {name}
           </span>
           <span className="text-muted-foreground truncate text-xs font-normal">
-            {userData?.email}
+            {email}
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

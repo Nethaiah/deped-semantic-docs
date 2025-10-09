@@ -3,6 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Header from "@/components/header";
+import Sidebar from "@/components/sidebar";
+import { createClient } from "@/lib/supabase/server";
+
+const supabase = createClient();
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,19 +23,40 @@ export const metadata: Metadata = {
   description: "Comprehensive retrieval of DepEd memoranda and policies",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data: { session } } = await supabase.auth.getSession();
+
+  // Get role on the server to avoid client flash
+  const { data: userData } = await supabase
+    .from('users')
+    .select('role')
+    .eq('uid', session?.user.id)
+    .single();
+
+  const role = userData?.role || 'user';
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Header />
-        {children}
-        <Toaster/>
+        { session ? (
+          <Sidebar role={role}>
+            {children}
+            <Toaster/>
+          </Sidebar>
+        ) : (
+          <>
+            {children}
+            <Toaster/>
+          </>
+        )}
       </body>
     </html>
   );

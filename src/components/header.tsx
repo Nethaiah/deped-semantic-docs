@@ -22,7 +22,7 @@ export default async function Header() {
         {/* Navigation Actions */}
         <div className="flex items-center gap-4">
           {isAuthenticated ? (
-            <UserMenu />
+            <UserMenu name={session.user.user_metadata.full_name} email={session.user.user_metadata.email} image={session.user.user_metadata.avatar_url}/>
           ) : (
             <>
               <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">

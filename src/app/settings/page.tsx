@@ -53,71 +53,67 @@ const SettingItem = ({
 
 export default function SettingsPage() {
   return (
-    <>
-      <Sidebar>
-        <div className="space-y-8 p-6">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-              <Settings2 className="h-7 w-7 text-primary" />
-              Settings
-            </h1>
-            <p className="text-muted-foreground">
-              Manage your account preferences and settings
-            </p>
-          </div>
+    <div className="space-y-8 p-6">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+          <Settings2 className="h-7 w-7 text-primary" />
+          Settings
+        </h1>
+        <p className="text-muted-foreground">
+          Manage your account preferences and settings
+        </p>
+      </div>
 
-          <SettingsSection
-            title="Profile"
-            description="Update your personal information and preferences"
-          >
-            <SettingItem
-              icon={User}
-              title="Personal Information"
-              description="Update your name, email, and other personal details"
-              action={
-                <Button variant="outline" size="sm">
-                  Edit
-                </Button>
-              }
-            />
-            <SettingItem
-              icon={Globe}
-              title="Language & Region"
-              description="Change your preferred language and region settings"
-              action={
-                <Button variant="outline" size="sm">
-                  English (US)
-                </Button>
-              }
-            />
-          </SettingsSection>
-
-          <SettingsSection
-            title="Help & Support"
-            description="Get help with using the platform"
-          >
-            <SettingItem
-              icon={HelpCircle}
-              title="Help Center"
-              description="Find answers to common questions"
-              action={
-                <Button variant="ghost" size="sm" className="text-primary">
-                  Visit Help Center
-                </Button>
-              }
-            />
-          </SettingsSection>
-
-          <div className="pt-4">
-            <Button
-              variant="outline"
-              className="text-destructive hover:text-destructive"
-            >
-              Sign out from all devices
+      <SettingsSection
+        title="Profile"
+        description="Update your personal information and preferences"
+      >
+        <SettingItem
+          icon={User}
+          title="Personal Information"
+          description="Update your name, email, and other personal details"
+          action={
+            <Button variant="outline" size="sm">
+              Edit
             </Button>
-          </div>
-        </div>
-      </Sidebar>
-    </>
+          }
+        />
+        <SettingItem
+          icon={Globe}
+          title="Language & Region"
+          description="Change your preferred language and region settings"
+          action={
+            <Button variant="outline" size="sm">
+              English (US)
+            </Button>
+          }
+        />
+      </SettingsSection>
+
+      <SettingsSection
+        title="Help & Support"
+        description="Get help with using the platform"
+      >
+        <SettingItem
+          icon={HelpCircle}
+          title="Help Center"
+          description="Find answers to common questions"
+          action={
+            <Button variant="ghost" size="sm" className="text-primary">
+              Visit Help Center
+            </Button>
+          }
+        />
+      </SettingsSection>
+
+      <div className="pt-4">
+        <Button
+          variant="outline"
+          className="text-destructive hover:text-destructive"
+        >
+          Sign out from all devices
+        </Button>
+      </div>
+    </div>
   );
 }

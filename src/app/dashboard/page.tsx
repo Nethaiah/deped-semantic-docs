@@ -23,8 +23,8 @@ export default async function DocumentsPage() {
   const role = userData?.role || 'user';
 
   return (
-    <Sidebar>
+    <>
       {role === 'admin' ? <AdminDocuments /> : <UserDocuments />}
-    </Sidebar>
+    </>
   );
 }

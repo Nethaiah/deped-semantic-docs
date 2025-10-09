@@ -10,6 +10,7 @@ import {
   Settings,
   MessageCircle,
   PanelLeft,
+  Shield,
 } from "lucide-react";
 
 const menuItems = [
@@ -24,7 +25,11 @@ interface SidebarProps {
   children?: React.ReactNode;
 }
 
-export default function Sidebar({ children }: SidebarProps) {
+type UserRoleProps = {
+  role: String;
+}
+
+export default function Sidebar({ children, role }: SidebarProps & UserRoleProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
@@ -53,7 +58,15 @@ export default function Sidebar({ children }: SidebarProps) {
         {/* Menu Items */}
         <nav className="flex-1 px-3 py-4">
           <ul className="space-y-2">
-            {menuItems.map(({ title, icon: Icon, path }) => {
+            {(() => {
+              // Build menu with optional admin-only item; role is provided by src/app/layout.tsx
+              const isAdmin = String(role).toLowerCase() === 'admin';
+              const computed = [...menuItems];
+              if (isAdmin) {
+                computed.push({ title: "Admin", icon: Shield, path: "#" });
+              }
+              return computed;
+            })().map(({ title, icon: Icon, path }) => {
               const isActive = pathname.startsWith(path);
               return (
                 <li key={title}>
