@@ -29,14 +29,7 @@ export default function Login() {
     if (searchParams.get('verified') === 'true') {
       toast.success("Email verified successfully! You can now sign in.", { duration: 5000, position: "bottom-right" });
     }
-
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        router.replace("/dashboard");
-      }
-    };
-    checkSession();
+    
   }, [router, searchParams]);
 
   async function onSubmit(values: LoginSchema) {
