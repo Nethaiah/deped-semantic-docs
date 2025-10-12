@@ -15,3 +15,14 @@ export const loginSchema = z.object({
 })
 
 export type LoginSchema = z.infer<typeof loginSchema>;
+
+// Upload form schema
+export const uploadSchema = z.object({
+  docType: z.string().min(1, { message: "Document type is required" }),
+  title: z.string().min(1, { message: "Title is required" }),
+  issuanceNumber: z.string().min(1, { message: "Issuance number is required" }),
+  issuanceDate: z.string().min(1, { message: "Issuance date is required" }),
+  audience: z.array(z.enum(["all", "schools", "internal", "district"])),
+})
+
+export type UploadSchema = z.infer<typeof uploadSchema>;

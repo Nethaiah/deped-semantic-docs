@@ -1,6 +1,5 @@
 import AdminDocuments from "@/components/admin/admin-page";
 import UserDocuments from "@/components/user/user-page";
-import Sidebar from "@/components/sidebar";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 

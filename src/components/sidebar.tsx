@@ -58,15 +58,7 @@ export default function Sidebar({ children, role }: SidebarProps & UserRoleProps
         {/* Menu Items */}
         <nav className="flex-1 px-3 py-4">
           <ul className="space-y-2">
-            {(() => {
-              // Build menu with optional admin-only item; role is provided by src/app/layout.tsx
-              const isAdmin = String(role).toLowerCase() === 'admin';
-              const computed = [...menuItems];
-              if (isAdmin) {
-                computed.push({ title: "Admin", icon: Shield, path: "#" });
-              }
-              return computed;
-            })().map(({ title, icon: Icon, path }) => {
+            {menuItems.map(({ title, icon: Icon, path }) => {
               const isActive = pathname.startsWith(path);
               return (
                 <li key={title}>
@@ -90,6 +82,25 @@ export default function Sidebar({ children, role }: SidebarProps & UserRoleProps
                 </li>
               );
             })}
+
+            {/* Admin Section */}
+            {String(role).toLowerCase() === 'admin' && (
+              <li className="mt-auto pt-4 border-t border-gray-200">
+                <button
+                  onClick={() => router.push("/upload")}
+                  className={`
+                    w-full flex items-center ${isExpanded ? "justify-start" : "justify-center"}
+                    gap-3 px-4 py-3 rounded-xl transition-all duration-200 bg-[#333DAD]
+                    text-white hover:bg-gray-100
+                  `}
+                >
+                  <Shield className="w-5 h-5 flex-shrink-0" />
+                  {isExpanded && (
+                    <span className="text-base font-medium">Admin</span>
+                  )}
+                </button>
+              </li>
+            )}
           </ul>
         </nav>
 
