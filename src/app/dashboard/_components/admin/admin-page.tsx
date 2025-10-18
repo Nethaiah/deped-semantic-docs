@@ -2,51 +2,11 @@
 
 import { ArrowRight } from "lucide-react";
 import { useCurrentTime } from "@/lib/time-utils";
+import Link from "next/link";
+import { latestIssuances, recentlyViewed } from "@/lib/mock-data";
 
 export default function AdminDocuments() {
   const { formattedTime, formattedDate } = useCurrentTime();
-
-  const issuances = [
-    {
-      id: 1,
-      code: "DO 022, s. 2023",
-      status: "NEW",
-      title: "Implementing Guidelines on the School Calendar",
-      category: "Policy",
-      time: "2 hours ago",
-    },
-    {
-      id: 2,
-      code: "DM-CI-2023-001",
-      status: "URGENT",
-      title: "National Learning Camp Guidelines",
-      category: "Curriculum",
-      time: "5 hours ago",
-    },
-    {
-      id: 3,
-      code: "DO 034, s. 2022",
-      status: "UPDATED",
-      title: "School Calendar for SY 2022-2023",
-      category: "Policy",
-      time: "1 day ago",
-    },
-    {
-      id: 4,
-      code: "DM-CI-2023-001",
-      status: "NEW",
-      title: "Implementing Guidelines on the School Calendar",
-      category: "Policy",
-      time: "2 hours ago",
-    },
-  ];
-
-  const recentlyViewed = [
-    { id: 1, code: "DM-CI-2023-001", title: "National Learning Camp..." },
-    { id: 2, code: "DM-CI-2023-001", title: "National Learning Camp..." },
-    { id: 3, code: "DM-CI-2023-001", title: "National Learning Camp..." },
-    { id: 4, code: "DM-CI-2023-001", title: "National Learning Camp..." },
-  ];
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -88,29 +48,28 @@ export default function AdminDocuments() {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
           <h2 className="text-xl font-bold mb-5 text-gray-900">Latest Issuances</h2>
           <div className="space-y-3">
-            {issuances.map((doc) => (
-              <div
-                key={doc.id}
-                className="p-4 rounded-xl bg-[#F5FBFF] border-l-4 border-indigo-500 hover:shadow-md transition-shadow cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-[#333DAD] text-base">{doc.code}</span>
-                  {doc.status && (
-                    <span
-                      className={`text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase ${
-                        doc.status === "NEW"
-                          ? "bg-[#DDF4FF] text-[#333DAD]"
-                          : doc.status === "URGENT"
-                          ? "bg-[#FFD2D2] text-[#AE2D2D]"
-                          : "bg-[#C2FFBA] text-[#048918]"
-                      }`}
-                    >
-                      {doc.status}
-                    </span>
-                  )}
+            {latestIssuances.map((doc, i) => (
+              <Link key={`${doc.slug}-${i}`} href={`/view/${doc.slug}`} className="block">
+                <div className="p-4 rounded-xl bg-[#F5FBFF] border-l-4 border-indigo-500 hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-[#333DAD] text-base">{doc.code}</span>
+                    {doc.status && (
+                      <span
+                        className={`text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase ${
+                          doc.status === "NEW"
+                            ? "bg-[#DDF4FF] text-[#333DAD]"
+                            : doc.status === "URGENT"
+                            ? "bg-[#FFD2D2] text-[#AE2D2D]"
+                            : "bg-[#C2FFBA] text-[#048918]"
+                        }`}
+                      >
+                        {doc.status}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-[#848080] mb-1">{doc.title} | {doc.category} • {doc.time}</p>
                 </div>
-                <p className="text-sm text-[#848080] mb-1">{doc.title} | {doc.category} • {doc.time}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -119,17 +78,16 @@ export default function AdminDocuments() {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <h2 className="text-xl font-bold mb-5 text-gray-900">Recently Viewed</h2>
           <div className="space-y-3">
-            {recentlyViewed.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between p-4 rounded-xl bg-[#F5F5F5] hover:bg-gray-100 hover:shadow-md transition-colors cursor-pointer"
-              >
-                <div>
-                  <p className="font-bold text-[#333DAD] text-base mb-1">{item.code}</p>
-                  <p className="text-sm text-[#848080]">{item.title}</p>
+            {recentlyViewed.map((item, i) => (
+              <Link key={`${item.slug}-${i}`} href={`/view/${item.slug}`} className="block">
+                <div className="flex items-center justify-between p-4 rounded-xl bg-[#F5F5F5] hover:bg-gray-100 hover:shadow-md transition-colors cursor-pointer">
+                  <div>
+                    <p className="font-bold text-[#333DAD] text-base mb-1">{item.code}</p>
+                    <p className="text-sm text-[#848080]">{item.title}</p>
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-[#333DAD]" />
                 </div>
-                <ArrowRight className="w-5 h-5 text-[#333DAD]" />
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -6,8 +6,6 @@ import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
 import { createClient } from "@/lib/supabase/server";
 
-const supabase = createClient();
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

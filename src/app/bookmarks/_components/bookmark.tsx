@@ -2,18 +2,8 @@
 
 import { Search as SearchIcon, Funnel, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Sidebar from "@/components/sidebar";
-
-const bookmarks = [
-  {
-    id: 1,
-    title: "DO 022, s. 2023 – Implementing Guidelines on the School Calendar and Activities for SY 2023-2024",
-    description: "To ensure that all learners have access to quality education, this Order provides the school calendar for SY 2022-2023, which includes...",
-    issuedDate: "January 25, 2023",
-    office: "Office of the Deputy M",
-    tags: ["Policy", "School Calendar"],
-  },
-];
+import Link from "next/link";
+import { bookmarks } from "@/lib/mock-data";
 
 export default function BookmarksPage() {
   return (
@@ -52,14 +42,13 @@ export default function BookmarksPage() {
       {bookmarks.length > 0 ? (
         <div className="space-y-4">
           {bookmarks.map((bookmark) => (
-            <div
-              key={bookmark.id}
-              className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow"
-            >
+            <div key={bookmark.id} className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-3">
-                <h3 className="text-base font-semibold text-blue-600 hover:underline cursor-pointer flex-1 pr-4">
-                  {bookmark.title}
-                </h3>
+                <Link href={`/view/${bookmark.slug}`} className="flex-1 pr-4">
+                  <h3 className="text-base font-semibold text-blue-600 hover:underline cursor-pointer">
+                    {bookmark.title}
+                  </h3>
+                </Link>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -69,18 +58,17 @@ export default function BookmarksPage() {
                   <span className="sr-only">Remove bookmark</span>
                 </Button>
               </div>
-              
+
               <p className="text-sm text-gray-700 mb-3 leading-relaxed">
                 {bookmark.description}
               </p>
 
               <div className="flex items-center gap-2 text-xs text-gray-600">
-                <span className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-medium">
-                  {bookmark.tags[0]}
-                </span>
-                <span className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-medium">
-                  {bookmark.tags[1]}
-                </span>
+                {bookmark.tags.map((t) => (
+                  <span key={t} className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-medium">
+                    {t}
+                  </span>
+                ))}
               </div>
             </div>
           ))}

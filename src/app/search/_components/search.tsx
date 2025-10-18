@@ -2,43 +2,10 @@
 
 import { Search as SearchIcon, Funnel } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { latestIssuances } from "@/lib/mock-data";
 
 export default function Search() {
-  const issuances = [
-    {
-      id: 1,
-      code: "DO 022, s. 2023",
-      status: "NEW",
-      title: "Implementing Guidelines on the School Calendar",
-      category: "Policy",
-      time: "2 hours ago",
-    },
-    {
-      id: 2,
-      code: "DO 022, s. 2023",
-      status: "URGENT",
-      title: "Implementing Guidelines on the School Calendar",
-      category: "Policy",
-      time: "2 hours ago",
-    },
-    {
-      id: 3,
-      code: "DO 022, s. 2023",
-      status: "UPDATED",
-      title: "Implementing Guidelines on the School Calendar",
-      category: "Policy",
-      time: "2 hours ago",
-    },
-    {
-      id: 4,
-      code: "DO 022, s. 2023",
-      status: "NEW",
-      title: "Implementing Guidelines on the School Calendar",
-      category: "Policy",
-      time: "2 hours ago",
-    },
-  ];
-
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
@@ -86,29 +53,28 @@ export default function Search() {
         </div>
 
         <div className="space-y-4">
-          {issuances.map((doc) => (
-            <div
-              key={doc.id}
-              className="p-4 rounded-xl bg-[#F5FBFF] border-l-4 border-indigo-500 hover:shadow-md transition-shadow cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-[#333DAD] text-base">{doc.code}</span>
-                {doc.status && (
-                  <span
-                    className={`text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase ${
-                      doc.status === "NEW"
-                        ? "bg-[#DDF4FF] text-[#333DAD]"
-                        : doc.status === "URGENT"
-                        ? "bg-[#FFD2D2] text-[#AE2D2D]"
-                        : "bg-[#C2FFBA] text-[#048918]"
-                    }`}
-                  >
-                    {doc.status}
-                  </span>
-                )}
+          {latestIssuances.map((doc, i) => (
+            <Link key={`${doc.slug}-${i}`} href={`/view/${doc.slug}`} className="block">
+              <div className="p-4 rounded-xl bg-[#F5FBFF] border-l-4 border-indigo-500 hover:shadow-md transition-shadow cursor-pointer">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-[#333DAD] text-base">{doc.code}</span>
+                  {doc.status && (
+                    <span
+                      className={`text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase ${
+                        doc.status === "NEW"
+                          ? "bg-[#DDF4FF] text-[#333DAD]"
+                          : doc.status === "URGENT"
+                          ? "bg-[#FFD2D2] text-[#AE2D2D]"
+                          : "bg-[#C2FFBA] text-[#048918]"
+                      }`}
+                    >
+                      {doc.status}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-[#848080] mb-1">{doc.title} | {doc.category} • {doc.time}</p>
               </div>
-              <p className="text-sm text-[#848080] mb-1">{doc.title} | {doc.category} • {doc.time}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
