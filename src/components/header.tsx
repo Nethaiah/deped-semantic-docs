@@ -24,7 +24,7 @@ export default async function Header() {
             height={40}
             className="object-contain"
           />
-          <span className="text-lg font-semibold tracking-tight text-gray-900">DocuLens</span>
+          <span className="text-lg font-bold tracking-tight text-[#333DAD]">DocuLens</span>
         </Link>
 
         {/* Navigation Actions */}

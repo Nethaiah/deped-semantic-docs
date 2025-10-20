@@ -57,6 +57,9 @@ const latestIssuances: LatestIssuance[] = [
     tags: [
       { label: "Tag 2", type: "teal" },
       { label: "Tag 4", type: "purple" },
+      { label: "Tag 4", type: "purple" },
+      { label: "Tag 4", type: "purple" },
+      { label: "Tag 4", type: "purple" },
     ],
     issuer: "Test Correspondent 1",
   },
@@ -176,19 +179,24 @@ export default function UserDocuments() {
                   }`}
                 >
                   {/* Created Date Column */}
-                  <td className="py-4 px-4 text-sm text-gray-600">
+                  <td className="py-4 px-4 text-md text-gray-600">
                     {issuance.createdDate}
                   </td>
 
                   {/* Title Column */}
-                  <td className="py-4 px-4 text-sm text-gray-900">
-                    {issuance.title}
+                  <td className="py-4 px-4 text-md text-gray-900 max-w-[250px]">
+                    <div
+                      className="truncate  "
+                      title={issuance.title} // Tooltip fallback for extra UX
+                    >
+                      {issuance.title}
+                    </div>
                   </td>
 
                   {/* Tags Column */}
                   <td className="py-4 px-4">
-                    <div className="flex flex-wrap gap-1.5">
-                      {issuance.tags.map((tag, tagIndex) => (
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      {issuance.tags.slice(0, 2).map((tag, tagIndex) => (
                         <span
                           key={tagIndex}
                           className={`text-xs px-2.5 py-1 rounded-md font-medium ${getTagClassName(
@@ -198,11 +206,22 @@ export default function UserDocuments() {
                           {tag.label}
                         </span>
                       ))}
+                      {issuance.tags.length > 2 && (
+                        <span
+                          className="text-xs text-gray-500 font-semibold cursor-default"
+                          title={issuance.tags
+                            .slice(2)
+                            .map((t) => t.label)
+                            .join(", ")} // Show hidden tags on hover
+                        >
+                          +{issuance.tags.length - 2}
+                        </span>
+                      )}
                     </div>
                   </td>
 
                   {/* Issuer Column - Currently using input, consider changing to plain text */}
-                  <td className="py-4 px-4 text-sm text-gray-600">
+                  <td className="py-4 px-4 text-md text-gray-600">
                     {/* TODO: If issuer should be editable, keep input and add onChange handler */}
                     {/* If not editable, replace with: {issuance.issuer} */}
                     <input
