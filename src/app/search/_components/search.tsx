@@ -1,82 +1,279 @@
 "use client";
 
-import { Search as SearchIcon, Funnel } from "lucide-react";
+import {
+  Search as SearchIcon,
+  SlidersHorizontal,
+  Eye,
+  Bookmark,
+  Share2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { latestIssuances } from "@/lib/mock-data";
+import { useState } from "react";
+
+// TODO: Replace this with actual data from your API/database
+// Expected data structure for Search Results:
+interface SearchResult {
+  id: string | number;
+  code: string; // e.g., "DO 022, s. 2023"
+  title: string;
+  issuedDate: string; // Format: "July 15, 2023"
+  description: string;
+  tags: Array<{
+    label: string;
+    type: "policy" | "program" | "learning"; // Add more types as needed
+  }>;
+  matchPercentage: number; // 0-100
+}
+
+// MOCK DATA - Replace with API call or props
+const mockSearchResults: SearchResult[] = [
+  {
+    id: 1,
+    code: "DO 022, s. 2023",
+    title:
+      "Implementing Guidelines on the School Calendar and Activities for SY 2023-2024",
+    issuedDate: "July 15, 2023",
+    description:
+      "This Order provides the implementing guidelines on the school calendar and activities for School Year 2023-2024, ensuring that all schools adhere to the standard number of school days...",
+    tags: [
+      { label: "Policy", type: "policy" },
+      { label: "School Calendar", type: "policy" },
+    ],
+    matchPercentage: 95,
+  },
+  {
+    id: 2,
+    code: "DO 034, s. 2022",
+    title: "School Calendar and Activities for the School Year 2022-2023",
+    issuedDate: "August 18, 2022",
+    description:
+      "To ensure that all learners have access to quality education, this Order provides the school calendar for SY 2022-2023, which includes the learning recovery program...",
+    tags: [
+      { label: "Policy", type: "policy" },
+      { label: "School Calendar", type: "policy" },
+      { label: "Learning Recovery", type: "learning" },
+    ],
+    matchPercentage: 78,
+  },
+  {
+    id: 3,
+    code: "DM-CI-2023-001",
+    title: "National Learning Camp Guidelines",
+    issuedDate: "January 05, 2023",
+    description:
+      "This memorandum outlines the guidelines for the National Learning Camp, a voluntary three to five-week program aimed to address learning gaps, scheduled during the end-of-school-year break...",
+    tags: [
+      { label: "Program", type: "program" },
+      { label: "Learning Recovery", type: "learning" },
+    ],
+    matchPercentage: 55,
+  },
+];
+
+// Helper function to get tag styling based on type
+const getTagClassName = (type: string): string => {
+  const tagStyles: Record<string, string> = {
+    policy: "bg-cyan-100 text-cyan-700",
+    program: "bg-cyan-100 text-cyan-700",
+    learning: "bg-gray-200 text-gray-700",
+  };
+  return tagStyles[type] || "bg-gray-100 text-gray-700";
+};
+
+// Helper function to get match percentage color
+const getMatchColor = (percentage: number): string => {
+  if (percentage >= 90) return "bg-green-500";
+  if (percentage >= 70) return "bg-yellow-500";
+  return "bg-orange-500";
+};
 
 export default function Search() {
+  // TODO: Replace with actual state management and API calls
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] =
+    useState<SearchResult[]>(mockSearchResults);
+  const [sortBy, setSortBy] = useState("relevance");
+
+  // TODO: Implement search handler
+  const handleSearch = () => {
+    // Example API call:
+    // fetch(`/api/search?query=${searchQuery}&sort=${sortBy}`)
+    //   .then(res => res.json())
+    //   .then(data => setSearchResults(data));
+    console.log("Searching for:", searchQuery);
+  };
+
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Document Search</h1>
-        <p className="text-sm text-gray-600">
-          Comprehensive retrieval of DepEd memoranda and policies.
-        </p>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Document Search
+        </h1>
       </div>
 
       {/* Search Bar */}
-      <div className="flex items-center gap-3 mb-8">
+      <div className="flex items-center gap-3 mb-6">
         <div className="relative flex-1">
-          <SearchIcon className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Search for 'learning recovery plan' or 'DO 22 s. 2023'..."
-            className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+            className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-4 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
         <Button
           variant="outline"
-          className="px-6 py-3 border-gray-300 hover:bg-gray-50"
+          className="px-6 py-6 text-md border-gray-300 hover:bg-gray-50 flex items-center gap-2"
         >
-          <Funnel className="h-4 w-4 mr-2" />
-          Filter
+          <SlidersHorizontal className="h-4 w-4" />
+          Advanced
         </Button>
-        <Button className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white">
+        <Button
+          onClick={handleSearch}
+          className="px-8 py-6 text-md bg-blue-600 hover:bg-blue-700 text-white"
+        >
           Search
         </Button>
       </div>
 
-      {/* Latest Issuances Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">Latest Issuances</h2>
+      {/* Results Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="text-sm text-gray-600">
+          {/* TODO: Replace with actual search query and result count from API */}
+          Showing <span className="font-semibold">{searchResults.length}</span>{" "}
+          results for{" "}
+          <span className="font-semibold">
+            "{searchQuery || "school calendar"}"
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-600">Sort by:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {/* TODO: Add more sort options as needed */}
+            <option value="relevance">Relevance (Semantic)</option>
+            <option value="date">Date (Newest)</option>
+            <option value="date-old">Date (Oldest)</option>
+            <option value="title">Title (A-Z)</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Search Results */}
+      <div className="space-y-4">
+        {/* 
+          TODO: BACKEND DEVELOPERS - Map through your search results here
+          Replace searchResults with your API response
+          
+          Expected data structure:
+          {
+            id: number | string,
+            code: string,
+            title: string,
+            issuedDate: string,
+            description: string,
+            tags: [{ label: string, type: string }],
+            matchPercentage: number
+          }
+        */}
+        {searchResults.map((result) => (
+          <div
+            key={result.id}
+            className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all flex justify-between gap-6"
+          >
+            {/* LEFT SECTION */}
+            <div className="flex-1">
+              <Link href={`/view/${result.id}`} className="block group">
+                <h3 className="text-lg font-semibold text-blue-600 group-hover:text-blue-700 mb-1">
+                  {result.code} - {result.title}
+                </h3>
+              </Link>
+
+              <p className="text-sm text-gray-500 mb-2">
+                Issued: {result.issuedDate}
+              </p>
+
+              <p className="text-sm text-gray-700 mb-3 line-clamp-2">
+                {result.description}
+              </p>
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2">
+                {result.tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    className={`text-xs px-3 py-1 rounded-full font-medium ${getTagClassName(
+                      tag.type
+                    )}`}
+                  >
+                    {tag.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* RIGHT SECTION */}
+            <div className="flex items-end justify-end gap-4">
+              {/* Match percentage bar */}
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full ${getMatchColor(
+                      result.matchPercentage
+                    )}`}
+                    style={{ width: `${result.matchPercentage}%` }}
+                  />
+                </div>
+                <span className="text-sm font-semibold text-gray-700">
+                  {result.matchPercentage}%
+                </span>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex items-center gap-2">
+                <button
+                  className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
+                  title="View document"
+                >
+                  <Eye className="h-5 w-5 text-gray-600" />
+                </button>
+                <button
+                  className="p-2 bg-gray-200 hover:bg-gray-300  rounded-md transition-colors"
+                  title="Bookmark"
+                >
+                  <Bookmark className="h-5 w-5 text-gray-600" />
+                </button>
+                <button
+                  className="p-2 bg-gray-200 hover:bg-gray-300  rounded-md transition-colors"
+                  title="Share"
+                >
+                  <Share2 className="h-5 w-5 text-gray-600" />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Empty State - Show when no results */}
+        {searchResults.length === 0 && (
+          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+            <SearchIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              No results found
+            </h3>
             <p className="text-sm text-gray-600">
-              Timely access to recently released DepEd policies and orders.
+              Try adjusting your search terms or filters
             </p>
           </div>
-          <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
-            View All
-          </button>
-        </div>
-
-        <div className="space-y-4">
-          {latestIssuances.map((doc, i) => (
-            <Link key={`${doc.slug}-${i}`} href={`/view/${doc.slug}`} className="block">
-              <div className="p-4 rounded-xl bg-[#F5FBFF] border-l-4 border-indigo-500 hover:shadow-md transition-shadow cursor-pointer">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-[#333DAD] text-base">{doc.code}</span>
-                  {doc.status && (
-                    <span
-                      className={`text-xs px-2.5 py-0.5 rounded-full font-semibold uppercase ${
-                        doc.status === "NEW"
-                          ? "bg-[#DDF4FF] text-[#333DAD]"
-                          : doc.status === "URGENT"
-                          ? "bg-[#FFD2D2] text-[#AE2D2D]"
-                          : "bg-[#C2FFBA] text-[#048918]"
-                      }`}
-                    >
-                      {doc.status}
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-[#848080] mb-1">{doc.title} | {doc.category} • {doc.time}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+        )}
       </div>
     </div>
   );
