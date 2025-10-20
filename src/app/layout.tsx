@@ -1,19 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
 import { createClient } from "@/lib/supabase/server";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// ✅ Load only Poppins
+const poppins = Poppins({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
 });
 
 export const metadata: Metadata = {
@@ -23,36 +20,33 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  // Get role on the server to avoid client flash
   const { data: userData } = await supabase
-    .from('users')
-    .select('role')
-    .eq('uid', user?.id)
+    .from("users")
+    .select("role")
+    .eq("uid", user?.id)
     .single();
 
-  const role = userData?.role || 'user';
+  const role = userData?.role || "user";
 
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${poppins.variable} font-sans antialiased`}>
         <Header />
-        { user ? (
+        {user ? (
           <Sidebar role={role}>
             {children}
-            <Toaster/>
+            <Toaster />
           </Sidebar>
         ) : (
           <>
             {children}
-            <Toaster/>
+            <Toaster />
           </>
         )}
       </body>

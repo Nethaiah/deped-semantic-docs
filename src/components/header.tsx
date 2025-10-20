@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import UserMenu from "./user-menu";
 
@@ -16,7 +17,14 @@ export default async function Header() {
       <div className={containerClass}>
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-lg font-semibold tracking-tight text-gray-900">Naninani〜</span>
+          <Image 
+            src="/Logo.png" 
+            alt="DocuLens Logo" 
+            width={40} 
+            height={40}
+            className="object-contain"
+          />
+          <span className="text-lg font-semibold tracking-tight text-gray-900">DocuLens</span>
         </Link>
 
         {/* Navigation Actions */}
