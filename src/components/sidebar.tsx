@@ -104,23 +104,7 @@ export default function Sidebar({ children, role }: SidebarProps & UserRoleProps
           </ul>
         </nav>
 
-        {/* Footer - Help Section */}
-        <div className="p-3 border-t border-gray-200">
-          <div className="bg-[#EAF0FF] rounded-xl p-4">
-            {isExpanded && (
-              <>
-                <p className="text-sm text-[#333DAD] font-semibold mb-1">Need Help?</p>
-                <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-                  Our AI assistant is here to guide you through the system.
-                </p>
-              </>
-            )}
-            <button className="w-full bg-[#333DAD] hover:bg-[#2b33a0] text-white text-sm font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
-              <MessageCircle size={16} />
-              {isExpanded && "Ask AI"}
-            </button>
-          </div>
-        </div>
+        
       </aside>
 
       {/* Main Content */}

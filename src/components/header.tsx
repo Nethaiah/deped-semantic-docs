@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import UserMenu from "./user-menu";
-import { Bell } from "lucide-react";
+import NotificationDropdown from "./notification-dropdown";
 
 export default async function Header() {
   const supabase = await createClient();
@@ -32,18 +32,14 @@ export default async function Header() {
         <div className="flex items-center gap-4">
           {isAuthenticated ? (
             <>
-              {/* Notification Icon */}
-              <button className="relative p-2 text-white hover:bg-white/10 rounded-full transition">
-                <Bell className="h-6 w-6" />
-                {/* Notification badge - remove this span if no notifications */}
-                <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
-              </button>
+              {/* Notification Dropdown */}
+              <NotificationDropdown />
               
               <UserMenu name={user.user_metadata.full_name} email={user.user_metadata.email} image={user.user_metadata.avatar_url}/>
             </>
           ) : (
             <>
-              <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
+              <Link href="/login" className="text-sm font-medium text-white hover:text-gray-100 transition">
                 Sign in
               </Link>
               <Link href="/register" className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition">

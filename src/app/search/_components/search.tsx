@@ -111,6 +111,9 @@ export default function Search() {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Document Search
         </h1>
+         <p className="text-sm text-gray-600">
+          Comprehensive retrieval of DepEd memoranda and policies.
+        </p>
       </div>
 
       {/* Search Bar */}

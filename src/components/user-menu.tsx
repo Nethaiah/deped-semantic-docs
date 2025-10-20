@@ -4,12 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  BookOpenIcon,
-  ChevronDownIcon,
-  LayoutDashboardIcon,
   LogOutIcon,
-  PinIcon,
-  SearchIcon,
   SettingsIcon,
   UserPenIcon,
 } from "lucide-react";
@@ -59,12 +54,6 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
     }
   }
 
-  // if (loading || !userData) {
-  //   return (
-  //     <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse" />
-  //   );
-  // }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -81,36 +70,15 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64">
+      <DropdownMenuContent className="w-70 py-2 px-4" align="end" sideOffset={8}>
         <DropdownMenuLabel className="flex min-w-0 flex-col">
           <span className="text-foreground truncate text-sm font-medium">
             {name}
           </span>
-          <span className="text-muted-foreground truncate text-xs font-normal">
+          <span className="text-muted-foreground truncate text-sm font-normal">
             {email}
           </span>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard" className="flex items-center">
-              <LayoutDashboardIcon size={16} className="opacity-60 mr-2" aria-hidden="true" />
-              <span>Dashboard</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/search" className="flex items-center">
-              <SearchIcon size={16} className="opacity-60 mr-2" aria-hidden="true" />
-              <span>Search Documents</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/bookmarks" className="flex items-center">
-              <PinIcon size={16} className="opacity-60 mr-2" aria-hidden="true" />
-              <span>Bookmarks</span>
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
@@ -127,8 +95,11 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
-          <LogOutIcon size={16} className="opacity-60 mr-2" aria-hidden="true" />
+        <DropdownMenuItem 
+          onClick={handleSignOut} 
+          className="text-red-600 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white group"
+        >
+          <LogOutIcon size={16} className="opacity-60 mr-2 group-hover:opacity-100" aria-hidden="true" />
           <span>Logout</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
