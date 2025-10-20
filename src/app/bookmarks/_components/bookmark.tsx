@@ -86,7 +86,7 @@ export default function BookmarksPage() {
             >
               <div className="flex items-start justify-between mb-3">
                 <Link href={`/view/${bookmark.slug}`} className="flex-1 pr-4">
-                  <h3 className="text-base font-semibold text-blue-600 hover:underline cursor-pointer">
+                  <h3 className="text-base font-semibold text-[#333DAD] hover:underline cursor-pointer">
                     {bookmark.title}
                   </h3>
                 </Link>

@@ -10,7 +10,7 @@ import {
   Settings,
   MessageCircle,
   PanelLeft,
-  Shield,
+  Upload,
 } from "lucide-react";
 
 const menuItems = [
@@ -27,9 +27,12 @@ interface SidebarProps {
 
 type UserRoleProps = {
   role: String;
-}
+};
 
-export default function Sidebar({ children, role }: SidebarProps & UserRoleProps) {
+export default function Sidebar({
+  children,
+  role,
+}: SidebarProps & UserRoleProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
@@ -40,12 +43,16 @@ export default function Sidebar({ children, role }: SidebarProps & UserRoleProps
     <div className="flex h-screen">
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 bottom-0 bg-white border-r border-gray-200 transition-all duration-300 flex flex-col pt-[73px] ${isExpanded ? "w-64" : "w-20"}`}
+        className={`fixed left-0 top-0 bottom-0 bg-white border-r border-gray-200 transition-all duration-300 flex flex-col pt-[73px] ${
+          isExpanded ? "w-64" : "w-20"
+        }`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
           {isExpanded && (
-            <h2 className="font-semibold text-base text-gray-900">Navigation</h2>
+            <h2 className="font-semibold text-base text-gray-900">
+              Navigation
+            </h2>
           )}
           <button
             onClick={toggleSidebar}
@@ -66,11 +73,14 @@ export default function Sidebar({ children, role }: SidebarProps & UserRoleProps
                     onClick={() => router.push(path)}
                     title={!isExpanded ? title : undefined}
                     className={`
-                      w-full flex items-center ${isExpanded ? "justify-start" : "justify-center"}
+                      w-full flex items-center ${
+                        isExpanded ? "justify-start" : "justify-center"
+                      }
                       gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                      ${isActive
-                        ? "bg-[#333DAD] text-white shadow-md"
-                        : "text-gray-700 hover:bg-gray-100"
+                      ${
+                        isActive
+                          ? "bg-[#333DAD] text-white shadow-md"
+                          : "text-gray-700 hover:bg-gray-100"
                       }
                     `}
                   >
@@ -84,32 +94,50 @@ export default function Sidebar({ children, role }: SidebarProps & UserRoleProps
             })}
 
             {/* Admin Section */}
-            {String(role).toLowerCase() === 'admin' && (
+            {String(role).toLowerCase() === "admin" && (
               <li className="mt-auto pt-4 border-t border-gray-200">
-                <button
-                  onClick={() => router.push("/upload")}
-                  className={`
-                    w-full flex items-center ${isExpanded ? "justify-start" : "justify-center"}
-                    gap-3 px-4 py-3 rounded-xl transition-all duration-200 bg-[#333DAD]
-                    text-white hover:bg-gray-100
-                  `}
-                >
-                  <Shield className="w-5 h-5 flex-shrink-0" />
-                  {isExpanded && (
-                    <span className="text-base font-medium">Admin</span>
-                  )}
-                </button>
+                <p className="px-4 pb-3 font-semibold text-[#333]/70 text-sm">
+                  Administration
+                </p>
+
+                {(() => {
+                  const isActive = pathname.startsWith("/upload");
+                  return (
+                    <button
+                      onClick={() => router.push("/upload")}
+                      title={!isExpanded ? "Upload" : undefined}
+                      className={`
+            w-full flex items-center ${
+              isExpanded ? "justify-start" : "justify-center"
+            }
+            gap-3 px-4 py-3 rounded-xl transition-all duration-200
+            ${
+              isActive
+                ? "bg-[#333DAD] text-white shadow-md"
+                : "text-gray-700 hover:bg-gray-100"
+            }
+          `}
+                    >
+                      <Upload className="w-5 h-5 flex-shrink-0" />
+                      {isExpanded && (
+                        <span className="text-base font-medium">Upload</span>
+                      )}
+                    </button>
+                  );
+                })()}
               </li>
             )}
           </ul>
         </nav>
-
-        
       </aside>
 
       {/* Main Content */}
       {children && (
-        <main className={`flex-1 overflow-auto bg-gray-50 transition-all duration-300 pt-[73px] h-screen ${isExpanded ? "ml-64" : "ml-20"}`}>
+        <main
+          className={`flex-1 overflow-auto bg-gray-50 transition-all duration-300 pt-[73px] h-screen ${
+            isExpanded ? "ml-64" : "ml-20"
+          }`}
+        >
           {children}
         </main>
       )}

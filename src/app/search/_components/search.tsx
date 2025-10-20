@@ -111,7 +111,7 @@ export default function Search() {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Document Search
         </h1>
-         <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-600">
           Comprehensive retrieval of DepEd memoranda and policies.
         </p>
       </div>
@@ -195,7 +195,7 @@ export default function Search() {
             {/* LEFT SECTION */}
             <div className="flex-1">
               <Link href={`/view/${result.id}`} className="block group">
-                <h3 className="text-lg font-semibold text-blue-600 group-hover:text-blue-700 mb-1">
+                <h3 className="text-lg font-semibold text-[#333DAD] group-hover:text-blue-700 mb-1">
                   {result.code} - {result.title}
                 </h3>
               </Link>

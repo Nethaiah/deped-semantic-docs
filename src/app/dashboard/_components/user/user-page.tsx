@@ -3,101 +3,22 @@
 import { ArrowRight } from "lucide-react";
 import { useCurrentTime } from "@/lib/time-utils";
 import Link from "next/link";
-import { recentlyViewed } from "@/lib/mock-data";
+import { recentlyViewed, latestIssuances } from "@/lib/mock-data";
 
-// TODO: Replace this with actual data from your API/database
-// Expected data structure for Latest Issuances:
-interface LatestIssuance {
-  id: string | number;
-  createdDate: string; // Format: "Aug 9, 2023" or any date format
-  title: string;
-  tags: Array<{
-    label: string;
-    type: "orange" | "teal" | "blue" | "purple" | "red"; // Add more types as needed
-  }>;
-  issuer: string;
-}
-
-// MOCK DATA - Replace with API call or props
-const latestIssuances: LatestIssuance[] = [
-  {
-    id: 1,
-    createdDate: "Aug 9, 2023",
-    title: "DM-CI-2024-012 DepEd Policies on Remote Learning",
-    tags: [
-      { label: "Tag 1", type: "orange" },
-      { label: "Tag 2", type: "teal" },
-    ],
-    issuer: "Newest Correspondent",
-  },
-  {
-    id: 2,
-    createdDate: "Mar 25, 2023",
-    title: "DM-CI-2024-001 DepEd Guidelines on the Use of AI in Education",
-    tags: [
-      { label: "Tag 2", type: "teal" },
-      { label: "Tag 4", type: "purple" },
-    ],
-    issuer: "Test Correspondent 1",
-  },
-  {
-    id: 3,
-    createdDate: "Mar 25, 2023",
-    title: "DM-CI-2024-001 DepEd Guidelines on the Use of AI in Education",
-    tags: [
-      { label: "Tag 2", type: "teal" },
-      { label: "Tag 4", type: "red" },
-    ],
-    issuer: "Test Correspondent 1",
-  },
-  {
-    id: 4,
-    createdDate: "Mar 25, 2023",
-    title: "DM-CI-2024-001 DepEd Guidelines on the Use of AI in Education",
-    tags: [
-      { label: "Tag 2", type: "teal" },
-      { label: "Tag 4", type: "purple" },
-      { label: "Tag 4", type: "purple" },
-      { label: "Tag 4", type: "purple" },
-    ],
-    issuer: "Test Correspondent 1",
-  },
-
-  {
-    id: 5,
-    createdDate: "Mar 25, 2023",
-    title: "DM-CI-2024-001 DepEd Guidelines on the Use of AI in Education",
-    tags: [
-      { label: "Tag 2", type: "teal" },
-      { label: "Tag 4", type: "purple" },
-    ],
-    issuer: "Test Correspondent 1",
-  },
-];
-
-// Helper function to get tag styling based on type
-const getTagClassName = (type: string): string => {
+// Helper function to get tag styling based on tag name
+const getTagClassName = (tag: string): string => {
   const tagStyles: Record<string, string> = {
-    orange: "bg-orange-100 text-orange-700",
-    teal: "bg-teal-100 text-teal-700",
-    blue: "bg-blue-600 text-white",
-    purple: "bg-purple-600 text-white",
-    red: "bg-red-100 text-red-700",
+    Policy: "bg-orange-100 text-orange-700",
+    Memo: "bg-teal-100 text-teal-700",
+    Learning: "bg-blue-600 text-white",
+    Curriculum: "bg-purple-600 text-white",
+    "School Calendar": "bg-red-100 text-red-700",
   };
-  return tagStyles[type] || "bg-gray-100 text-gray-700";
+  return tagStyles[tag] || "bg-gray-100 text-gray-700";
 };
 
 export default function UserDocuments() {
   const { formattedTime, formattedDate } = useCurrentTime();
-
-  // TODO: Fetch latest issuances from your API
-  // Example:
-  // const [latestIssuances, setLatestIssuances] = useState<LatestIssuance[]>([]);
-  // useEffect(() => {
-  //   fetch('/api/latest-issuances')
-  //     .then(res => res.json())
-  //     .then(data => setLatestIssuances(data));
-  // }, []);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -155,23 +76,10 @@ export default function UserDocuments() {
               </tr>
             </thead>
             <tbody>
-              {/* 
-                TODO: BACKEND DEVELOPERS - Map through your data here
-                Replace latestIssuances with your API response
-                
-                Expected data structure:
-                {
-                  id: number | string,
-                  createdDate: string,
-                  title: string,
-                  tags: [{ label: string, type: string }],
-                  issuer: string
-                }
-              */}
               {latestIssuances.map((issuance, index) => (
                 <tr
                   key={issuance.id}
-                  className={`hover:bg-gray-50 cursor-pointer ${
+                  className={`hover:bg-gray-50 ${
                     index !== latestIssuances.length - 1
                       ? "border-b border-gray-100"
                       : ""
@@ -179,58 +87,72 @@ export default function UserDocuments() {
                 >
                   {/* Created Date Column */}
                   <td className="py-4 px-4 text-md text-gray-600">
-                    {issuance.createdDate}
+                    <Link
+                      href={`/view/${issuance.slug}`}
+                      className="block hover:opacity-80 transition-opacity"
+                    >
+                      {issuance.issuedDate}
+                    </Link>
                   </td>
 
-                  {/* Title Column */}
+                  {/* Title Column - Now clickable */}
                   <td className="py-4 px-4 text-md text-gray-900 max-w-[250px]">
-                    <div
-                      className="truncate  "
-                      title={issuance.title} // Tooltip fallback for extra UX
+                    <Link
+                      href={`/view/${issuance.slug}`}
+                      className="block hover:opacity-80 transition-opacity"
                     >
-                      {issuance.title}
-                    </div>
+                      <div
+                        className="truncate"
+                        title={`${issuance.code} ${issuance.title}`}
+                      >
+                        <span className="font-bold text-[#333DAD]">
+                          {issuance.code}
+                        </span>{" "}
+                        <br />
+                        <span className="text-gray-900">{issuance.title}</span>
+                      </div>
+                    </Link>
                   </td>
 
                   {/* Tags Column */}
                   <td className="py-4 px-4">
-                    <div className="flex flex-wrap gap-1.5 items-center">
-                      {issuance.tags.slice(0, 2).map((tag, tagIndex) => (
-                        <span
-                          key={tagIndex}
-                          className={`text-xs px-2.5 py-1 rounded-md font-medium ${getTagClassName(
-                            tag.type
-                          )}`}
-                        >
-                          {tag.label}
-                        </span>
-                      ))}
-                      {issuance.tags.length > 2 && (
-                        <span
-                          className="text-xs text-gray-500 font-semibold cursor-default"
-                          title={issuance.tags
-                            .slice(2)
-                            .map((t) => t.label)
-                            .join(", ")} // Show hidden tags on hover
-                        >
-                          +{issuance.tags.length - 2}
-                        </span>
-                      )}
-                    </div>
+                    <Link
+                      href={`/view/${issuance.slug}`}
+                      className="block hover:opacity-80 transition-opacity"
+                    >
+                      <div className="flex flex-wrap gap-1.5 items-center">
+                        {issuance.tags.slice(0, 2).map((tag, tagIndex) => (
+                          <span
+                            key={tagIndex}
+                            className={`text-xs px-2.5 py-1 rounded-md font-medium ${getTagClassName(
+                              tag
+                            )}`}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                        {issuance.tags.length > 2 && (
+                          <span
+                            className="text-xs text-gray-500 font-semibold cursor-default"
+                            title={issuance.tags.slice(2).join(", ")}
+                          >
+                            +{issuance.tags.length - 2}
+                          </span>
+                        )}
+                      </div>
+                    </Link>
                   </td>
 
-                  {/* Issuer Column - Currently using input, consider changing to plain text */}
+                  {/* Issuer Column */}
                   <td className="py-4 px-4 text-md text-gray-600">
-                    {/* TODO: If issuer should be editable, keep input and add onChange handler */}
-                    {/* If not editable, replace with: {issuance.issuer} */}
-                    <input
-                      type="text"
-                      defaultValue={issuance.issuer}
-                      placeholder="Enter issuer name"
-                      className="w-full bg-transparent border-none focus:outline-none text-sm text-gray-600"
-                      // TODO: Add onChange handler if this should be editable
-                      // onChange={(e) => handleIssuerChange(issuance.id, e.target.value)}
-                    />
+                    <Link
+                      href={`/view/${issuance.slug}`}
+                      className="block hover:opacity-80 transition-opacity"
+                    >
+                      <span className="text-gray-500 text-sm">
+                        {issuance.office}
+                      </span>
+                    </Link>
                   </td>
                 </tr>
               ))}
@@ -253,7 +175,6 @@ export default function UserDocuments() {
             Recently Viewed
           </h2>
           <div className="space-y-3">
-            {/* TODO: Replace recentlyViewed with API data */}
             {recentlyViewed.map((item, i) => (
               <Link
                 key={`${item.slug}-${i}`}

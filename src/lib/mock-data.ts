@@ -18,7 +18,8 @@ export const documents: DocumentItem[] = [
   {
     id: 1,
     code: "DO 022, s. 2023",
-    title: "Implementing Guidelines on the School Calendar and Activities for SY 2023-2024",
+    title:
+      "Implementing Guidelines on the School Calendar and Activities for SY 2023-2024",
     slug: "do-022-2023",
     status: "NEW",
     category: "Policy",
@@ -56,7 +57,7 @@ export const documents: DocumentItem[] = [
     category: "Policy",
     issuedDate: "June 20, 2022",
     time: "1 day ago",
-    tags: ["Policy", "School Calendar"],
+    tags: ["Policy", "School Calendar", "Sample tag", "waaa", "213232"],
     office: "OSEC",
     description:
       "Provides the school calendar for SY 2022-2023, including key schedules and activities...",
