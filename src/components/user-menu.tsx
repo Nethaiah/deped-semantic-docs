@@ -69,9 +69,9 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
-          <Avatar className="size-8">
+          <Avatar className="size-10">
             {image && <AvatarImage src={image} alt={name} />}
-            <AvatarFallback className="text-xs bg-gray-100">
+            <AvatarFallback className="text-md bg-gray-100">
               {name.split(' ')
               .map((n: string) => n[0])
               .join('')

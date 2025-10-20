@@ -59,7 +59,6 @@ const latestIssuances: LatestIssuance[] = [
       { label: "Tag 4", type: "purple" },
       { label: "Tag 4", type: "purple" },
       { label: "Tag 4", type: "purple" },
-      { label: "Tag 4", type: "purple" },
     ],
     issuer: "Test Correspondent 1",
   },
@@ -103,7 +102,7 @@ export default function UserDocuments() {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-[#CCD9FF] via-[#9BA9E6] to-[#333DAD] text-white px-8 py-15 rounded-3xl mb-6">
+      <div className="bg-gray-100 border-1 border-gray-300 text-white px-8 py-15 rounded-3xl mb-6">
         <div className="flex justify-between items-start">
           <div>
             {/* TODO: Replace "User" with actual user name from auth/session */}
@@ -116,10 +115,10 @@ export default function UserDocuments() {
             </p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold tracking-[0.2rem]">
+            <div className="text-3xl text-[#333] font-bold tracking-[0.2rem]">
               {formattedTime}
             </div>
-            <div className="text-lg text-white/90">{formattedDate}</div>
+            <div className="text-lg text-[#333]">{formattedDate}</div>
           </div>
         </div>
       </div>
