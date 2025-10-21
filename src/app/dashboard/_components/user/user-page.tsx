@@ -6,6 +6,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { recentlyViewed, latestIssuances } from "@/lib/mock-data";
 
+type User = {
+  name: string;
+};
+
 // Helper function to get tag styling based on tag name
 const getTagClassName = (tag: string): string => {
   const tagStyles: Record<string, string> = {
@@ -18,7 +22,7 @@ const getTagClassName = (tag: string): string => {
   return tagStyles[tag] || "bg-gray-100 text-gray-700";
 };
 
-export default function UserDocuments() {
+export default function UserDocuments({ name }: User) {
   const { formattedTime, formattedDate } = useCurrentTime();
   const router = useRouter();
 
@@ -30,7 +34,7 @@ export default function UserDocuments() {
           <div>
             {/* TODO: Replace "User" with actual user name from auth/session */}
             <h1 className="text-[#333] text-4xl font-bold mb-2">
-              Welcome Back, User!
+              Welcome Back, { name }!
             </h1>
             <p className="text-[#333]/70 text-lg font-semibold">
               Stay informed with the latest orders and memoranda from your

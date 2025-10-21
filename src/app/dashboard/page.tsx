@@ -23,7 +23,7 @@ export default async function DocumentsPage() {
 
   return (
     <>
-      {role === 'admin' ? <AdminDocuments /> : <UserDocuments />}
+      {role === 'admin' ? <AdminDocuments name={user.user_metadata.full_name} /> : <UserDocuments name={user.user_metadata.full_name} />}
     </>
   );
 }
