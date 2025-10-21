@@ -10,75 +10,11 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";
+import { mockSearchResults, type SearchResult } from "@/lib/mock-data";
 
-// TODO: Replace this with actual data from your API/database
-// Expected data structure for Search Results:
-interface SearchResult {
-  id: string | number;
-  code: string; // e.g., "DO 022, s. 2023"
-  title: string;
-  issuedDate: string; // Format: "July 15, 2023"
-  description: string;
-  tags: Array<{
-    label: string;
-    type: "policy" | "program" | "learning"; // Add more types as needed
-  }>;
-  matchPercentage: number; // 0-100
-}
-
-// MOCK DATA - Replace with API call or props
-const mockSearchResults: SearchResult[] = [
-  {
-    id: 1,
-    code: "DO 022, s. 2023",
-    title:
-      "Implementing Guidelines on the School Calendar and Activities for SY 2023-2024",
-    issuedDate: "July 15, 2023",
-    description:
-      "This Order provides the implementing guidelines on the school calendar and activities for School Year 2023-2024, ensuring that all schools adhere to the standard number of school days...",
-    tags: [
-      { label: "Policy", type: "policy" },
-      { label: "School Calendar", type: "policy" },
-    ],
-    matchPercentage: 95,
-  },
-  {
-    id: 2,
-    code: "DO 034, s. 2022",
-    title: "School Calendar and Activities for the School Year 2022-2023",
-    issuedDate: "August 18, 2022",
-    description:
-      "To ensure that all learners have access to quality education, this Order provides the school calendar for SY 2022-2023, which includes the learning recovery program...",
-    tags: [
-      { label: "Policy", type: "policy" },
-      { label: "School Calendar", type: "policy" },
-      { label: "Learning Recovery", type: "learning" },
-    ],
-    matchPercentage: 78,
-  },
-  {
-    id: 3,
-    code: "DM-CI-2023-001",
-    title: "National Learning Camp Guidelines",
-    issuedDate: "January 05, 2023",
-    description:
-      "This memorandum outlines the guidelines for the National Learning Camp, a voluntary three to five-week program aimed to address learning gaps, scheduled during the end-of-school-year break...",
-    tags: [
-      { label: "Program", type: "program" },
-      { label: "Learning Recovery", type: "learning" },
-    ],
-    matchPercentage: 55,
-  },
-];
-
-// Helper function to get tag styling based on type
-const getTagClassName = (type: string): string => {
-  const tagStyles: Record<string, string> = {
-    policy: "bg-cyan-100 text-cyan-700",
-    program: "bg-cyan-100 text-cyan-700",
-    learning: "bg-gray-200 text-gray-700",
-  };
-  return tagStyles[type] || "bg-gray-100 text-gray-700";
+// Helper function to get tag styling - using default style for all tags
+const getTagClassName = (): string => {
+  return "bg-cyan-100 text-cyan-700";
 };
 
 // Helper function to get match percentage color
@@ -91,8 +27,7 @@ const getMatchColor = (percentage: number): string => {
 export default function Search() {
   // TODO: Replace with actual state management and API calls
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] =
-    useState<SearchResult[]>(mockSearchResults);
+  const [searchResults] = useState<SearchResult[]>(mockSearchResults);
   const [sortBy, setSortBy] = useState("relevance");
 
   // TODO: Implement search handler
@@ -172,10 +107,10 @@ export default function Search() {
 
       {/* Search Results */}
       <div className="space-y-4">
-        {/* 
+        {/*
           TODO: BACKEND DEVELOPERS - Map through your search results here
           Replace searchResults with your API response
-          
+
           Expected data structure:
           {
             id: number | string,
@@ -194,7 +129,7 @@ export default function Search() {
           >
             {/* LEFT SECTION */}
             <div className="flex-1">
-              <Link href={`/view/${result.id}`} className="block group">
+              <Link href={`/view/${result.slug}`} className="block group">
                 <h3 className="text-lg font-semibold text-[#333DAD] group-hover:text-blue-700 mb-1">
                   {result.code} - {result.title}
                 </h3>
@@ -210,14 +145,12 @@ export default function Search() {
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2">
-                {result.tags.map((tag, index) => (
+                {result.tags.map((tag) => (
                   <span
-                    key={index}
-                    className={`text-xs px-3 py-1 rounded-full font-medium ${getTagClassName(
-                      tag.type
-                    )}`}
+                    key={tag}
+                    className={`text-xs px-3 py-1 rounded-full font-medium ${getTagClassName()}`}
                   >
-                    {tag.label}
+                    {tag}
                   </span>
                 ))}
               </div>
@@ -230,7 +163,7 @@ export default function Search() {
                 <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className={`h-full ${getMatchColor(
-                      result.matchPercentage
+                      result.matchPercentage,
                     )}`}
                     style={{ width: `${result.matchPercentage}%` }}
                   />
@@ -242,19 +175,22 @@ export default function Search() {
 
               {/* Action buttons */}
               <div className="flex items-center gap-2">
-                <button
+                <Link
+                  href={`/view/${result.slug}`}
                   className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
                   title="View document"
                 >
                   <Eye className="h-5 w-5 text-gray-600" />
-                </button>
+                </Link>
                 <button
+                  type="button"
                   className="p-2 bg-gray-200 hover:bg-gray-300  rounded-md transition-colors"
                   title="Bookmark"
                 >
                   <Bookmark className="h-5 w-5 text-gray-600" />
                 </button>
                 <button
+                  type="button"
                   className="p-2 bg-gray-200 hover:bg-gray-300  rounded-md transition-colors"
                   title="Share"
                 >

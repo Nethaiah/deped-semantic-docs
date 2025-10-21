@@ -3,7 +3,7 @@ import { Search as SearchIcon, SlidersHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { bookmarks } from "@/lib/mock-data";
-import { use, useState } from "react";
+import { useState } from "react";
 
 export default function BookmarksPage() {
   const [searchQuery, setSearchQuery] = useState("");

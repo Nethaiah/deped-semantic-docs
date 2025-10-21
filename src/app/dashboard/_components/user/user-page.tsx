@@ -3,6 +3,7 @@
 import { ArrowRight } from "lucide-react";
 import { useCurrentTime } from "@/lib/time-utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { recentlyViewed, latestIssuances } from "@/lib/mock-data";
 
 // Helper function to get tag styling based on tag name
@@ -19,6 +20,7 @@ const getTagClassName = (tag: string): string => {
 
 export default function UserDocuments() {
   const { formattedTime, formattedDate } = useCurrentTime();
+  const router = useRouter();
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -78,8 +80,9 @@ export default function UserDocuments() {
             <tbody>
               {latestIssuances.map((issuance, index) => (
                 <tr
-                  key={issuance.id}
-                  className={`hover:bg-gray-50 ${
+                  key={`${issuance.id}-${index}`}
+                  onClick={() => router.push(`/view/${issuance.slug}`)}
+                  className={`hover:bg-gray-50 transition-colors cursor-pointer ${
                     index !== latestIssuances.length - 1
                       ? "border-b border-gray-100"
                       : ""
@@ -87,19 +90,15 @@ export default function UserDocuments() {
                 >
                   {/* Created Date Column */}
                   <td className="py-4 px-4 text-md text-gray-600">
-                    <Link
-                      href={`/view/${issuance.slug}`}
-                      className="block hover:opacity-80 transition-opacity"
-                    >
-                      {issuance.issuedDate}
-                    </Link>
+                    {issuance.issuedDate}
                   </td>
 
-                  {/* Title Column - Now clickable */}
+                  {/* Title Column - PRIMARY LINK */}
                   <td className="py-4 px-4 text-md text-gray-900 max-w-[250px]">
                     <Link
                       href={`/view/${issuance.slug}`}
                       className="block hover:opacity-80 transition-opacity"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <div
                         className="truncate"
@@ -116,43 +115,33 @@ export default function UserDocuments() {
 
                   {/* Tags Column */}
                   <td className="py-4 px-4">
-                    <Link
-                      href={`/view/${issuance.slug}`}
-                      className="block hover:opacity-80 transition-opacity"
-                    >
-                      <div className="flex flex-wrap gap-1.5 items-center">
-                        {issuance.tags.slice(0, 2).map((tag, tagIndex) => (
-                          <span
-                            key={tagIndex}
-                            className={`text-xs px-2.5 py-1 rounded-md font-medium ${getTagClassName(
-                              tag
-                            )}`}
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        {issuance.tags.length > 2 && (
-                          <span
-                            className="text-xs text-gray-500 font-semibold cursor-default"
-                            title={issuance.tags.slice(2).join(", ")}
-                          >
-                            +{issuance.tags.length - 2}
-                          </span>
-                        )}
-                      </div>
-                    </Link>
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      {issuance.tags.slice(0, 2).map((tag, tagIndex) => (
+                        <span
+                          key={tagIndex}
+                          className={`text-xs px-2.5 py-1 rounded-md font-medium ${getTagClassName(
+                            tag,
+                          )}`}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {issuance.tags.length > 2 && (
+                        <span
+                          className="text-xs text-gray-500 font-semibold cursor-default"
+                          title={issuance.tags.slice(2).join(", ")}
+                        >
+                          +{issuance.tags.length - 2}
+                        </span>
+                      )}
+                    </div>
                   </td>
 
                   {/* Issuer Column */}
                   <td className="py-4 px-4 text-md text-gray-600">
-                    <Link
-                      href={`/view/${issuance.slug}`}
-                      className="block hover:opacity-80 transition-opacity"
-                    >
-                      <span className="text-gray-500 text-sm">
-                        {issuance.office}
-                      </span>
-                    </Link>
+                    <span className="text-gray-500 text-sm">
+                      {issuance.office}
+                    </span>
                   </td>
                 </tr>
               ))}

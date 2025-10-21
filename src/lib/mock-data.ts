@@ -13,6 +13,17 @@ export type DocumentItem = {
   contentText?: string;
 };
 
+export type SearchResult = {
+  id: number;
+  code: string;
+  title: string;
+  slug: string;
+  issuedDate: string;
+  description: string;
+  tags: string[];
+  matchPercentage: number;
+};
+
 // Core document catalog
 export const documents: DocumentItem[] = [
   {
@@ -102,5 +113,43 @@ export const bookmarks: DocumentItem[] = [
     ...documents[0],
     title:
       "DO 022, s. 2023 – Implementing Guidelines on the School Calendar and Activities for SY 2023-2024",
+  },
+];
+
+// Search results with match percentages
+export const mockSearchResults: SearchResult[] = [
+  {
+    id: 1,
+    code: "DO 022, s. 2023",
+    title:
+      "Implementing Guidelines on the School Calendar and Activities for SY 2023-2024",
+    slug: "do-022-2023",
+    issuedDate: "July 15, 2023",
+    description:
+      "This Order provides the implementing guidelines on the school calendar and activities for School Year 2023-2024, ensuring that all schools adhere to the standard number of school days...",
+    tags: ["Policy", "School Calendar"],
+    matchPercentage: 95,
+  },
+  {
+    id: 3,
+    code: "DO 034, s. 2022",
+    title: "School Calendar and Activities for the School Year 2022-2023",
+    slug: "do-034-2022",
+    issuedDate: "August 18, 2022",
+    description:
+      "To ensure that all learners have access to quality education, this Order provides the school calendar for SY 2022-2023, which includes the learning recovery program...",
+    tags: ["Policy", "School Calendar", "Learning Recovery"],
+    matchPercentage: 78,
+  },
+  {
+    id: 2,
+    code: "DM-CI-2023-001",
+    title: "National Learning Camp Guidelines",
+    slug: "dm-ci-2023-001",
+    issuedDate: "January 05, 2023",
+    description:
+      "This memorandum outlines the guidelines for the National Learning Camp, a voluntary three to five-week program aimed to address learning gaps, scheduled during the end-of-school-year break...",
+    tags: ["Program", "Learning Recovery"],
+    matchPercentage: 55,
   },
 ];
