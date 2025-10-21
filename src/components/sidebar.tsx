@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutGrid,
   Search,
   Folder,
   Bookmark,
   Settings,
-  MessageCircle,
   PanelLeft,
   Upload,
 } from "lucide-react";
@@ -35,7 +35,6 @@ export default function Sidebar({
 }: SidebarProps & UserRoleProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const pathname = usePathname();
-  const router = useRouter();
 
   const toggleSidebar = () => setIsExpanded(!isExpanded);
 
@@ -55,6 +54,7 @@ export default function Sidebar({
             </h2>
           )}
           <button
+            type="button"
             onClick={toggleSidebar}
             className="h-9 w-9 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
           >
@@ -69,8 +69,8 @@ export default function Sidebar({
               const isActive = pathname.startsWith(path);
               return (
                 <li key={title}>
-                  <button
-                    onClick={() => router.push(path)}
+                  <Link
+                    href={path}
                     title={!isExpanded ? title : undefined}
                     className={`
                       w-full flex items-center ${
@@ -88,7 +88,7 @@ export default function Sidebar({
                     {isExpanded && (
                       <span className="text-base font-medium">{title}</span>
                     )}
-                  </button>
+                  </Link>
                 </li>
               );
             })}
@@ -96,15 +96,17 @@ export default function Sidebar({
             {/* Admin Section */}
             {String(role).toLowerCase() === "admin" && (
               <li className="mt-auto pt-4 border-t border-gray-200">
-                <p className="px-4 pb-3 font-semibold text-[#333]/70 text-sm">
-                  Administration
-                </p>
+                {isExpanded && (
+                  <p className="px-4 pb-3 font-semibold text-[#333]/70 text-sm">
+                    Administration
+                  </p>
+                )}
 
                 {(() => {
                   const isActive = pathname.startsWith("/upload");
                   return (
-                    <button
-                      onClick={() => router.push("/upload")}
+                    <Link
+                      href="/upload"
                       title={!isExpanded ? "Upload" : undefined}
                       className={`
             w-full flex items-center ${
@@ -122,7 +124,7 @@ export default function Sidebar({
                       {isExpanded && (
                         <span className="text-base font-medium">Upload</span>
                       )}
-                    </button>
+                    </Link>
                   );
                 })()}
               </li>
