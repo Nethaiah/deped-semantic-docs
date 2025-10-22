@@ -26,7 +26,7 @@ interface SidebarProps {
 }
 
 type UserRoleProps = {
-  role: String;
+  role: string;
 };
 
 export default function Sidebar({
@@ -37,6 +37,10 @@ export default function Sidebar({
   const pathname = usePathname();
 
   const toggleSidebar = () => setIsExpanded(!isExpanded);
+
+  // Determine active link background color based on role
+  const activeLinkColor =
+    String(role).toLowerCase() === "admin" ? "bg-[#6A2C2E]" : "bg-[#333DAD]";
 
   return (
     <div className="flex h-screen">
@@ -79,7 +83,7 @@ export default function Sidebar({
                       gap-3 px-4 py-3 rounded-xl transition-all duration-200
                       ${
                         isActive
-                          ? "bg-[#333DAD] text-white shadow-md"
+                          ? `${activeLinkColor} text-white shadow-md`
                           : "text-gray-700 hover:bg-gray-100"
                       }
                     `}
@@ -115,7 +119,7 @@ export default function Sidebar({
             gap-3 px-4 py-3 rounded-xl transition-all duration-200
             ${
               isActive
-                ? "bg-[#333DAD] text-white shadow-md"
+                ? `${activeLinkColor} text-white shadow-md`
                 : "text-gray-700 hover:bg-gray-100"
             }
           `}
