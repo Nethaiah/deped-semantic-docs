@@ -21,7 +21,7 @@ export default async function Header() {
   const role = userData?.role || "user";
 
   // Determine header background color based on role
-  const headerBgColor = role === "admin" ? "bg-[#6A2C2E]" : "bg-[#333DAD]";
+  const headerBgColor = role === "admin" ? "bg-[#008c8b]" : "bg-[#333DAD]";
 
   const containerClass = isAuthenticated
     ? "flex items-center justify-between px-6 py-4"

@@ -40,7 +40,7 @@ export default function Sidebar({
 
   // Determine active link background color based on role
   const activeLinkColor =
-    String(role).toLowerCase() === "admin" ? "bg-[#6A2C2E]" : "bg-[#333DAD]";
+    String(role).toLowerCase() === "admin" ? "bg-[#008c8b]" : "bg-[#333DAD]";
 
   return (
     <div className="flex h-screen">

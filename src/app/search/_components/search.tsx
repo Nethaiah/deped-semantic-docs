@@ -24,11 +24,17 @@ const getMatchColor = (percentage: number): string => {
   return "bg-orange-500";
 };
 
-export default function Search() {
+type Role = {
+  role: string;
+};
+
+export default function Search({ role }: Role) {
   // TODO: Replace with actual state management and API calls
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults] = useState<SearchResult[]>(mockSearchResults);
   const [sortBy, setSortBy] = useState("relevance");
+
+  const activeColor = String(role).toLowerCase() === "admin" ? "#008c8b" : "#333DAD";
 
   // TODO: Implement search handler
   const handleSearch = () => {
@@ -66,14 +72,14 @@ export default function Search() {
         </div>
         <Button
           variant="outline"
-          className="px-6 py-6 text-md border-gray-300 hover:bg-gray-50 flex items-center gap-2"
+          className="cursor-pointer px-6 py-6 text-md border-gray-300 hover:bg-gray-50 flex items-center gap-2"
         >
           <SlidersHorizontal className="h-4 w-4" />
           Advanced
         </Button>
         <Button
           onClick={handleSearch}
-          className="px-8 py-6 text-md bg-blue-600 hover:bg-blue-700 text-white"
+          className={`cursor-pointer px-8 py-6 text-md bg-[${activeColor}] hover:bg-[${activeColor}-90] text-white`}
         >
           Search
         </Button>
@@ -130,7 +136,7 @@ export default function Search() {
             {/* LEFT SECTION */}
             <div className="flex-1">
               <Link href={`/view/${result.slug}`} className="block group">
-                <h3 className="text-lg font-semibold text-[#333DAD] group-hover:text-blue-700 mb-1">
+                <h3 className={`text-xl font-semibold text-[${activeColor}] mb-1 group-hover:text-[${activeColor}]-90`}>
                   {result.code} - {result.title}
                 </h3>
               </Link>

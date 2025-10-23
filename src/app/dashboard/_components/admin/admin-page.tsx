@@ -75,7 +75,7 @@ export default function AdminDocuments({ name }: Admin ) {
             <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
               Latest Issuance
             </h2>
-            <button className="text-sm text-[#333DAD] hover:underline font-medium">
+            <button className="text-sm text-[#008c8b] hover:underline font-medium">
               Show all
             </button>
           </div>
@@ -124,7 +124,7 @@ export default function AdminDocuments({ name }: Admin ) {
                         className="truncate"
                         title={`${issuance.code} ${issuance.title}`}
                       >
-                        <span className="font-bold text-[#333DAD]">
+                        <span className="font-bold text-[#008c8b] mr-2">
                           {issuance.code}
                         </span>{" "}
                         <br />
@@ -192,12 +192,12 @@ export default function AdminDocuments({ name }: Admin ) {
               >
                 <div className="flex items-center justify-between p-4 rounded-xl bg-[#F5F5F5] hover:bg-gray-100 hover:shadow-md transition-colors cursor-pointer">
                   <div>
-                    <p className="font-bold text-[#333DAD] text-base mb-1">
+                    <p className="font-bold text-[#008c8b] text-base mb-1">
                       {item.code}
                     </p>
                     <p className="text-sm text-[#848080]">{item.title}</p>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-[#333DAD]" />
+                  <ArrowRight className="w-5 h-5 text-[#008c8b]" />
                 </div>
               </Link>
             ))}
