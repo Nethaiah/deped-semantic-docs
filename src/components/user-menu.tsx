@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   LogOutIcon,
   SettingsIcon,
@@ -25,6 +24,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { createClient } from "@/lib/supabase/client";
 
 type UserMenuProps = {
@@ -34,9 +43,8 @@ type UserMenuProps = {
 }
 
 export default function UserMenu({ name, email, image }: UserMenuProps) {
-  const router = useRouter();
   const supabase = createClient();
-
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   async function handleSignOut() {
     try {
@@ -55,54 +63,76 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
-          <Avatar className="size-10">
-            {image && <AvatarImage src={image} alt={name} />}
-            <AvatarFallback className="text-md bg-gray-100">
-              {name.split(' ')
-              .map((n: string) => n[0])
-              .join('')
-              .toUpperCase()
-              .substring(0, 2)}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-70 py-2 px-4" align="end" sideOffset={8}>
-        <DropdownMenuLabel className="flex min-w-0 flex-col">
-          <span className="text-foreground truncate text-sm font-medium">
-            {name}
-          </span>
-          <span className="text-muted-foreground truncate text-sm font-normal">
-            {email}
-          </span>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/settings" className="flex items-center">
-              <SettingsIcon size={16} className="opacity-60 mr-2" aria-hidden="true" />
-              <span>Settings</span>
-            </Link>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
+            <Avatar className="size-10">
+              {image && <AvatarImage src={image} alt={name} />}
+              <AvatarFallback className="text-md bg-gray-100">
+                {name.split(' ')
+                .map((n: string) => n[0])
+                .join('')
+                .toUpperCase()
+                .substring(0, 2)}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-70 py-2 px-4" align="end" sideOffset={8}>
+          <DropdownMenuLabel className="flex min-w-0 flex-col">
+            <span className="text-foreground truncate text-sm font-medium">
+              {name}
+            </span>
+            <span className="text-muted-foreground truncate text-sm font-normal">
+              {email}
+            </span>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem asChild>
+              <Link href="/settings" className="flex items-center">
+                <SettingsIcon size={16} className="opacity-60 mr-2" aria-hidden="true" />
+                <span>Settings</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/profile" className="flex items-center">
+                <UserPenIcon size={16} className="opacity-60 mr-2" aria-hidden="true" />
+                <span>Edit Profile</span>
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem 
+            onClick={() => setShowLogoutDialog(true)} 
+            className="text-red-600 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white group"
+          >
+            <LogOutIcon size={16} className="opacity-60 mr-2 group-hover:opacity-100" aria-hidden="true" />
+            <span>Logout</span>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/profile" className="flex items-center">
-              <UserPenIcon size={16} className="opacity-60 mr-2" aria-hidden="true" />
-              <span>Edit Profile</span>
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem 
-          onClick={handleSignOut} 
-          className="text-red-600 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white group"
-        >
-          <LogOutIcon size={16} className="opacity-60 mr-2 group-hover:opacity-100" aria-hidden="true" />
-          <span>Logout</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to logout? You will need to sign in again to access your account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleSignOut}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              Logout
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }

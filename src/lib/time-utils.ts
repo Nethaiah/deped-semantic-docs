@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export function formatTime(date: Date) {
   return date.toLocaleTimeString("en-US", {
@@ -19,15 +19,27 @@ export function formatDate(date: Date) {
 }
 
 export function useCurrentTime(updateInterval = 1000) {
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    // Set initial time on client side only
+    setTime(new Date());
+
     const timer = setInterval(() => {
       setTime(new Date());
     }, updateInterval);
-    
+
     return () => clearInterval(timer);
   }, [updateInterval]);
+
+  // Return placeholder values during SSR or before client hydration
+  if (!time) {
+    return {
+      time: null,
+      formattedTime: "--:--:-- --",
+      formattedDate: "Loading...",
+    };
+  }
 
   return {
     time,
