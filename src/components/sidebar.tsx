@@ -11,6 +11,7 @@ import {
   Settings,
   PanelLeft,
   Upload,
+  FileText,
 } from "lucide-react";
 
 const menuItems = [
@@ -19,6 +20,11 @@ const menuItems = [
   { title: "Categories", icon: Folder, path: "/categories" },
   { title: "Bookmark", icon: Bookmark, path: "/bookmarks" },
   { title: "Settings", icon: Settings, path: "/settings" },
+];
+
+const adminMenuItems = [
+  { title: "Manage Documents", icon: FileText, path: "/manage-document" },
+  { title: "Upload", icon: Upload, path: "/upload" },
 ];
 
 interface SidebarProps {
@@ -106,13 +112,15 @@ export default function Sidebar({
                   </p>
                 )}
 
-                {(() => {
-                  const isActive = pathname.startsWith("/upload");
-                  return (
-                    <Link
-                      href="/upload"
-                      title={!isExpanded ? "Upload" : undefined}
-                      className={`
+                <ul className="space-y-2">
+                  {adminMenuItems.map(({ title, icon: Icon, path }) => {
+                    const isActive = pathname.startsWith(path);
+                    return (
+                      <li key={title}>
+                        <Link
+                          href={path}
+                          title={!isExpanded ? title : undefined}
+                          className={`
             w-full flex items-center ${
               isExpanded ? "justify-start" : "justify-center"
             }
@@ -123,14 +131,16 @@ export default function Sidebar({
                 : "text-gray-700 hover:bg-gray-100"
             }
           `}
-                    >
-                      <Upload className="w-5 h-5 flex-shrink-0" />
-                      {isExpanded && (
-                        <span className="text-base font-medium">Upload</span>
-                      )}
-                    </Link>
-                  );
-                })()}
+                        >
+                          <Icon className="w-5 h-5 flex-shrink-0" />
+                          {isExpanded && (
+                            <span className="text-base font-medium">{title}</span>
+                          )}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
               </li>
             )}
           </ul>

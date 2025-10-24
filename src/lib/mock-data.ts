@@ -13,6 +13,70 @@ export type DocumentItem = {
   contentText?: string;
 };
 
+export type ReviewDocMock = {
+  id: string;
+  title: string;
+  url: string;
+  parsedText: string;
+  updated_at?: string | null;
+};
+
+export const reviewDocs: ReviewDocMock[] = [
+  {
+    id: "doc-1",
+    title: "Project Proposal Q4.pdf",
+    url:
+      "https://drutlxqnjmypjxwwxukv.supabase.co/storage/v1/object/public/documents/division_memo_pdf/Division_MemorandumNo_348_s_2025_CONDUCT_OF_THE_AGORA_CROSSROADS_OF_CREATIVITY_CULTURE_AND_IDEAS.pdf",
+    parsedText: [
+      "Project Proposal Q4",
+      "",
+      "This proposal outlines initiatives planned for Q4...",
+    ].join("\n"),
+    updated_at: null,
+  },
+  {
+    id: "doc-2",
+    title: "Financial_Report_2024.pdf",
+    url:
+      "https://drutlxqnjmypjxwwxukv.supabase.co/storage/v1/object/public/documents/division_memo_pdf/Division_MemorandumNo_360_s_2025_POTENTIAL_DATA_BREACH_INVOLVING_OUR_LOCALIZED_SYSTEM_TRACKIT_DOCUMENT_SYSTEM_DCP_ACCESS_ONLINE_MONIT.pdf",
+    parsedText: [
+      "Annual Financial Report - 2024 Executive Summary",
+      "",
+      "Revenue increased by 12% YoY...",
+    ].join("\n"),
+    updated_at: null,
+  },
+  {
+    id: "doc-3",
+    title: "Employee Handbook_Rev3.pdf",
+    url:
+      "https://drutlxqnjmypjxwwxukv.supabase.co/storage/v1/object/public/documents/division_memo_pdf/Division_MemorandumNo_367_s_2025_PARTICIPATION_IN_THE_SEMINAR_AND_GENERAL_ASSEMBLY_OF_PUBLIC_LIBRARIANS_AND_INFORMATION_PROFESSIONALS.pdf",
+    parsedText: [
+      "Employee Handbook (Revision 3)",
+      "",
+      "Welcome to the team!",
+      "",
+      "This handbook provides essential information about our",
+      "company culture, policies, and procedures. Please read it",
+      "carefully.",
+      "",
+      "Work Hours",
+      "Standard work hours are from 9:00 AM to 5:00 PM, Monday to",
+      "Friday, with a one-hour lunch break.",
+      "",
+      "Dress Code",
+      "Our dress code is business casual. Please ensure you present",
+      "a professional appearance at all times.",
+      "",
+      "Confidentiality",
+      "All employees must sign a Non-Disclosure Agreement (NDA)",
+      "and adhere to strict confidentiality protocols regarding",
+      "company and client information.",
+    ].join("\n"),
+    updated_at: null,
+  },
+];
+
 export type SearchResult = {
   id: number;
   code: string;
