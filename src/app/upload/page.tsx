@@ -1,4 +1,4 @@
-import UploadForm from "./_components/upload-form"
+import UploadForm from "./_components/upload-file"
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
