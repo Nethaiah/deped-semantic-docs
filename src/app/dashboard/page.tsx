@@ -16,7 +16,7 @@ export default async function DocumentsPage() {
   const { data: userData } = await supabase
     .from('users')
     .select('role')
-    .eq('uid', user.id)
+    .eq('id', user.id)
     .single();
 
   const role = userData?.role || 'user';

@@ -1,11 +1,10 @@
-import { pgEnum, pgTable, text, varchar, timestamp, serial } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, varchar, timestamp } from "drizzle-orm/pg-core";
 
 // Roles: admin | user (default: user)
 export const userRoleEnum = pgEnum('user_role', ['admin', 'user']);
 
 export const users = pgTable('users', {
-  id: serial('id').primaryKey(),
-  uid: text('uid').unique(),
+  id: text('id').primaryKey(), // Supabase auth user ID
   fullName: text('full_name').notNull(),
   email: varchar('email', { length: 256 }).notNull().unique(),
   role: userRoleEnum('role').notNull().default('user'),

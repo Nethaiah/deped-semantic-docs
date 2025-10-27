@@ -65,7 +65,7 @@ export async function POST(req: Request) {
     const uid = data.user?.id;
     if (uid) {
       await db.insert(users).values({ 
-        uid, 
+        id: uid,
         email: normalizedEmail, 
         fullName, 
         role: 'user' 

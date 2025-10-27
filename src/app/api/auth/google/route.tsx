@@ -38,12 +38,12 @@ export async function syncGoogleUser(user: any) {
     const fullName = user.user_metadata?.full_name || user.user_metadata?.name || "Google User";
 
     // Check if user exists in database
-    const [record] = await db.select().from(users).where(eq(users.uid, uid)).limit(1);
+    const [record] = await db.select().from(users).where(eq(users.id, uid)).limit(1);
     
     if (!record) {
       // Create new user in database
       await db.insert(users).values({
-        uid,
+        id: uid,
         email: user.email ?? "",
         fullName,
         role: "user",
