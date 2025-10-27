@@ -151,7 +151,6 @@ export default function TableUpload({
       });
       setUploadFiles(newUploadFiles);
       setPendingFiles(newFiles);
-      onFilesChange?.(newFiles);
     },
   });
 

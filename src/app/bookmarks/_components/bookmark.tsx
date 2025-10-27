@@ -5,9 +5,15 @@ import Link from "next/link";
 import { bookmarks } from "@/lib/mock-data";
 import { useState } from "react";
 
-export default function BookmarksPage() {
+type Role = {
+  role: string;
+};
+
+export default function BookmarksPage({ role }: Role) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("relevance");
+
+  const activeColor = String(role).toLowerCase() === "admin" ? "#008c8b" : "#333DAD";
 
   const handleSearch = () => {
     console.log("Searching for:", searchQuery);
@@ -47,7 +53,7 @@ export default function BookmarksPage() {
         </Button>
         <Button
           onClick={handleSearch}
-          className="px-8 py-6 text-md bg-blue-600 hover:bg-blue-700 text-white"
+          className={`cursor-pointer px-8 py-6 text-md bg-[${activeColor}] hover:bg-[${activeColor}-700] text-white`}
         >
           Search
         </Button>
@@ -86,7 +92,7 @@ export default function BookmarksPage() {
             >
               <div className="flex items-start justify-between mb-3">
                 <Link href={`/view/${bookmark.slug}`} className="flex-1 pr-4">
-                  <h3 className="text-base font-semibold text-[#333DAD] hover:underline cursor-pointer">
+                  <h3 className={`text-base font-semibold text-[${activeColor}] hover:underline cursor-pointer`}>
                     {bookmark.title}
                   </h3>
                 </Link>

@@ -11,7 +11,16 @@ export default async function DocumentsPage() {
     redirect('/login');
   }
 
+  // Get role on the server to avoid client flash
+  const { data: userData } = await supabase
+    .from("users")
+    .select("role")
+    .eq("uid", user?.id)
+    .single();
+
+  const role = userData?.role || "user";
+
   return (
-    <Bookmarks />
+    <Bookmarks role={role} />
   );
 }

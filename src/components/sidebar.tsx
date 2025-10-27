@@ -45,8 +45,7 @@ export default function Sidebar({
   const toggleSidebar = () => setIsExpanded(!isExpanded);
 
   // Determine active link background color based on role
-  const activeLinkColor =
-    String(role).toLowerCase() === "admin" ? "bg-[#008c8b]" : "bg-[#333DAD]";
+  const activeLinkColor = String(role).toLowerCase() === "admin" ? "bg-[#008c8b]" : "bg-[#333DAD]";
 
   return (
     <div className="flex h-screen">
