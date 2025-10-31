@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { DocumentItem } from "@/lib/mock-data";
+import { Badge } from "@/components/ui/badge";
 import {
   ChevronLeft,
   Bookmark,
@@ -41,12 +42,33 @@ export default function ViewDocument({ doc, similar }: Props) {
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
               {doc.tags.map((t) => (
-                <div
+                <Badge
                   key={t}
-                  className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-medium"
+                  size="md"
+                  variant={(function getBadgeVariant(tag: string):
+                    | "policy"
+                    | "memo"
+                    | "learning"
+                    | "curriculum"
+                    | "schoolCalendar" {
+                    switch (tag) {
+                      case "Policy":
+                        return "policy";
+                      case "Memo":
+                        return "memo";
+                      case "Learning":
+                        return "learning";
+                      case "Curriculum":
+                        return "curriculum";
+                      case "School Calendar":
+                        return "schoolCalendar";
+                      default:
+                        return "policy";
+                    }
+                  })(t)}
                 >
                   {t}
-                </div>
+                </Badge>
               ))}
             </div>
           </div>
