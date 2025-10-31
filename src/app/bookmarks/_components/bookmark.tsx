@@ -3,6 +3,7 @@ import { Search as SearchIcon, SlidersHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { bookmarks } from "@/lib/mock-data";
+import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 
 type Role = {
@@ -14,6 +15,29 @@ export default function BookmarksPage({ role }: Role) {
   const [sortBy, setSortBy] = useState("relevance");
 
   const activeColor = String(role).toLowerCase() === "admin" ? "#008c8b" : "#333DAD";
+
+  // Helper to map tag labels to Badge variant
+  const getBadgeVariant = (tag: string):
+    | "policy"
+    | "memo"
+    | "learning"
+    | "curriculum"
+    | "schoolCalendar" => {
+    switch (tag) {
+      case "Policy":
+        return "policy";
+      case "Memo":
+        return "memo";
+      case "Learning":
+        return "learning";
+      case "Curriculum":
+        return "curriculum";
+      case "School Calendar":
+        return "schoolCalendar";
+      default:
+        return "policy";
+    }
+  };
 
   const handleSearch = () => {
     console.log("Searching for:", searchQuery);
@@ -112,12 +136,9 @@ export default function BookmarksPage({ role }: Role) {
 
               <div className="flex items-center gap-2 text-xs text-gray-600">
                 {bookmark.tags.map((t) => (
-                  <span
-                    key={t}
-                    className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-medium"
-                  >
+                  <Badge key={t} size="md" variant={getBadgeVariant(t)}>
                     {t}
-                  </span>
+                  </Badge>
                 ))}
               </div>
             </div>

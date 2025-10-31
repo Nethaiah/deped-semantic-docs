@@ -11,10 +11,29 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";
 import { mockSearchResults, type SearchResult } from "@/lib/mock-data";
+import { Badge } from "@/components/ui/badge";
 
-// Helper function to get tag styling - using default style for all tags
-const getTagClassName = (): string => {
-  return "bg-cyan-100 text-cyan-700";
+// Helper to map tag labels to Badge variant
+const getBadgeVariant = (tag: string):
+  | "policy"
+  | "memo"
+  | "learning"
+  | "curriculum"
+  | "schoolCalendar" => {
+  switch (tag) {
+    case "Policy":
+      return "policy";
+    case "Memo":
+      return "memo";
+    case "Learning":
+      return "learning";
+    case "Curriculum":
+      return "curriculum";
+    case "School Calendar":
+      return "schoolCalendar";
+    default:
+      return "policy";
+  }
 };
 
 // Helper function to get match percentage color
@@ -152,12 +171,9 @@ export default function Search({ role }: Role) {
               {/* Tags */}
               <div className="flex flex-wrap gap-2">
                 {result.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className={`text-xs px-3 py-1 rounded-full font-medium ${getTagClassName()}`}
-                  >
+                  <Badge key={tag} size="md" variant={getBadgeVariant(tag)}>
                     {tag}
-                  </span>
+                  </Badge>
                 ))}
               </div>
             </div>

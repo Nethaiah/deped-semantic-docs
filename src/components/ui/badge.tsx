@@ -31,6 +31,12 @@ const badgeVariants = cva(
         info: 'bg-[var(--color-info-accent,var(--color-violet-500))] text-[var(--color-info-foreground,var(--color-white))]',
         outline: 'bg-transparent border border-border text-secondary-foreground',
         destructive: 'bg-destructive text-destructive-foreground',
+        /* Tag variants */
+        policy: 'bg-orange-100 text-orange-700',
+        memo: 'bg-teal-100 text-teal-700',
+        learning: 'bg-blue-600 text-white',
+        curriculum: 'bg-purple-600 text-white',
+        schoolCalendar: 'bg-red-100 text-red-700',
       },
       appearance: {
         default: '',

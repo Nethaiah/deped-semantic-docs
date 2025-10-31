@@ -5,21 +5,33 @@ import { useCurrentTime } from "@/lib/time-utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { recentlyViewed, latestIssuances } from "@/lib/mock-data";
+import { Badge } from "@/components/ui/badge";
 
 type User = {
   name: string;
 };
 
-// Helper function to get tag styling based on tag name
-const getTagClassName = (tag: string): string => {
-  const tagStyles: Record<string, string> = {
-    Policy: "bg-orange-100 text-orange-700",
-    Memo: "bg-teal-100 text-teal-700",
-    Learning: "bg-blue-600 text-white",
-    Curriculum: "bg-purple-600 text-white",
-    "School Calendar": "bg-red-100 text-red-700",
-  };
-  return tagStyles[tag] || "bg-gray-100 text-gray-700";
+// Helper to map tag labels to Badge variant
+const getBadgeVariant = (tag: string):
+  | "policy"
+  | "memo"
+  | "learning"
+  | "curriculum"
+  | "schoolCalendar" => {
+  switch (tag) {
+    case "Policy":
+      return "policy";
+    case "Memo":
+      return "memo";
+    case "Learning":
+      return "learning";
+    case "Curriculum":
+      return "curriculum";
+    case "School Calendar":
+      return "schoolCalendar";
+    default:
+      return "policy";
+  }
 };
 
 export default function UserDocuments({ name }: User) {
@@ -121,14 +133,9 @@ export default function UserDocuments({ name }: User) {
                   <td className="py-4 px-4">
                     <div className="flex flex-wrap gap-1.5 items-center">
                       {issuance.tags.slice(0, 2).map((tag, tagIndex) => (
-                        <span
-                          key={tagIndex}
-                          className={`text-xs px-2.5 py-1 rounded-md font-medium ${getTagClassName(
-                            tag,
-                          )}`}
-                        >
+                        <Badge key={tagIndex} size="md" variant={getBadgeVariant(tag)}>
                           {tag}
-                        </span>
+                        </Badge>
                       ))}
                       {issuance.tags.length > 2 && (
                         <span

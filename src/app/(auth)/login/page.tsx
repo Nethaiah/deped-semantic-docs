@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import LoginForm from "@/app/(auth)/login/_components/LoginForm";
+import LoginForm from "@/app/(auth)/login/_components/login-form"
 import { redirect } from "next/navigation";
 
 export default async function Login() {
