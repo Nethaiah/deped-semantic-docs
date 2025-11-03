@@ -1,6 +1,7 @@
 "use client";
 
-import { Settings2, User, Globe, HelpCircle } from "lucide-react";
+import { Settings2, User, HelpCircle } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -75,41 +76,14 @@ export default function Settings() {
             </Button>
           }
         />
-        <SettingItem
-          icon={Globe}
-          title="Language & Region"
-          description="Change your preferred language and region settings"
-          action={
-            <Button variant="outline" size="sm">
-              English (US)
-            </Button>
-          }
-        />
-      </SettingsSection>
-
-      <SettingsSection
-        title="Help & Support"
-        description="Get help with using the platform"
-      >
-        <SettingItem
-          icon={HelpCircle}
-          title="Help Center"
-          description="Find answers to common questions"
-          action={
-            <Button variant="ghost" size="sm" className="text-primary">
-              Visit Help Center
-            </Button>
-          }
-        />
       </SettingsSection>
 
       <div className="pt-4">
-        <Button
-          variant="outline"
-          className="text-destructive hover:text-destructive"
-        >
-          Sign out from all devices
-        </Button>
+        <Link href="/forgot-password">
+          <Button variant="destructive" className="cursor-pointer">
+            Forgot Password
+          </Button>
+        </Link>
       </div>
     </div>
   );

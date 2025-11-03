@@ -69,7 +69,7 @@ export default function VerifyEmailClient() {
           <p className="text-green-600 font-medium">Email verified successfully!</p>
           <p className="text-gray-600 text-sm mt-2">
             <button
-              onClick={() => router.push('/login')}
+              onClick={() => router.replace('/login')}
               className="text-blue-600 hover:underline"
             >
               Go to login
@@ -94,7 +94,7 @@ export default function VerifyEmailClient() {
             This link is invalid or has expired. Please request a new verification email.
           </p>
           <button
-            onClick={() => router.push('/register')}
+            onClick={() => router.replace('/register')}
             className="mt-4 text-blue-600 hover:underline text-sm"
           >
             Back to registration
