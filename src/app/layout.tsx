@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "sonner";
 import Header from "@/components/header";
-import Sidebar from "@/components/sidebar";
 import { createClient } from "@/lib/supabase/server";
+import ConditionalLayout from "./conditional-layout";
+import ConditionalHeader from "./conditional-header";
 
 // ✅ Load only Poppins
 const poppins = Poppins({
@@ -37,18 +37,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} font-sans antialiased`}>
-        <Header />
-        {user ? (
-          <Sidebar role={role}>
-            {children}
-            <Toaster />
-          </Sidebar>
-        ) : (
-          <>
-            {children}
-            <Toaster />
-          </>
-        )}
+        <ConditionalHeader>
+          <Header />
+        </ConditionalHeader>
+        <ConditionalLayout user={user} role={role}>
+          {children}
+        </ConditionalLayout>
       </body>
     </html>
   );

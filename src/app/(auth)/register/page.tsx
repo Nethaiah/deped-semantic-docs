@@ -4,8 +4,8 @@ import RegisterForm from "@/app/(auth)/register/_components/register-form";
 
 export default async function RegisterPage() {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
     redirect("/dashboard");
   }
   return <RegisterForm />;

@@ -31,13 +31,6 @@ export default function RegisterForm() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-
-        if (!session) {
-          setIsCheckingAuth(false);
-          return; // No session, user can register
-        }
-
         // Verify user is still valid
         const { data: { user }, error } = await supabase.auth.getUser();
 

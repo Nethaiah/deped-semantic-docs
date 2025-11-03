@@ -1,9 +1,5 @@
-"use client";
+import ForgotPasswordForm from "./_components/forgot-password";
 
-export default function ForgotPassword() {
-	return (
-		<div>
-			<h1>Forgot Password</h1>
-		</div>
-	);
+export default async function ForgotPasswordPage() {
+	return <ForgotPasswordForm />;
 }
