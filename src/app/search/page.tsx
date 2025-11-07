@@ -1,4 +1,4 @@
-import Search from "@/app/search/_components/search";
+import Search from "@/features/search/components/search";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 

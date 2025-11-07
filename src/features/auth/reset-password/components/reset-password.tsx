@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Spinner } from "@/components/ui/spinner";
-import { updatePassword } from "@/app/(auth)/reset-password/actions";
+import { updatePassword } from "@/features/auth/reset-password/server/actions";
 
 export default function ResetPasswordForm() {
   const router = useRouter();

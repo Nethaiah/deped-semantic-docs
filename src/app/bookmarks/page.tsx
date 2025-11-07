@@ -1,4 +1,4 @@
-import Bookmarks from "@/app/bookmarks/_components/bookmark";
+import Bookmarks from "@/features/bookmarks/components/bookmark";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 

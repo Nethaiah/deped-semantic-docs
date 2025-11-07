@@ -1,7 +1,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import ManageDocument from "@/app/manage-document/_components/manage-document";
+import ManageDocument from "@/features/manage-document/components/manage-document";
 import { requireAdmin } from "@/lib/auth-utils";
 
 export default async function DocumentsPage() {

@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
-import { login } from "@/app/(auth)/login/actions";
+import { login } from "@/features/auth/login/server/actions";
 
 export default function LoginForm() {
   const router = useRouter();

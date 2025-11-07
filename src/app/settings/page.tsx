@@ -1,4 +1,4 @@
-import Settings from "@/app/settings/_components/settings";
+import Settings from "@/features/settings/components/settings";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 

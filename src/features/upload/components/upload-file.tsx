@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import TableUpload from "@/components/file-upload";
+import TableUpload from "@/features/upload/components/file-upload";
 import { toast } from "sonner";
 import { type FileWithPreview } from "@/hooks/use-file-upload";
 import { Button } from "@/components/ui/button";

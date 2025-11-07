@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { documents } from "@/lib/mock-data";
-import ViewDocument from "@/app/view/[documentName]/_components/view-document";
+import ViewDocument from "@/features/document-view/components/view-document";
 import { createClient } from "@/lib/supabase/server";
 
 type Props = {

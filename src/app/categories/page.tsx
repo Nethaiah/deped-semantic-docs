@@ -1,4 +1,4 @@
-import Categories from "@/app/categories/_components/categories";
+import Categories from "@/features/categories/components/categories";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 

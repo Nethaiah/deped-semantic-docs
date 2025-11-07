@@ -7,7 +7,7 @@ import { forgotPasswordSchema, type ForgotPasswordSchema } from "@/lib/zodSchema
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
-import { resetPasswordForEmail } from "@/app/(auth)/forgot-password/actions";
+import { resetPasswordForEmail } from "@/features/auth/forgot-password/server/actions";
 
 export default function ForgotPasswordForm() {
   const router = useRouter();

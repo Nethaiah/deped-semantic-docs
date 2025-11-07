@@ -1,4 +1,4 @@
-import ResetPasswordForm from "./_components/reset-password";
+import ResetPasswordForm from "../../../features/auth/reset-password/components/reset-password";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 

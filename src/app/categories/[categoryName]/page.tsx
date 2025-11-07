@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import Category from "./_components/category";
+import Category from "../../../features/categories/categories-name/components/category";
 import { redirect } from "next/navigation";
 
 export default async function CategoryPage() {

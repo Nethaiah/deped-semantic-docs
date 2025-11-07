@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import VerifyEmailClient from "./_components/verify-email";
+import VerifyEmailClient from "../../features/verify-email/components/verify-email";
 
 export default async function VerifyEmailPage() {
 	const supabase = await createClient();

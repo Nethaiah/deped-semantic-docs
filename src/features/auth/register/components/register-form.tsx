@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Spinner } from "@/components/ui/spinner";
-import { register } from "@/app/(auth)/register/actions";
+import { register } from "@/features/auth/register/server/actions";
 
 export default function RegisterForm() {
   const router = useRouter();
