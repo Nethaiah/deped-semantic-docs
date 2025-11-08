@@ -131,7 +131,7 @@ export default function TableUpload({
       const newUploadFiles = newFiles.map((file) => {
         // Check if this file already exists in uploadFiles
         const existingFile = uploadFiles.find(
-          (existing) => existing.id === file.id,
+          (existing) => existing.id === file.id
         );
 
         if (existingFile) {
@@ -192,7 +192,7 @@ export default function TableUpload({
           }
 
           return { ...file, progress: newProgress };
-        }),
+        })
       );
     }, 500);
 
@@ -214,8 +214,8 @@ export default function TableUpload({
               status: "uploading" as const,
               error: undefined,
             }
-          : file,
-      ),
+          : file
+      )
     );
   };
 
@@ -256,7 +256,7 @@ export default function TableUpload({
           "relative rounded-lg border border-dashed p-6 text-center transition-colors",
           isDragging
             ? "border-primary bg-primary/5"
-            : "border-muted-foreground/25 hover:border-muted-foreground/50",
+            : "border-muted-foreground/25 hover:border-muted-foreground/50"
         )}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -272,7 +272,7 @@ export default function TableUpload({
               "flex h-12 w-12 items-center justify-center rounded-full bg-muted transition-colors",
               isDragging
                 ? "border-primary bg-primary/10"
-                : "border-muted-foreground/25",
+                : "border-muted-foreground/25"
             )}
           >
             <Upload className="h-5 w-5 text-muted-foreground" />
@@ -284,7 +284,7 @@ export default function TableUpload({
               <button
                 type="button"
                 onClick={openFileDialog}
-                className="cursor-pointer text-primary underline-offset-4 hover:underline"
+                className="cursor-pointer text-[#008c8b] underline-offset-4 hover:underline"
               >
                 browse files
               </button>
@@ -335,7 +335,7 @@ export default function TableUpload({
                       <div className="flex items-center gap-1">
                         <div
                           className={cn(
-                            "size-8 shrink-0 relative flex items-center justify-center text-muted-foreground/80",
+                            "size-8 shrink-0 relative flex items-center justify-center text-muted-foreground/80"
                           )}
                         >
                           <div className="not-[]:size-8 flex items-center justify-center">
@@ -369,14 +369,14 @@ export default function TableUpload({
                             </Link>
                           </Button>
                         )}
-                          <Button
-                            onClick={() => removeUploadFile(fileItem.id)}
-                            variant="dim"
-                            size="icon"
-                            className="size-8"
-                          >
-                            <Trash2 className="size-3.5" />
-                          </Button>
+                        <Button
+                          onClick={() => removeUploadFile(fileItem.id)}
+                          variant="dim"
+                          size="icon"
+                          className="size-8"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
