@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import PDFViewer from "@/app/manage-document/_components/pdf-viewer";
+import PDFViewer from "@/features/manage-document/components/pdf-viewer";
 import { reviewDocs, type ReviewDocMock } from "@/lib/mock-data";
 
 export default function ManageDocument() {
