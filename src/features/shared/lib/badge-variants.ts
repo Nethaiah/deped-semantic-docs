@@ -2,28 +2,43 @@
 import type { VariantProps } from "class-variance-authority";
 import { badgeVariants } from "@/components/ui/badge";
 
-// 🔹 Define the allowed variant type
 export type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>["variant"]>;
 
 // Convert string to snake_case for variant matching
 function toSnakeCase(str: string): string {
   return str
     .toLowerCase()
-    .replace(/[\/\s]+/g, '_')  // Replace / and spaces with underscore
-    .replace(/[^a-z0-9_]/g, '') // Remove special characters except underscore
-    .replace(/_+/g, '_')        // Replace multiple underscores with single
-    .replace(/^_|_$/g, '');     // Remove leading/trailing underscores
+    .replace(/[\/\s]+/g, '_')
+    .replace(/[^a-z0-9_]/g, '')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '');
 }
 
+// Hash function to generate consistent color from string
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash = hash & hash;
+  }
+  return Math.abs(hash);
+}
+
+// Generate variant name from tag
+function generateVariantName(tag: string): string {
+  return toSnakeCase(tag);
+}
+
+// Predefined mappings for known categories and offices
 export const badgeVariantMap: Record<string, BadgeVariant> = {
-  // === Categories ===
+  // Categories
   "policy": "policy",
   "memo": "memo",
   "learning": "learning",
   "curriculum": "curriculum",
   "school calendar": "school_calendar",
   
-  // === Office tags (normalized to snake_case) ===
+  // Offices
   "curriculum implementation division": "curriculum_implementation_division",
   "school governance and operations division": "school_governance_and_operations_division",
   "school governance and operations": "school_governance_and_operations_division",
@@ -43,16 +58,43 @@ export const badgeVariantMap: Record<string, BadgeVariant> = {
   "quality management system": "quality_management_system",
 };
 
-// 🔹 Helper with correct return type
-export const getBadgeVariant = (label: string): BadgeVariant => {
+// Color palette for dynamic badges (softer, professional colors)
+const dynamicColors = [
+  { bg: "bg-blue-100", text: "text-blue-800" },
+  { bg: "bg-purple-100", text: "text-purple-800" },
+  { bg: "bg-pink-100", text: "text-pink-800" },
+  { bg: "bg-indigo-100", text: "text-indigo-800" },
+  { bg: "bg-cyan-100", text: "text-cyan-800" },
+  { bg: "bg-emerald-100", text: "text-emerald-800" },
+  { bg: "bg-amber-100", text: "text-amber-800" },
+  { bg: "bg-rose-100", text: "text-rose-800" },
+  { bg: "bg-violet-100", text: "text-violet-800" },
+  { bg: "bg-lime-100", text: "text-lime-800" },
+];
+
+// Get dynamic color classes for unknown tags
+export function getDynamicBadgeClasses(tag: string): string {
+  const hash = hashString(tag);
+  const colorIndex = hash % dynamicColors.length;
+  const color = dynamicColors[colorIndex];
+  return `${color.bg} ${color.text}`;
+}
+
+// Main helper function with fallback to dynamic colors
+export const getBadgeVariant = (label: string): BadgeVariant | "dynamic" => {
   const normalized = label.trim().toLowerCase();
   
-  // First try direct lookup
+  // Try direct lookup
   if (badgeVariantMap[normalized]) {
     return badgeVariantMap[normalized];
   }
   
-  // If not found, try snake_case conversion
+  // Try snake_case conversion
   const snakeCase = toSnakeCase(normalized);
-  return (snakeCase as BadgeVariant) || "outline";
+  if (badgeVariantMap[snakeCase]) {
+    return badgeVariantMap[snakeCase];
+  }
+  
+  // Return "dynamic" to signal custom styling should be used
+  return "dynamic";
 };

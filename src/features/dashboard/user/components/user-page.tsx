@@ -1,9 +1,7 @@
-"use client";
-
-import { ArrowRight, TrendingUp, FileText, Clock, Eye } from "lucide-react";
-import { useCurrentTime } from "@/lib/time-utils";
-import { useRouter } from "next/navigation";
-import { recentlyViewed, latestIssuances } from "@/lib/mock-data";
+import { TrendingUp, FileText, Clock, Eye } from "lucide-react";
+import ClientTimeDisplay from "@/features/dashboard/shared/components/time"
+import LatestIssuances from "./latest-issuances";
+import { getLatestIssuances } from "@/features/shared/server/get-latest-issuances";
 
 // Mock monthly data for chart - placeholder data
 const monthlyData = [
@@ -15,55 +13,17 @@ const monthlyData = [
   { month: "Nov", uploads: 30 },
 ];
 
-const Badge = ({ children, variant }) => {
-  const variants = {
-    policy: "bg-blue-100 text-blue-700 border-blue-200",
-    memo: "bg-purple-100 text-purple-700 border-purple-200",
-    learning: "bg-green-100 text-green-700 border-green-200",
-    curriculum: "bg-orange-100 text-orange-700 border-orange-200",
-    schoolCalendar: "bg-pink-100 text-pink-700 border-pink-200",
-  };
-
-  return (
-    <span
-      className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${
-        variants[variant] || variants.policy
-      }`}
-    >
-      {children}
-    </span>
-  );
-};
-
-const getBadgeVariant = (tag) => {
-  switch (tag) {
-    case "Policy":
-      return "policy";
-    case "Memo":
-      return "memo";
-    case "Learning":
-      return "learning";
-    case "Curriculum":
-      return "curriculum";
-    case "School Calendar":
-      return "schoolCalendar";
-    default:
-      return "policy";
-  }
-};
-
-export default function EnhancedDashboard({ name = "User" }) {
-  const { formattedTime, formattedDate } = useCurrentTime();
-  const router = useRouter();
+export default async function UserDocuments({ name = "User" }) {
+  const latestIssuances = await getLatestIssuances();
 
   const maxUploads = Math.max(...monthlyData.map((d) => d.uploads));
   const totalUploads = monthlyData.reduce((sum, d) => sum + d.uploads, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 p-6">
       {/* Header Section */}
-      <div className="bg-white rounded-3xl shadow-lg border border-slate-200 px-8 py-15 mb-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-full blur-3xl"></div>
+      <div className="bg-white rounded-lg shadow-md border border-slate-200 px-8 py-15 mb-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-slate-400/10 to-slate-500/10 rounded-full blur-3xl"></div>
         <div className="relative z-10 flex justify-between items-start">
           <div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2">
@@ -74,23 +34,16 @@ export default function EnhancedDashboard({ name = "User" }) {
               organization.
             </p>
           </div>
-          <div className="text-right">
-            <div className="text-3xl font-bold tracking-wide text-slate-800">
-              {formattedTime}
-            </div>
-            <div className="text-sm font-medium text-slate-600">
-              {formattedDate}
-            </div>
-          </div>
+          <ClientTimeDisplay/>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-blue-100 rounded-xl">
-              <FileText className="w-6 h-6 text-blue-600" />
+            <div className="p-3 bg-slate-100 rounded-xl">
+              <FileText className="w-6 h-6 text-slate-700" />
             </div>
             <TrendingUp className="w-5 h-5 text-green-500" />
           </div>
@@ -103,10 +56,10 @@ export default function EnhancedDashboard({ name = "User" }) {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-purple-100 rounded-xl">
-              <Eye className="w-6 h-6 text-purple-600" />
+            <div className="p-3 bg-slate-100 rounded-xl">
+              <Eye className="w-6 h-6 text-slate-700" />
             </div>
             <TrendingUp className="w-5 h-5 text-green-500" />
           </div>
@@ -119,10 +72,10 @@ export default function EnhancedDashboard({ name = "User" }) {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-indigo-100 rounded-xl">
-              <Clock className="w-6 h-6 text-indigo-600" />
+            <div className="p-3 bg-slate-100 rounded-xl">
+              <Clock className="w-6 h-6 text-slate-700" />
             </div>
             <span className="text-xs text-slate-500 font-medium">
               This Month
@@ -143,80 +96,12 @@ export default function EnhancedDashboard({ name = "User" }) {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Latest Issuances Table */}
-        <div className="col-span-2 bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
-          <div className="flex justify-between items-center px-6 py-5 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white">
-            <h2 className="text-xl font-bold text-slate-800">
-              Latest Issuances
-            </h2>
-            <button className="text-sm text-blue-600 hover:text-blue-700 font-semibold hover:underline cursor-pointer">
-              View All →
-            </button>
-          </div>
-
-          <table className="w-full">
-            <thead className="bg-slate-50">
-              <tr>
-                <th className="py-3 px-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="py-3 px-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                  Document
-                </th>
-                <th className="py-3 px-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                  Tags
-                </th>
-                <th className="py-3 px-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
-                  Issuer
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {latestIssuances.map((issuance, index) => (
-                <tr
-                  key={index}
-                  onClick={() => router.push(`/view/${issuance.slug}`)}
-                  className="hover:bg-slate-50 transition-colors cursor-pointer"
-                >
-                  <td className="py-4 px-4 text-sm text-slate-600 font-medium">
-                    {issuance.issuedDate}
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="max-w-xs">
-                      <p className="font-bold text-[#333DAD] text-sm mb-0.5">
-                        {issuance.code}
-                      </p>
-                      <p className="text-sm text-slate-700 truncate">
-                        {issuance.title}
-                      </p>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex flex-wrap gap-1.5">
-                      {issuance.tags.slice(0, 2).map((tag, i) => (
-                        <Badge key={i} variant={getBadgeVariant(tag)}>
-                          {tag}
-                        </Badge>
-                      ))}
-                      {issuance.tags.length > 2 && (
-                        <span className="text-xs text-slate-500 font-semibold">
-                          +{issuance.tags.length - 2}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 text-sm text-slate-600">
-                    {issuance.office}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <LatestIssuances initialData={latestIssuances.data} initialTotalPages={latestIssuances.totalPages}/>
 
         {/* Right Column */}
         <div className="space-y-6">
           {/* Monthly Activity Chart */}
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6">
+          <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6">
             <div className="mb-2">
               <h2 className="text-lg font-bold text-slate-800">
                 Monthly Activity
@@ -239,7 +124,7 @@ export default function EnhancedDashboard({ name = "User" }) {
                     </span>
                     {/* Bar */}
                     <div
-                      className="w-full bg-[#333DAD] rounded-t-lg transition-all duration-500 hover:bg-blue-900 relative group"
+                      className="w-full bg-[#333DAD] rounded-t-lg transition-all duration-500 hover:bg-slate-600 relative group"
                       style={{
                         height: `${(data.uploads / maxUploads) * 100}%`,
                       }}
@@ -261,7 +146,7 @@ export default function EnhancedDashboard({ name = "User" }) {
           </div>
 
           {/* Recently Viewed */}
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6">
+          {/* <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6">
             <h2 className="text-lg font-bold text-slate-800 mb-4">
               Recently Viewed
             </h2>
@@ -297,7 +182,7 @@ export default function EnhancedDashboard({ name = "User" }) {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
