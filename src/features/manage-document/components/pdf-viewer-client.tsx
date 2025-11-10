@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -21,26 +21,80 @@ export default function PDFViewerClient({ file, title, initialScale = 1 }: PDFVi
   const [scale, setScale] = useState<number>(initialScale);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageInput, setPageInput] = useState<string>("1");
-  const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     setNumPages(0);
     setCurrentPage(1);
     setPageInput("1");
-    pageRefs.current = [];
   }, [file]);
 
   useEffect(() => {
-    const idx = Math.min(Math.max(currentPage - 1, 0), Math.max(numPages - 1, 0));
-    const node = pageRefs.current[idx];
-    if (node) node.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [currentPage, numPages]);
+    setPageInput(String(currentPage));
+  }, [currentPage]);
+
+  useEffect(() => {
+    setScale(initialScale);
+  }, [initialScale]);
+
+  const goToPage = (page: number) => {
+    setCurrentPage((prev) => {
+      if (numPages === 0) return prev;
+      const next = Math.min(Math.max(page, 1), numPages);
+      return next;
+    });
+  };
+
+  const handlePageInputSubmit = () => {
+    const n = Number(pageInput);
+    if (!Number.isFinite(n)) return;
+    goToPage(Math.round(n));
+  };
 
   return (
     <div className="h-full flex flex-col">
-      <div className="px-4 py-3 border-b flex items-center justify-between">
+      <div className="px-4 py-3 border-b flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-semibold text-gray-700 truncate">{title ? `Reviewing: ${title}` : "PDF Viewer"}</p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => goToPage(currentPage - 1)}
+              disabled={currentPage <= 1}
+              className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Previous page"
+            >
+              {"<"}
+            </button>
+            <div className="flex items-center gap-1">
+              <input
+                type="number"
+                min={1}
+                max={Math.max(numPages, 1)}
+                value={pageInput}
+                onChange={(e) => setPageInput(e.target.value)}
+                onBlur={handlePageInputSubmit}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handlePageInputSubmit();
+                  }
+                }}
+                className="w-16 h-8 border border-gray-300 rounded px-2 text-sm"
+                aria-label="Current page number"
+              />
+              <span className="text-xs text-gray-500">/ {numPages || "–"}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => goToPage(currentPage + 1)}
+              disabled={numPages === 0 || currentPage >= numPages}
+              className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Next page"
+            >
+              {">"}
+            </button>
+          </div>
+
           <button
             type="button"
             onClick={() => setScale((s) => Math.max(0.5, +(s - 0.1).toFixed(2)))}
@@ -70,68 +124,27 @@ export default function PDFViewerClient({ file, title, initialScale = 1 }: PDFVi
       </div>
 
       <div className="flex-1 overflow-hidden p-2">
-        <div className="border rounded-md h-full bg-gray-50 grid grid-cols-12 gap-2 overflow-hidden">
-          <aside className="col-span-3 border-r overflow-auto p-2">
-            <div className="flex items-center gap-2 pb-2">
-              <input
-                type="number"
-                min={1}
-                max={Math.max(numPages, 1)}
-                value={pageInput}
-                onChange={(e) => setPageInput(e.target.value)}
-                className="w-16 h-8 border border-gray-300 rounded px-2 text-sm"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  const n = Number(pageInput) || 1;
-                  setCurrentPage(Math.min(Math.max(n, 1), Math.max(numPages, 1)));
-                }}
-                className="h-8 px-3 text-xs rounded bg-gray-200 hover:bg-gray-300"
-              >
-                Go
-              </button>
-            </div>
-            <div className="space-y-2 overflow-x-auto overflow-y-auto">
-              <div className="min-w-max">
-                <Document file={file} loading={null} onLoadError={() => {}}>
-                  {Array.from({ length: numPages }, (_, i) => (
-                    <div key={`thumb-${i + 1}`}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCurrentPage(i + 1);
-                          setPageInput(String(i + 1));
-                        }}
-                        className="block w-full text-left rounded hover:border-gray-300"
-                      >
-                        <Page pageNumber={i + 1} width={100} renderTextLayer={false} renderAnnotationLayer={false} />
-                      </button>
-                    </div>
-                  ))}
-                </Document>
-              </div>
-            </div>
-          </aside>
-          <div className="col-span-9 overflow-x-auto overflow-y-auto p-2">
-            <div className="min-w-max">
+        <div className="border rounded-md h-full bg-gray-50 overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-auto flex justify-center">
+            <div className="p-4">
               <Document
                 file={file}
-                onLoadSuccess={(info: { numPages: number }) => setNumPages(info.numPages)}
+                onLoadSuccess={(info: { numPages: number }) => {
+                  setNumPages(info.numPages);
+                  setCurrentPage((prev) => Math.min(prev, info.numPages));
+                }}
                 onLoadError={(e: unknown) => console.error("PDF load error", e)}
                 loading={<div className="p-6 text-sm text-gray-500">Loading PDF…</div>}
                 error={<div className="p-6 text-sm text-red-600">Failed to load PDF.</div>}
               >
-                {Array.from({ length: numPages }, (_, i) => (
-                  <div key={`pagewrap-${i + 1}`} ref={(el) => { pageRefs.current[i] = el; }} className="mb-4">
-                    <Page
-                      pageNumber={i + 1}
-                      width={Math.round(420 * scale)}
-                      renderTextLayer={false}
-                      renderAnnotationLayer={false}
-                    />
-                  </div>
-                ))}
+                {numPages > 0 && (
+                  <Page
+                    pageNumber={currentPage}
+                    scale={scale}
+                    renderTextLayer={false}
+                    renderAnnotationLayer={false}
+                  />
+                )}
               </Document>
             </div>
           </div>
