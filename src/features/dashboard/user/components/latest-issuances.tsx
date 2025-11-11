@@ -116,7 +116,7 @@ export default function LatestIssuances({
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="truncate" title={`${issuance.code} ${issuance.title}`}>
-                        <span className="font-bold text-blue-600 mr-2">{issuance.code}</span>
+                        <span className="font-bold text-[#333DAD] mr-2">{issuance.code}</span>
                         <br />
                         <span className="text-slate-900">{issuance.title}</span>
                       </div>
