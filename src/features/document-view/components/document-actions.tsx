@@ -2,7 +2,7 @@
 
 import { Bookmark, Share2, FileDown, Flag } from "lucide-react";
 import Link from "next/link";
-import { toggleBookmark } from "@/features/document-view/server/toggle-bookmark";
+import { toggleBookmark } from "@/features/shared/server/toggle-bookmark";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 

@@ -2,36 +2,19 @@
 
 import {
   Search as SearchIcon,
-  SlidersHorizontal,
-  Eye,
-  Bookmark,
-  Share2,
   Loader2,
-  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { RAGApiService, type DocumentSource } from "@/lib/api/rag-api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-
-// Helper to map categories to Badge variant
-const getBadgeVariant = (category: string):
-  | "policy"
-  | "memo"
-  | "learning"
-  | "curriculum"
-  | "school_calendar" => {
-  const lowerCategory = category.toLowerCase();
-  if (lowerCategory.includes("policy")) return "policy";
-  if (lowerCategory.includes("memo")) return "memo";
-  if (lowerCategory.includes("learning")) return "learning";
-  if (lowerCategory.includes("curriculum")) return "curriculum";
-  if (lowerCategory.includes("calendar")) return "school_calendar";
-  return "policy";
-};
+import { toast } from "sonner";
+import { getBadgeVariant, getDynamicBadgeClasses } from "@/features/shared/lib/badge-variants";
+import DocumentActionButtons from "@/features/shared/components/document-action-buttons";
+import { checkBookmark } from "../../shared/server/check-bookmark";
 
 type Role = {
   role: string;
@@ -42,8 +25,8 @@ export default function Search({ role }: Role) {
   const [searchQuery, setSearchQuery] = useState("");
   const [answer, setAnswer] = useState("");
   const [searchResults, setSearchResults] = useState<DocumentSource[]>([]);
+  const [bookmarks, setBookmarks] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [useRAG, setUseRAG] = useState(true);
   const [searchType, setSearchType] = useState("");
@@ -53,12 +36,11 @@ export default function Search({ role }: Role) {
   // Handle search
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      setError("Please enter a search query");
+      toast.error("Please enter a search query", { duration: 5000, position: "bottom-right" });
       return;
     }
 
     setIsLoading(true);
-    setError(null);
     setHasSearched(true);
 
     try {
@@ -75,18 +57,26 @@ export default function Search({ role }: Role) {
         return bChunks - aChunks;
       });
 
+      // ✅ Fetch bookmark statuses for all documents before rendering
+      const bookmarkStatuses: Record<string, boolean> = {};
+      await Promise.all(
+        sortedResults.map(async (doc) => {
+          const { bookmarked } = await checkBookmark(doc.doc_id);
+          bookmarkStatuses[doc.doc_id] = bookmarked;
+        })
+      );
+
+      // ✅ Update all states once (no flicker)
+      setBookmarks(bookmarkStatuses);
       setAnswer(result.answer);
       setSearchResults(sortedResults);
       setSearchType(result.search_type);
     } catch (err) {
       console.error("Search error:", err);
-      setError(
-        err instanceof Error 
-          ? err.message 
-          : "Failed to perform search. Please ensure the backend is running."
-      );
+      toast.error( err instanceof Error ? err.message : "Failed to perform search. Please ensure the backend is running.", { duration: 5000, position: "bottom-right" });
       setAnswer("");
       setSearchResults([]);
+      setBookmarks({});
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +104,7 @@ export default function Search({ role }: Role) {
               placeholder="Ask a question or search for 'learning recovery plan' or 'DO 22 s. 2023'..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSearch()}
+              onKeyDown={(e) => e.key === "Enter" && !isLoading && handleSearch()}
               disabled={isLoading}
               className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-4 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
@@ -168,19 +158,8 @@ export default function Search({ role }: Role) {
         </div>
       </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-          <div>
-            <h3 className="font-semibold text-red-900 mb-1">Error</h3>
-            <p className="text-sm text-red-700">{error}</p>
-          </div>
-        </div>
-      )}
-
       {/* AI Answer Section */}
-      {answer && !error && (
+      {answer && (
         <div className="mb-6 p-6 bg-white rounded-lg shadow-md border border-gray-200">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
@@ -271,47 +250,28 @@ export default function Search({ role }: Role) {
                   </div>
 
                   {/* Categories */}
-                  {doc.categories && doc.categories.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {doc.categories.map((category, idx) => (
-                        <Badge 
-                          key={idx} 
-                          size="md" 
-                          variant={getBadgeVariant(category)}
+                  {doc.categories &&
+                    doc.categories.map((category: string) => {
+                      const variant = getBadgeVariant(category);
+                      return (
+                        <Badge
+                          key={category}
+                          size="md"
+                          {...(variant === "dynamic"
+                            ? { className: getDynamicBadgeClasses(category) }
+                            : { variant })}
                         >
                           {category}
                         </Badge>
-                      ))}
-                    </div>
-                  )}
+                      );
+                    })}
                 </div>
 
-                {/* RIGHT SECTION - Action buttons */}
-                <div className="flex flex-col items-end justify-between">
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href={`/view/${doc.doc_id}`}
-                      className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
-                      title="View document"
-                    >
-                      <Eye className="h-5 w-5 text-gray-600" />
-                    </Link>
-                    <button
-                      type="button"
-                      className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
-                      title="Bookmark"
-                    >
-                      <Bookmark className="h-5 w-5 text-gray-600" />
-                    </button>
-                    <button
-                      type="button"
-                      className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
-                      title="Share"
-                    >
-                      <Share2 className="h-5 w-5 text-gray-600" />
-                    </button>
-                  </div>
-                </div>
+                {/* RIGHT SECTION - Action buttons with dynamic bookmark status */}
+                <DocumentActionButtons
+                  docId={doc.doc_id}
+                  initialBookmarked={bookmarks[doc.doc_id]}
+                />
               </div>
             </div>
           ))}

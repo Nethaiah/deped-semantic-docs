@@ -10,7 +10,7 @@ import DocumentActions from "./document-actions"
 import DocumentAnalysis from "./document-summary"
 import DocumentPDFViewer from "./pdf-viewer"
 import SimilarDocuments from "./similar-documents"
-import { checkBookmark } from "../server/check-bookmark";
+import { checkBookmark } from "../../shared/server/check-bookmark";
 
 type Props = {
   documentId: string;

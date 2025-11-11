@@ -1,9 +1,10 @@
-import { Search as SearchIcon, SlidersHorizontal, Trash2 } from "lucide-react";
+import { Search as SearchIcon, SlidersHorizontal, Trash2, Eye, Bookmark, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { getBookmarkedDocuments } from "../server/get-bookmark";
 import { getBadgeVariant, getDynamicBadgeClasses } from "@/features/shared/lib/badge-variants";
+import DocumentActionButtons from "@/features/shared/components/document-action-buttons";
 
 type Role = {
   role: string;
@@ -77,9 +78,10 @@ export default async function BookmarksPage({ role }: Role) {
               key={doc.id}
               className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow"
             >
+              {/* Title + Action Buttons */}
               <div className="flex items-start justify-between mb-3">
                 <Link href={`/view/${doc.id}`} className="flex-1 pr-4">
-                  <h3 
+                  <h3
                     className="text-base font-semibold hover:underline cursor-pointer"
                     style={{ color: activeColor }}
                   >
@@ -89,29 +91,39 @@ export default async function BookmarksPage({ role }: Role) {
                     <p className="text-xs text-gray-500 mt-1">{doc.docNumber}</p>
                   )}
                 </Link>
+
+                {/* Action Buttons */}
+                {/* Reusable Action Buttons */}
+                <DocumentActionButtons
+                  docId={doc.id}
+                  initialBookmarked={true}
+                />
               </div>
 
+              {/* Summary */}
               {doc.summary && (
                 <p className="text-sm text-gray-700 mb-3 leading-relaxed line-clamp-2">
                   {doc.summary}
                 </p>
               )}
 
+              {/* Categories + Date */}
               <div className="flex items-center gap-2 text-xs text-gray-600 flex-wrap">
-                {doc.categories && doc.categories.map((category: string) => {
-                  const variant = getBadgeVariant(category);
-                  return (
-                    <Badge
-                      key={category}
-                      size="md"
-                      {...(variant === "dynamic"
-                        ? { className: getDynamicBadgeClasses(category) }
-                        : { variant })}
-                    >
-                      {category}
-                    </Badge>
-                  );
-                })}
+                {doc.categories &&
+                  doc.categories.map((category: string) => {
+                    const variant = getBadgeVariant(category);
+                    return (
+                      <Badge
+                        key={category}
+                        size="md"
+                        {...(variant === "dynamic"
+                          ? { className: getDynamicBadgeClasses(category) }
+                          : { variant })}
+                      >
+                        {category}
+                      </Badge>
+                    );
+                  })}
                 {doc.dateIssued && (
                   <span className="text-xs text-gray-500 ml-auto">
                     Issued: {new Date(doc.dateIssued).toLocaleDateString()}
