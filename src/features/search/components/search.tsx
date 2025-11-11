@@ -6,41 +6,31 @@ import {
   Eye,
   Bookmark,
   Share2,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";
-import { mockSearchResults, type SearchResult } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/badge";
+import { RAGApiService, type DocumentSource } from "@/lib/api/rag-api";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
-// Helper to map tag labels to Badge variant
-const getBadgeVariant = (tag: string):
+// Helper to map categories to Badge variant
+const getBadgeVariant = (category: string):
   | "policy"
   | "memo"
   | "learning"
   | "curriculum"
-  | "schoolCalendar" => {
-  switch (tag) {
-    case "Policy":
-      return "policy";
-    case "Memo":
-      return "memo";
-    case "Learning":
-      return "learning";
-    case "Curriculum":
-      return "curriculum";
-    case "School Calendar":
-      return "schoolCalendar";
-    default:
-      return "policy";
-  }
-};
-
-// Helper function to get match percentage color
-const getMatchColor = (percentage: number): string => {
-  if (percentage >= 90) return "bg-green-500";
-  if (percentage >= 70) return "bg-yellow-500";
-  return "bg-orange-500";
+  | "school_calendar" => {
+  const lowerCategory = category.toLowerCase();
+  if (lowerCategory.includes("policy")) return "policy";
+  if (lowerCategory.includes("memo")) return "memo";
+  if (lowerCategory.includes("learning")) return "learning";
+  if (lowerCategory.includes("curriculum")) return "curriculum";
+  if (lowerCategory.includes("calendar")) return "school_calendar";
+  return "policy";
 };
 
 type Role = {
@@ -48,20 +38,58 @@ type Role = {
 };
 
 export default function Search({ role }: Role) {
-  // TODO: Replace with actual state management and API calls
+  // State management
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults] = useState<SearchResult[]>(mockSearchResults);
-  const [sortBy, setSortBy] = useState("relevance");
+  const [answer, setAnswer] = useState("");
+  const [searchResults, setSearchResults] = useState<DocumentSource[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [useRAG, setUseRAG] = useState(true);
+  const [searchType, setSearchType] = useState("");
 
   const activeColor = String(role).toLowerCase() === "admin" ? "#008c8b" : "#333DAD";
 
-  // TODO: Implement search handler
-  const handleSearch = () => {
-    // Example API call:
-    // fetch(`/api/search?query=${searchQuery}&sort=${sortBy}`)
-    //   .then(res => res.json())
-    //   .then(data => setSearchResults(data));
-    console.log("Searching for:", searchQuery);
+  // Handle search
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
+      setError("Please enter a search query");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setHasSearched(true);
+
+    try {
+      const result = await RAGApiService.search({
+        query: searchQuery,
+        use_rag: useRAG,
+        top_k: 10,
+      });
+
+      // Sort results by number of relevant sections (descending)
+      const sortedResults = [...result.sources].sort((a, b) => {
+        const aChunks = a.num_relevant_chunks || 0;
+        const bChunks = b.num_relevant_chunks || 0;
+        return bChunks - aChunks;
+      });
+
+      setAnswer(result.answer);
+      setSearchResults(sortedResults);
+      setSearchType(result.search_type);
+    } catch (err) {
+      console.error("Search error:", err);
+      setError(
+        err instanceof Error 
+          ? err.message 
+          : "Failed to perform search. Please ensure the backend is running."
+      );
+      setAnswer("");
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -72,170 +100,257 @@ export default function Search({ role }: Role) {
           Document Search
         </h1>
         <p className="text-sm text-gray-600">
-          Comprehensive retrieval of DepEd memoranda and policies.
+          AI-powered semantic search for DepEd memoranda and policies.
         </p>
       </div>
 
       {/* Search Bar */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="relative flex-1">
-          <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search for 'learning recovery plan' or 'DO 22 s. 2023'..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-            className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-4 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+      <div className="flex flex-col gap-3 mb-6">
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1">
+            <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Ask a question or search for 'learning recovery plan' or 'DO 22 s. 2023'..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSearch()}
+              disabled={isLoading}
+              className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-4 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            />
+          </div>
+          <Button
+            onClick={handleSearch}
+            disabled={isLoading || !searchQuery.trim()}
+            className="cursor-pointer px-8 py-6 text-md"
+            style={{ 
+              backgroundColor: activeColor,
+              opacity: isLoading || !searchQuery.trim() ? 0.5 : 1
+            }}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Searching...
+              </>
+            ) : (
+              "Search"
+            )}
+          </Button>
         </div>
-        <Button
-          variant="outline"
-          className="cursor-pointer px-6 py-6 text-md border-gray-300 hover:bg-gray-50 flex items-center gap-2"
-        >
-          <SlidersHorizontal className="h-4 w-4" />
-          Advanced
-        </Button>
-        <Button
-          onClick={handleSearch}
-          className={`cursor-pointer px-8 py-6 text-md bg-[${activeColor}] hover:bg-[${activeColor}-90] text-white`}
-        >
-          Search
-        </Button>
+
+        {/* Search Mode Toggle */}
+        <div className="flex items-center gap-4">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              checked={useRAG}
+              onChange={() => setUseRAG(true)}
+              disabled={isLoading}
+              className="cursor-pointer"
+            />
+            <span className="text-sm text-gray-700">
+              RAG Search (AI-powered with semantic understanding)
+            </span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              checked={!useRAG}
+              onChange={() => setUseRAG(false)}
+              disabled={isLoading}
+              className="cursor-pointer"
+            />
+            <span className="text-sm text-gray-700">
+              Keyword Search (Traditional text matching)
+            </span>
+          </label>
+        </div>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+          <div>
+            <h3 className="font-semibold text-red-900 mb-1">Error</h3>
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
+        </div>
+      )}
+
+      {/* AI Answer Section */}
+      {answer && !error && (
+        <div className="mb-6 p-6 bg-white rounded-lg shadow-md border border-gray-200">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+              <span className="text-blue-600 font-semibold text-sm">AI</span>
+            </div>
+            <h2 className="text-xl font-bold text-gray-900">Answer</h2>
+            {searchType && (
+              <span className="ml-auto text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                {searchType.replace("_", " ").toUpperCase()}
+              </span>
+            )}
+          </div>
+          <div className="prose max-w-none text-gray-700">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {answer}
+            </ReactMarkdown>
+          </div>
+        </div>
+      )}
 
       {/* Results Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="text-sm text-gray-600">
-          {/* TODO: Replace with actual search query and result count from API */}
-          Showing <span className="font-semibold">{searchResults.length}</span>{" "}
-          results for{" "}
-          <span className="font-semibold">
-            "{searchQuery || "school calendar"}"
-          </span>
+      {hasSearched && !isLoading && (
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-sm text-gray-600">
+            {searchResults.length > 0 ? (
+              <>
+                Found <span className="font-semibold">{searchResults.length}</span>{" "}
+                relevant document{searchResults.length !== 1 ? "s" : ""} for{" "}
+                <span className="font-semibold">"{searchQuery}"</span>
+              </>
+            ) : (
+              <>No documents found for <span className="font-semibold">"{searchQuery}"</span></>
+            )}
+          </div>
+          {searchResults.length > 0 && (
+            <div className="text-xs text-gray-500">
+              Sorted by number of relevant sections
+            </div>
+          )}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Sort by:</span>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {/* TODO: Add more sort options as needed */}
-            <option value="relevance">Relevance (Semantic)</option>
-            <option value="date">Date (Newest)</option>
-            <option value="date-old">Date (Oldest)</option>
-            <option value="title">Title (A-Z)</option>
-          </select>
-        </div>
-      </div>
+      )}
 
       {/* Search Results */}
-      <div className="space-y-4">
-        {/*
-          TODO: BACKEND DEVELOPERS - Map through your search results here
-          Replace searchResults with your API response
+      {hasSearched && !isLoading && (
+        <div className="space-y-4">
+          {searchResults.map((doc) => (
+            <div
+              key={doc.doc_id}
+              className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
+            >
+              <div className="flex justify-between gap-6">
+                {/* LEFT SECTION */}
+                <div className="flex-1">
+                  <Link href={`/view/${doc.doc_id}`} className="block group">
+                    <h3 
+                      className="text-xl font-semibold mb-1 group-hover:underline"
+                      style={{ color: activeColor }}
+                    >
+                      {doc.doc_number} - {doc.title}
+                    </h3>
+                  </Link>
 
-          Expected data structure:
-          {
-            id: number | string,
-            code: string,
-            title: string,
-            issuedDate: string,
-            description: string,
-            tags: [{ label: string, type: string }],
-            matchPercentage: number
-          }
-        */}
-        {searchResults.map((result) => (
-          <div
-            key={result.id}
-            className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all flex justify-between gap-6"
-          >
-            {/* LEFT SECTION */}
-            <div className="flex-1">
-              <Link href={`/view/${result.slug}`} className="block group">
-                <h3 className={`text-xl font-semibold text-[${activeColor}] mb-1 group-hover:text-[${activeColor}]-90`}>
-                  {result.code} - {result.title}
-                </h3>
-              </Link>
+                  {doc.date_issued && (
+                    <p className="text-sm text-gray-500 mb-2">
+                      Issued: {new Date(doc.date_issued).toLocaleDateString()}
+                    </p>
+                  )}
 
-              <p className="text-sm text-gray-500 mb-2">
-                Issued: {result.issuedDate}
-              </p>
+                  {doc.summary && (
+                    <p className="text-sm text-gray-700 mb-3 line-clamp-2">
+                      {doc.summary}
+                    </p>
+                  )}
 
-              <p className="text-sm text-gray-700 mb-3 line-clamp-2">
-                {result.description}
-              </p>
+                  {/* Document Info */}
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 mb-3">
+                    {doc.doc_type && (
+                      <span>Type: <span className="font-medium">{doc.doc_type}</span></span>
+                    )}
+                    {doc.issuer && (
+                      <span>Issuer: <span className="font-medium">{doc.issuer}</span></span>
+                    )}
+                    {doc.num_relevant_chunks && (
+                      <span className="text-blue-600">
+                        {doc.num_relevant_chunks} relevant section{doc.num_relevant_chunks !== 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
 
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2">
-                {result.tags.map((tag) => (
-                  <Badge key={tag} size="md" variant={getBadgeVariant(tag)}>
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {/* RIGHT SECTION */}
-            <div className="flex items-end justify-end gap-4">
-              {/* Match percentage bar */}
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full ${getMatchColor(
-                      result.matchPercentage,
-                    )}`}
-                    style={{ width: `${result.matchPercentage}%` }}
-                  />
+                  {/* Categories */}
+                  {doc.categories && doc.categories.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {doc.categories.map((category, idx) => (
+                        <Badge 
+                          key={idx} 
+                          size="md" 
+                          variant={getBadgeVariant(category)}
+                        >
+                          {category}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <span className="text-sm font-semibold text-gray-700">
-                  {result.matchPercentage}%
-                </span>
-              </div>
 
-              {/* Action buttons */}
-              <div className="flex items-center gap-2">
-                <Link
-                  href={`/view/${result.slug}`}
-                  className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
-                  title="View document"
-                >
-                  <Eye className="h-5 w-5 text-gray-600" />
-                </Link>
-                <button
-                  type="button"
-                  className="p-2 bg-gray-200 hover:bg-gray-300  rounded-md transition-colors"
-                  title="Bookmark"
-                >
-                  <Bookmark className="h-5 w-5 text-gray-600" />
-                </button>
-                <button
-                  type="button"
-                  className="p-2 bg-gray-200 hover:bg-gray-300  rounded-md transition-colors"
-                  title="Share"
-                >
-                  <Share2 className="h-5 w-5 text-gray-600" />
-                </button>
+                {/* RIGHT SECTION - Action buttons */}
+                <div className="flex flex-col items-end justify-between">
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/view/${doc.doc_id}`}
+                      className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
+                      title="View document"
+                    >
+                      <Eye className="h-5 w-5 text-gray-600" />
+                    </Link>
+                    <button
+                      type="button"
+                      className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
+                      title="Bookmark"
+                    >
+                      <Bookmark className="h-5 w-5 text-gray-600" />
+                    </button>
+                    <button
+                      type="button"
+                      className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
+                      title="Share"
+                    >
+                      <Share2 className="h-5 w-5 text-gray-600" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
 
-        {/* Empty State - Show when no results */}
-        {searchResults.length === 0 && (
-          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <SearchIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              No results found
-            </h3>
-            <p className="text-sm text-gray-600">
-              Try adjusting your search terms or filters
-            </p>
+          {/* Empty State */}
+          {searchResults.length === 0 && (
+            <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+              <SearchIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No documents found
+              </h3>
+              <p className="text-sm text-gray-600">
+                Try adjusting your search query or using different keywords
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Initial State */}
+      {!hasSearched && (
+        <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+          <SearchIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Start your search
+          </h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Enter a query above to search through DepEd documents with AI-powered semantic search
+          </p>
+          <div className="text-xs text-gray-500 max-w-md mx-auto">
+            <p className="mb-2">Try asking questions like:</p>
+            <ul className="text-left list-disc list-inside space-y-1">
+              <li>"What is the ARAL Program?"</li>
+              <li>"School calendar guidelines for 2024"</li>
+              <li>"Curriculum implementation policies"</li>
+            </ul>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
