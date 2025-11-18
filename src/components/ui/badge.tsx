@@ -34,8 +34,8 @@ const badgeVariants = cva(
         /* Tag variants */
         policy: 'bg-orange-100 text-orange-700',
         memo: 'bg-teal-100 text-teal-700',
-        learning: 'bg-blue-600 text-white',
-        curriculum: 'bg-purple-600 text-white',
+        learning: 'bg-blue-100 text-blue-700',
+        curriculum: 'bg-purple-100 text-purple-700',
         school_calendar: 'bg-red-100 text-red-700',
 
         /* New Category Variants */

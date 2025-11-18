@@ -31,7 +31,7 @@ export default function Category({
   const [documents] = useState<CategoryDocument[]>(initialDocuments);
   const [bookmarks] = useState<Record<string, boolean>>(initialBookmarks);
 
-  const activeColor = "#333DAD"; // Default user color
+  const activeColor = "#3a7c94"; // Default user color
   const totalPages = Math.max(1, Math.ceil((total || 0) / (pageSize || 10)));
   const prevPage = page > 1 ? page - 1 : 1;
   const nextPage = page < totalPages ? page + 1 : totalPages;
@@ -103,9 +103,13 @@ export default function Category({
                       {doc.title}
                     </h3>
                   </Link>
-                  {doc.date_issued && (
-                    <p className="text-sm text-gray-500 mb-2">
-                      Issued: {new Date(doc.date_issued).toLocaleDateString()}
+                  {doc.date_issued && doc.issuer && (
+                    <p className="text-sm text-gray-600/60 mb-2">
+                      Issued: <span className="font-medium"></span>{new Date(doc.date_issued).toLocaleDateString('en-US', { 
+                        month: 'long', 
+                        day: 'numeric',
+                        year: 'numeric' 
+                      })} | Issuer: <span className="font-medium">{doc.issuer || "N/A"}</span>
                     </p>
                   )}
                   {doc.summary && (
@@ -121,12 +125,7 @@ export default function Category({
                         <span className="font-medium">{doc.doc_type}</span>
                       </span>
                     )}
-                    {doc.issuer && (
-                      <span>
-                        Issuer:{" "}
-                        <span className="font-medium">{doc.issuer}</span>
-                      </span>
-                    )}
+                   
                   </div>
                   {/* Categories */}
                   {doc.categories &&
