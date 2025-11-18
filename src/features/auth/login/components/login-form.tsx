@@ -88,16 +88,16 @@ export default function LoginForm() {
       {/* Background Image with Dark Overlay */}
       <div className="absolute inset-0 z-0">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-contain bg-left bg-no-repeat"
           style={{
-            backgroundImage: `url('/samplebuilding.jpg')`,
+            backgroundImage: `url('/depedbuilding2.png')`,
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/60 to-black/80" />
       </div>
 
       {/* Back to Landing Page - Top Right (outside login form) */}
-      <div className="absolute top-12 right-[calc(30%+2rem)] z-20">
+      {/* <div className="absolute top-12 right-[calc(30%+2rem)] z-20">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm font-medium text-white hover:text-blue-300 transition"
@@ -117,7 +117,7 @@ export default function LoginForm() {
           </svg>
           Back to landing page
         </Link>
-      </div>
+      </div> */}
 
       {/* Content Container */}
       <div className="relative z-10 flex min-h-screen">
@@ -125,17 +125,27 @@ export default function LoginForm() {
         <div className="flex flex-1 lg:w-[75%] flex-col justify-between p-8 lg:p-12">
           {/* Logo/Title - Top Left */}
           <div>
-            <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
-              Doculens
-            </h1>
+            <Link href="/" className="flex items-center gap-2">
+              <Image
+                src="/Logo.png"
+                alt="DocuLens Logo"
+                width={60}
+                height={60}
+                className="object-contain"
+              />
+              <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
+                Doculens
+              </h1>
+            </Link>
+
             <p className="text-blue-200 text-sm lg:text-base">
               Your intelligent document management platform
             </p>
           </div>
 
           {/* Tagline - Bottom Left */}
-          <div className="max-w-md">
-            <p className="text-white/90 text-lg lg:text-3xl leading-relaxed">
+          <div className="max-w-3xl">
+            <p className="text-white/90 font-bold text-lg lg:text-5xl leading-relaxed">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             </p>
             <div className="mt-4 text-white/60 text-sm">
@@ -145,9 +155,9 @@ export default function LoginForm() {
         </div>
 
         {/* Right Side - Login Form (30%) */}
-        <div className="flex flex-col w-full lg:w-[30%] bg-white m-5 rounded-md">
+        <div className="flex flex-col h-full h-auto w-full lg:w-[30%] bg-white my-auto mr-30 rounded-md">
           {/* Login Form - Takes full height with more spacing */}
-          <div className="flex-1 flex items-center justify-center px-8 py-12">
+          <div className="flex-1 flex items-center justify-around px-8 py-12">
             <div className="w-full">
               {/* Header */}
               <div className="mb-10">
