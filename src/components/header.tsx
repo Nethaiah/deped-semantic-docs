@@ -25,7 +25,7 @@ export default async function Header() {
 
   const containerClass = isAuthenticated
     ? "flex items-center justify-between px-6 py-4"
-    : "mx-auto flex max-w-5xl items-center justify-between px-6 py-3";
+    : "mx-auto flex max-w-7xl items-center justify-between px-6 py-3";
 
   return (
     <nav
@@ -69,9 +69,9 @@ export default async function Header() {
               </Link>
               <Link
                 href="/register"
-                className="rounded-full bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition"
+                className="rounded-full bg-white px-5 py-2 text-sm font-medium text-[#333] hover:bg-gray-300 transition"
               >
-                Try it free
+                Sign up
               </Link>
             </>
           )}
