@@ -26,7 +26,7 @@ export default function Home() {
               <span className="text-[#278fb6]"> Start understanding it.</span>
             </h1>
             <p className="text-lg text-gray-600 leading-relaxed mb-8">
-              Doculens uses Graph Neural Networks to automatically read,
+              Doculens uses Transformer-based Models to automatically read,
               summarize, and organize your official orders and memoranda so you
               can find what matters in seconds, not hours.
             </p>
@@ -35,7 +35,7 @@ export default function Home() {
                 href="/register"
                 className="group flex items-center gap-2 rounded-full bg-[#278fb6] px-7 py-3.5 text-base font-semibold text-white hover:bg-[#278fb6]/80 transition"
               >
-                Get started free
+                Get started
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link

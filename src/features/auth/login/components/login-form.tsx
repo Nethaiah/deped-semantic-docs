@@ -10,11 +10,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { login } from "@/features/auth/login/server/actions";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
@@ -139,10 +141,10 @@ export default function LoginForm() {
                   Doculens
                 </h1>
                 <p
-                  className="text-blue-100 text-sm lg:text-base"
+                  className="text-[#66b2b6] text-sm lg:text-base"
                   style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.5)" }}
                 >
-                  Your intelligent document platform
+                  See the core of every issuance.
                 </p>
               </div>
             </a>
@@ -151,10 +153,15 @@ export default function LoginForm() {
           {/* Tagline - Bottom Left */}
           <div className="max-w-3xl">
             <p
-              className="text-white/90 font-bold text-lg lg:text-5xl leading-relaxed"
+              className="text-white/90 font-bold text-lg lg:text-5xl leading-tight"
               style={{ textShadow: "2px 2px 8px rgba(0,0,0,0.6)" }}
             >
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Process Smarter. Extract Faster. <span className="text-[#66b2b6]">Understand More.</span>
+            </p>
+            <p
+              className="mt-4 text-gray-200 text-base lg:text-lg"
+              style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.5)" }}
+            > Doculens simplifies your workflow by transforming scanned documents into organized, searchable, and actionable information—instantly.
             </p>
             <div
               className="mt-4 text-white/60 text-sm"
@@ -166,7 +173,7 @@ export default function LoginForm() {
         </div>
 
         {/* Right Side - Login Form (30%) */}
-        <div className="flex flex-col h-full h-auto w-full lg:w-[30%] bg-white my-auto mr-30 rounded-md">
+        <div className="flex flex-col h-full  w-full lg:w-[30%] bg-white my-auto mr-30 rounded-md">
           {/* Login Form - Takes full height with more spacing */}
           <div className="flex-1 flex items-center justify-around px-8 py-12">
             <div className="w-full">
@@ -192,18 +199,23 @@ export default function LoginForm() {
                   >
                     Email address
                   </label>
-                  <input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    {...form.register("email")}
-                    aria-invalid={!!form.formState.errors.email || undefined}
-                    className={`w-full text-gray-900 rounded-lg border px-4 py-3.5 text-base transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 ${
-                      form.formState.errors.email
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                      <Mail className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      id="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      {...form.register("email")}
+                      aria-invalid={!!form.formState.errors.email || undefined}
+                      className={`w-full text-gray-900 rounded-lg border pl-11 pr-4 py-3.5 text-base transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 ${
+                        form.formState.errors.email
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                  </div>
                   {form.formState.errors.email && (
                     <p className="mt-2 text-sm text-red-600">
                       {form.formState.errors.email.message}
@@ -218,18 +230,34 @@ export default function LoginForm() {
                   >
                     Password
                   </label>
-                  <input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    {...form.register("password")}
-                    aria-invalid={!!form.formState.errors.password || undefined}
-                    className={`w-full text-gray-900 rounded-lg border px-4 py-3.5 text-base transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 ${
-                      form.formState.errors.password
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                      <Lock className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      {...form.register("password")}
+                      aria-invalid={!!form.formState.errors.password || undefined}
+                      className={`w-full text-gray-900 rounded-lg border pl-11 pr-12 py-3.5 text-base transition focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 ${
+                        form.formState.errors.password
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition"
+                    >
+                      {showPassword ? (
+                        <Eye className="h-5 w-5" />
+                      ) : (
+                        <EyeOff className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
                   {form.formState.errors.password && (
                     <p className="mt-2 text-sm text-red-600">
                       {form.formState.errors.password.message}
@@ -245,21 +273,7 @@ export default function LoginForm() {
                   </div>
                 </div>
 
-                {/* Remember me */}
-                <div className="flex items-center">
-                  <input
-                    id="remember"
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label
-                    htmlFor="remember"
-                    className="ml-2 text-sm text-gray-700"
-                  >
-                    Remember me for 30 days
-                  </label>
-                </div>
-
+              
                 {/* Submit Button */}
                 <button
                   type="submit"
@@ -272,7 +286,7 @@ export default function LoginForm() {
                       Signing in...
                     </div>
                   ) : (
-                    "Sign in"
+                    "Log in"
                   )}
                 </button>
               </form>
@@ -327,7 +341,7 @@ export default function LoginForm() {
                   href="/register"
                   className="font-semibold text-[#278fb6] hover:text-[#278fb6]/80"
                 >
-                  Sign up for free
+                  Sign up here
                 </Link>
               </p>
             </div>

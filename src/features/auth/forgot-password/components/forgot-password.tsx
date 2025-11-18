@@ -96,7 +96,7 @@ export default function ForgotPasswordForm() {
                 <input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="Enter your email"
                   {...form.register("email")}
                   aria-invalid={!!form.formState.errors.email || undefined}
                   className={`w-full text-gray-900 rounded-lg border px-3.5 py-2.5 text-sm transition focus:border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-500/10 ${form.formState.errors.email ? "border-red-500" : "border-gray-300"}`}
@@ -132,7 +132,7 @@ export default function ForgotPasswordForm() {
                 href="/login"
                 className="font-semibold text-purple-600 hover:text-purple-700"
               >
-                Sign in
+                Log in
               </Link>
             </p>
           </div>

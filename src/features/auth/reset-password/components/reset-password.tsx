@@ -226,7 +226,7 @@ export default function ResetPasswordForm() {
                 href="/login"
                 className="font-semibold text-indigo-600 hover:text-indigo-700"
               >
-                Sign in
+                Log in
               </Link>
             </p>
           </div>

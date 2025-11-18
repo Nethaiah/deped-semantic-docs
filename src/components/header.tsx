@@ -65,7 +65,7 @@ export default async function Header() {
                 href="/login"
                 className="text-sm font-medium text-white hover:text-gray-100 transition"
               >
-                Sign in
+                Log in
               </Link>
               <Link
                 href="/register"
