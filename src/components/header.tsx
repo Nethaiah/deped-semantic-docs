@@ -33,7 +33,7 @@ export default async function Header() {
     >
       <div className={containerClass}>
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <Image
             src="/Logo.png"
             alt="DocuLens Logo"
@@ -44,7 +44,7 @@ export default async function Header() {
           <span className="text-lg font-bold tracking-tight text-[#f3f3f3]">
             DocuLens
           </span>
-        </Link>
+        </div>
 
         {/* Navigation Actions */}
         <div className="flex items-center gap-4">

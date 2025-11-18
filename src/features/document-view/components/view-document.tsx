@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  ChevronLeft,
   Files,
   History,
 } from "lucide-react";
@@ -11,6 +10,7 @@ import DocumentAnalysis from "./document-summary"
 import DocumentPDFViewer from "./pdf-viewer"
 import SimilarDocuments from "./similar-documents"
 import { checkBookmark } from "../../shared/server/check-bookmark";
+import BackButton from "./back-button";
 
 type Props = {
   documentId: string;
@@ -28,13 +28,7 @@ export default async function ViewDocument({ documentId }: Props) {
   return (
     <div className="p-6">
       <div className="mb-4">
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Back
-        </Link>
+        <BackButton />
       </div>
 
       <div className="grid grid-cols-12 gap-8">

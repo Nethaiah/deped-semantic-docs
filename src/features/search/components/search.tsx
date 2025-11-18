@@ -20,6 +20,8 @@ type Role = {
   role: string;
 };
 
+const SEARCH_STATE_KEY = "deped-search-state";
+
 export default function Search({ role }: Role) {
   // State management
   const [searchQuery, setSearchQuery] = useState("");
@@ -30,6 +32,45 @@ export default function Search({ role }: Role) {
   const [hasSearched, setHasSearched] = useState(false);
   const [useRAG, setUseRAG] = useState(true);
   const [searchType, setSearchType] = useState("");
+
+  // Restore search state from sessionStorage on mount
+  useEffect(() => {
+    try {
+      const savedState = sessionStorage.getItem(SEARCH_STATE_KEY);
+      if (savedState) {
+        const parsed = JSON.parse(savedState);
+        setSearchQuery(parsed.searchQuery || "");
+        setAnswer(parsed.answer || "");
+        setSearchResults(parsed.searchResults || []);
+        setBookmarks(parsed.bookmarks || {});
+        setHasSearched(parsed.hasSearched || false);
+        setUseRAG(parsed.useRAG !== undefined ? parsed.useRAG : true);
+        setSearchType(parsed.searchType || "");
+      }
+    } catch (err) {
+      console.error("Error restoring search state:", err);
+    }
+  }, []);
+
+  // Save search state to sessionStorage whenever it changes
+  useEffect(() => {
+    if (hasSearched) {
+      try {
+        const stateToSave = {
+          searchQuery,
+          answer,
+          searchResults,
+          bookmarks,
+          hasSearched,
+          useRAG,
+          searchType,
+        };
+        sessionStorage.setItem(SEARCH_STATE_KEY, JSON.stringify(stateToSave));
+      } catch (err) {
+        console.error("Error saving search state:", err);
+      }
+    }
+  }, [searchQuery, answer, searchResults, bookmarks, hasSearched, useRAG, searchType]);
 
   const activeColor =
     String(role).toLowerCase() === "admin" ? "#008c8b" : "#333DAD";
