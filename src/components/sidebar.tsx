@@ -45,7 +45,8 @@ export default function Sidebar({
   const toggleSidebar = () => setIsExpanded(!isExpanded);
 
   // Determine active link background color based on role
-  const activeLinkColor = String(role).toLowerCase() === "admin" ? "bg-[#008c8b]" : "bg-[#333DAD]";
+  const activeLinkColor =
+    String(role).toLowerCase() === "admin" ? "bg-[#278fb6]" : "bg-[#278fb6]";
 
   return (
     <div className="flex h-screen">
@@ -133,7 +134,9 @@ export default function Sidebar({
                         >
                           <Icon className="w-5 h-5 flex-shrink-0" />
                           {isExpanded && (
-                            <span className="text-base font-medium">{title}</span>
+                            <span className="text-base font-medium">
+                              {title}
+                            </span>
                           )}
                         </Link>
                       </li>

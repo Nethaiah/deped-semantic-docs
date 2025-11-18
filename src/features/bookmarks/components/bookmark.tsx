@@ -1,9 +1,19 @@
-import { Search as SearchIcon, SlidersHorizontal, Trash2, Eye, Bookmark, Share2 } from "lucide-react";
+import {
+  Search as SearchIcon,
+  SlidersHorizontal,
+  Trash2,
+  Eye,
+  Bookmark,
+  Share2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { getBookmarkedDocuments } from "../server/get-bookmark";
-import { getBadgeVariant, getDynamicBadgeClasses } from "@/features/shared/lib/badge-variants";
+import {
+  getBadgeVariant,
+  getDynamicBadgeClasses,
+} from "@/features/shared/lib/badge-variants";
 import DocumentActionButtons from "@/features/shared/components/document-action-buttons";
 
 type Role = {
@@ -12,7 +22,8 @@ type Role = {
 
 export default async function BookmarksPage({ role }: Role) {
   const { data: bookmarkedDocs, error } = await getBookmarkedDocuments();
-  const activeColor = String(role).toLowerCase() === "admin" ? "#008c8b" : "#333DAD";
+  const activeColor =
+    String(role).toLowerCase() === "admin" ? "#008c8b" : "#333DAD";
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -43,10 +54,7 @@ export default async function BookmarksPage({ role }: Role) {
           <SlidersHorizontal className="h-4 w-4" />
           Advanced
         </Button>
-        <Button
-          className="px-8 py-6 text-md text-white"
-          style={{ backgroundColor: activeColor }}
-        >
+        <Button className="px-8 py-6 text-md text-white bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer">
           Search
         </Button>
       </div>
@@ -59,9 +67,7 @@ export default async function BookmarksPage({ role }: Role) {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">Sort by:</span>
-          <select
-            className="text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
+          <select className="text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="recent">Recently Added</option>
             <option value="date">Date Issued (Newest)</option>
             <option value="date-old">Date Issued (Oldest)</option>
@@ -88,7 +94,9 @@ export default async function BookmarksPage({ role }: Role) {
                     {doc.title}
                   </h3>
                   {doc.docNumber && (
-                    <p className="text-xs text-gray-500 mt-1">{doc.docNumber}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {doc.docNumber}
+                    </p>
                   )}
                 </Link>
 
@@ -158,7 +166,7 @@ export default async function BookmarksPage({ role }: Role) {
             bookmark icon to add them here.
           </p>
           <Link href="/dashboard">
-            <Button style={{ backgroundColor: activeColor }} className="text-white">
+            <Button className="text-white bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer">
               Browse Documents
             </Button>
           </Link>

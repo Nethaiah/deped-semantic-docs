@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  Search as SearchIcon,
-  Loader2,
-} from "lucide-react";
+import { Search as SearchIcon, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -12,7 +9,10 @@ import { RAGApiService, type DocumentSource } from "@/lib/api/rag-api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
-import { getBadgeVariant, getDynamicBadgeClasses } from "@/features/shared/lib/badge-variants";
+import {
+  getBadgeVariant,
+  getDynamicBadgeClasses,
+} from "@/features/shared/lib/badge-variants";
 import DocumentActionButtons from "@/features/shared/components/document-action-buttons";
 import { checkBookmark } from "../../shared/server/check-bookmark";
 
@@ -31,12 +31,16 @@ export default function Search({ role }: Role) {
   const [useRAG, setUseRAG] = useState(true);
   const [searchType, setSearchType] = useState("");
 
-  const activeColor = String(role).toLowerCase() === "admin" ? "#008c8b" : "#333DAD";
+  const activeColor =
+    String(role).toLowerCase() === "admin" ? "#008c8b" : "#333DAD";
 
   // Handle search
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      toast.error("Please enter a search query", { duration: 5000, position: "bottom-right" });
+      toast.error("Please enter a search query", {
+        duration: 5000,
+        position: "bottom-right",
+      });
       return;
     }
 
@@ -73,7 +77,12 @@ export default function Search({ role }: Role) {
       setSearchType(result.search_type);
     } catch (err) {
       console.error("Search error:", err);
-      toast.error( err instanceof Error ? err.message : "Failed to perform search. Please ensure the backend is running.", { duration: 5000, position: "bottom-right" });
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : "Failed to perform search. Please ensure the backend is running.",
+        { duration: 5000, position: "bottom-right" }
+      );
       setAnswer("");
       setSearchResults([]);
       setBookmarks({});
@@ -104,7 +113,9 @@ export default function Search({ role }: Role) {
               placeholder="Ask a question or search for 'learning recovery plan' or 'DO 22 s. 2023'..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && !isLoading && handleSearch()}
+              onKeyDown={(e) =>
+                e.key === "Enter" && !isLoading && handleSearch()
+              }
               disabled={isLoading}
               className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-4 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
@@ -112,10 +123,9 @@ export default function Search({ role }: Role) {
           <Button
             onClick={handleSearch}
             disabled={isLoading || !searchQuery.trim()}
-            className="cursor-pointer px-8 py-6 text-md"
-            style={{ 
-              backgroundColor: activeColor,
-              opacity: isLoading || !searchQuery.trim() ? 0.5 : 1
+            className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
+            style={{
+              opacity: isLoading || !searchQuery.trim() ? 0.5 : 1,
             }}
           >
             {isLoading ? (
@@ -173,9 +183,7 @@ export default function Search({ role }: Role) {
             )}
           </div>
           <div className="prose max-w-none text-gray-700">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {answer}
-            </ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{answer}</ReactMarkdown>
           </div>
         </div>
       )}
@@ -186,12 +194,16 @@ export default function Search({ role }: Role) {
           <div className="text-sm text-gray-600">
             {searchResults.length > 0 ? (
               <>
-                Found <span className="font-semibold">{searchResults.length}</span>{" "}
+                Found{" "}
+                <span className="font-semibold">{searchResults.length}</span>{" "}
                 relevant document{searchResults.length !== 1 ? "s" : ""} for{" "}
                 <span className="font-semibold">"{searchQuery}"</span>
               </>
             ) : (
-              <>No documents found for <span className="font-semibold">"{searchQuery}"</span></>
+              <>
+                No documents found for{" "}
+                <span className="font-semibold">"{searchQuery}"</span>
+              </>
             )}
           </div>
           {searchResults.length > 0 && (
@@ -214,7 +226,7 @@ export default function Search({ role }: Role) {
                 {/* LEFT SECTION */}
                 <div className="flex-1">
                   <Link href={`/view/${doc.doc_id}`} className="block group">
-                    <h3 
+                    <h3
                       className="text-xl font-semibold mb-1 group-hover:underline"
                       style={{ color: activeColor }}
                     >
@@ -237,14 +249,21 @@ export default function Search({ role }: Role) {
                   {/* Document Info */}
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 mb-3">
                     {doc.doc_type && (
-                      <span>Type: <span className="font-medium">{doc.doc_type}</span></span>
+                      <span>
+                        Type:{" "}
+                        <span className="font-medium">{doc.doc_type}</span>
+                      </span>
                     )}
                     {doc.issuer && (
-                      <span>Issuer: <span className="font-medium">{doc.issuer}</span></span>
+                      <span>
+                        Issuer:{" "}
+                        <span className="font-medium">{doc.issuer}</span>
+                      </span>
                     )}
                     {doc.num_relevant_chunks && (
                       <span className="text-blue-600">
-                        {doc.num_relevant_chunks} relevant section{doc.num_relevant_chunks !== 1 ? "s" : ""}
+                        {doc.num_relevant_chunks} relevant section
+                        {doc.num_relevant_chunks !== 1 ? "s" : ""}
                       </span>
                     )}
                   </div>
@@ -299,7 +318,8 @@ export default function Search({ role }: Role) {
             Start your search
           </h3>
           <p className="text-sm text-gray-600 mb-4">
-            Enter a query above to search through DepEd documents with AI-powered semantic search
+            Enter a query above to search through DepEd documents with
+            AI-powered semantic search
           </p>
           <div className="text-xs text-gray-500 max-w-md mx-auto">
             <p className="mb-2">Try asking questions like:</p>

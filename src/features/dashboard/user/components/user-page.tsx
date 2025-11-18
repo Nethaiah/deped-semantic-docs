@@ -1,5 +1,5 @@
 import { TrendingUp, FileText, Clock, Eye } from "lucide-react";
-import ClientTimeDisplay from "@/features/dashboard/shared/components/time"
+import ClientTimeDisplay from "@/features/dashboard/shared/components/time";
 import LatestIssuances from "./latest-issuances";
 import { getLatestIssuances } from "@/features/shared/server/get-latest-issuances";
 
@@ -27,14 +27,14 @@ export default async function UserDocuments({ name = "User" }) {
         <div className="relative z-10 flex justify-between items-start">
           <div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2">
-              Welcome Back, <span className="text-[#333DAD]">{name}!</span>
+              Welcome Back, <span className="text-[#278fb6]">{name}!</span>
             </h1>
             <p className="text-slate-600 text-base font-medium">
               Stay informed with the latest orders and memoranda from your
               organization.
             </p>
           </div>
-          <ClientTimeDisplay/>
+          <ClientTimeDisplay />
         </div>
       </div>
 
@@ -96,7 +96,10 @@ export default async function UserDocuments({ name = "User" }) {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Latest Issuances Table */}
-        <LatestIssuances initialData={latestIssuances.data} initialTotalPages={latestIssuances.totalPages}/>
+        <LatestIssuances
+          initialData={latestIssuances.data}
+          initialTotalPages={latestIssuances.totalPages}
+        />
 
         {/* Right Column */}
         <div className="space-y-6">
@@ -124,7 +127,7 @@ export default async function UserDocuments({ name = "User" }) {
                     </span>
                     {/* Bar */}
                     <div
-                      className="w-full bg-[#333DAD] rounded-t-lg transition-all duration-500 hover:bg-slate-600 relative group"
+                      className="w-full bg-[#278fb6] rounded-t-lg transition-all duration-500 hover:bg-slate-600 relative group"
                       style={{
                         height: `${(data.uploads / maxUploads) * 100}%`,
                       }}
@@ -160,7 +163,7 @@ export default async function UserDocuments({ name = "User" }) {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="font-bold text-[#333DAD] text-sm">
+                        <p className="font-bold text-[#278fb6] text-sm">
                           {item.code}
                         </p>
                         <Badge
@@ -177,7 +180,7 @@ export default async function UserDocuments({ name = "User" }) {
                         <span>Recently</span>
                       </div>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-[#333DAD] group-hover:translate-x-1 transition-transform flex-shrink-0" />
+                    <ArrowRight className="w-5 h-5 text-[#278fb6] group-hover:translate-x-1 transition-transform flex-shrink-0" />
                   </div>
                 </div>
               ))}

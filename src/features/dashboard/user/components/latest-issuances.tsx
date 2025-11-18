@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { getBadgeVariant, getDynamicBadgeClasses } from "@/features/shared/lib/badge-variants";
+import {
+  getBadgeVariant,
+  getDynamicBadgeClasses,
+} from "@/features/shared/lib/badge-variants";
 import { getLatestIssuances } from "@/features/shared/server/get-latest-issuances";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -21,18 +24,18 @@ type Issuance = {
 // Format date to "Month Day, Year" format
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  const options: Intl.DateTimeFormatOptions = { 
-    month: 'long', 
-    day: 'numeric',
-    year: 'numeric'
+  const options: Intl.DateTimeFormatOptions = {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   };
-  return date.toLocaleDateString('en-US', options);
+  return date.toLocaleDateString("en-US", options);
 }
 
-export default function LatestIssuances({ 
+export default function LatestIssuances({
   initialData,
-  initialTotalPages = 1
-}: { 
+  initialTotalPages = 1,
+}: {
   initialData: Issuance[];
   initialTotalPages?: number;
 }) {
@@ -115,8 +118,13 @@ export default function LatestIssuances({
                       className="block hover:opacity-80 transition-opacity"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <div className="truncate" title={`${issuance.code} ${issuance.title}`}>
-                        <span className="font-bold text-[#333DAD] mr-2">{issuance.code}</span>
+                      <div
+                        className="truncate"
+                        title={`${issuance.code} ${issuance.title}`}
+                      >
+                        <span className="font-bold text-[#278fb6] mr-2">
+                          {issuance.code}
+                        </span>
                         <br />
                         <span className="text-slate-900">{issuance.title}</span>
                       </div>
@@ -131,7 +139,9 @@ export default function LatestIssuances({
                           return (
                             <span
                               key={tagIndex}
-                              className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${getDynamicBadgeClasses(tag)}`}
+                              className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${getDynamicBadgeClasses(
+                                tag
+                              )}`}
                             >
                               {tag}
                             </span>
@@ -172,7 +182,7 @@ export default function LatestIssuances({
         </table>
       </div>
 
-      { totalPages > 1 && (
+      {totalPages > 1 && (
         <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
           <div className="text-sm text-slate-600">
             Page {currentPage} of {totalPages}
