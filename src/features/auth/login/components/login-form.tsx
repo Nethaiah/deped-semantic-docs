@@ -88,7 +88,7 @@ export default function LoginForm() {
       {/* Background Image with Dark Overlay */}
       <div className="absolute inset-0 z-0">
         <div
-          className="absolute inset-0 bg-contain bg-left bg-no-repeat"
+          className="absolute inset-0 bg-contain bg-left bg-repeat"
           style={{
             backgroundImage: `url('/depedbuilding2.png')`,
           }}
