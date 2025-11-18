@@ -23,7 +23,7 @@ type Role = {
 export default async function BookmarksPage({ role }: Role) {
   const { data: bookmarkedDocs, error } = await getBookmarkedDocuments();
   const activeColor =
-    String(role).toLowerCase() === "admin" ? "#008c8b" : "#333DAD";
+    String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -82,61 +82,72 @@ export default async function BookmarksPage({ role }: Role) {
           {bookmarkedDocs.map((doc) => (
             <div
               key={doc.id}
-              className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow"
+              className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
             >
-              {/* Title + Action Buttons */}
-              <div className="flex items-start justify-between mb-3">
-                <Link href={`/view/${doc.id}`} className="flex-1 pr-4">
-                  <h3
-                    className="text-base font-semibold hover:underline cursor-pointer"
-                    style={{ color: activeColor }}
-                  >
-                    {doc.title}
-                  </h3>
-                  {doc.docNumber && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      {doc.docNumber}
+              <div className="flex justify-between gap-6">
+                {/* LEFT SECTION */}
+                <div className="flex-1">
+                  <Link href={`/view/${doc.id}`} className="block group">
+                    <h3
+                      className="text-xl font-semibold mb-1 group-hover:underline"
+                      style={{ color: activeColor }}
+                    >
+                      {doc.docNumber} - {doc.title}
+                    </h3>
+                  </Link>
+
+                  {doc.dateIssued && doc.issuer && (
+                    <p className="text-sm text-gray-600/60 mb-2">
+                      Issued: <span className="font-medium">{new Date(doc.dateIssued).toLocaleDateString('en-US', { 
+                        month: 'long', 
+                        day: 'numeric',
+                        year: 'numeric' 
+                      })}</span> | Issuer: <span className="font-medium">{doc.issuer || "N/A"}</span>
                     </p>
                   )}
-                </Link>
 
-                {/* Action Buttons */}
-                {/* Reusable Action Buttons */}
+                  {doc.summary && (
+                    <p className="text-sm text-gray-700 mb-3 line-clamp-2">
+                      {doc.summary}
+                    </p>
+                  )}
+
+                  {/* Document Info */}
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 mb-3">
+                    {doc.docType && (
+                      <span>
+                        Type:{" "}
+                        <span className="font-medium">{doc.docType}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                      {/* Categories */}
+                  {doc.categories &&
+                    doc.categories.map((category: string) => {
+                      const variant = getBadgeVariant(category);
+                      return (
+                        <Badge
+                          key={category}
+                          size="md"
+                          {...(variant === "dynamic"
+                            ? { className: getDynamicBadgeClasses(category) }
+                            : { variant })}
+                        >
+                          {category}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                
+                </div>
+
+                {/* RIGHT SECTION - Action buttons with dynamic bookmark status */}
                 <DocumentActionButtons
                   docId={doc.id}
                   initialBookmarked={true}
                 />
-              </div>
-
-              {/* Summary */}
-              {doc.summary && (
-                <p className="text-sm text-gray-700 mb-3 leading-relaxed line-clamp-2">
-                  {doc.summary}
-                </p>
-              )}
-
-              {/* Categories + Date */}
-              <div className="flex items-center gap-2 text-xs text-gray-600 flex-wrap">
-                {doc.categories &&
-                  doc.categories.map((category: string) => {
-                    const variant = getBadgeVariant(category);
-                    return (
-                      <Badge
-                        key={category}
-                        size="md"
-                        {...(variant === "dynamic"
-                          ? { className: getDynamicBadgeClasses(category) }
-                          : { variant })}
-                      >
-                        {category}
-                      </Badge>
-                    );
-                  })}
-                {doc.dateIssued && (
-                  <span className="text-xs text-gray-500 ml-auto">
-                    Issued: {new Date(doc.dateIssued).toLocaleDateString()}
-                  </span>
-                )}
               </div>
             </div>
           ))}

@@ -73,7 +73,7 @@ export default function Search({ role }: Role) {
   }, [searchQuery, answer, searchResults, bookmarks, hasSearched, useRAG, searchType]);
 
   const activeColor =
-    String(role).toLowerCase() === "admin" ? "#008c8b" : "#333DAD";
+    String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
 
   // Handle search
   const handleSearch = async () => {
@@ -275,9 +275,13 @@ export default function Search({ role }: Role) {
                     </h3>
                   </Link>
 
-                  {doc.date_issued && (
-                    <p className="text-sm text-gray-500 mb-2">
-                      Issued: {new Date(doc.date_issued).toLocaleDateString()}
+                  {doc.date_issued && doc.issuer && (
+                    <p className="text-sm text-gray-600/60 mb-2">
+                      Issued: <span className="font-medium">{new Date(doc.date_issued).toLocaleDateString('en-US', { 
+                        month: 'long', 
+                        day: 'numeric',
+                        year: 'numeric' 
+                      })}</span> | Issuer: <span className="font-medium">{doc.issuer || "N/A"}</span>
                     </p>
                   )}
 
@@ -295,12 +299,6 @@ export default function Search({ role }: Role) {
                         <span className="font-medium">{doc.doc_type}</span>
                       </span>
                     )}
-                    {doc.issuer && (
-                      <span>
-                        Issuer:{" "}
-                        <span className="font-medium">{doc.issuer}</span>
-                      </span>
-                    )}
                     {doc.num_relevant_chunks && (
                       <span className="text-blue-600">
                         {doc.num_relevant_chunks} relevant section
@@ -309,7 +307,8 @@ export default function Search({ role }: Role) {
                     )}
                   </div>
 
-                  {/* Categories */}
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                      {/* Categories */}
                   {doc.categories &&
                     doc.categories.map((category: string) => {
                       const variant = getBadgeVariant(category);
@@ -325,6 +324,8 @@ export default function Search({ role }: Role) {
                         </Badge>
                       );
                     })}
+                  </div>
+                
                 </div>
 
                 {/* RIGHT SECTION - Action buttons with dynamic bookmark status */}
