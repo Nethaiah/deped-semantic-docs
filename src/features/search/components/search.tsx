@@ -1,6 +1,6 @@
 "use client";
 
-import { Search as SearchIcon, Loader2 } from "lucide-react";
+import { Search as SearchIcon, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -51,6 +51,44 @@ export default function Search({ role }: Role) {
       console.error("Error restoring search state:", err);
     }
   }, []);
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setAnswer("");
+    setSearchResults([]);
+    setBookmarks({});
+    setHasSearched(false);
+    setSearchType("");
+    sessionStorage.removeItem(SEARCH_STATE_KEY);
+  };
+
+  // Clear persisted search on full page refresh/close
+  useEffect(() => {
+    const handler = () => {
+      sessionStorage.removeItem(SEARCH_STATE_KEY);
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, []);
+
+  // Re-sync bookmark states for restored results (e.g., when navigating back)
+  useEffect(() => {
+    if (!hasSearched || searchResults.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const statuses: Record<string, boolean> = {};
+      await Promise.all(
+        searchResults.map(async (doc) => {
+          const { bookmarked } = await checkBookmark(doc.doc_id);
+          statuses[doc.doc_id] = bookmarked;
+        })
+      );
+      if (!cancelled) setBookmarks(statuses);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [hasSearched, searchResults]);
 
   // Save search state to sessionStorage whenever it changes
   useEffect(() => {
@@ -158,8 +196,20 @@ export default function Search({ role }: Role) {
                 e.key === "Enter" && !isLoading && handleSearch()
               }
               disabled={isLoading}
-              className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-4 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-10 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
+            {(searchQuery || hasSearched) && (
+              <button
+                type="button"
+                onClick={clearSearch}
+                disabled={isLoading}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                aria-label="Clear search"
+                title="Clear search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
           <Button
             onClick={handleSearch}
@@ -331,7 +381,10 @@ export default function Search({ role }: Role) {
                 {/* RIGHT SECTION - Action buttons with dynamic bookmark status */}
                 <DocumentActionButtons
                   docId={doc.doc_id}
-                  initialBookmarked={bookmarks[doc.doc_id]}
+                  initialBookmarked={!!bookmarks[doc.doc_id]}
+                  onBookmarkChange={(id, state) =>
+                    setBookmarks((prev) => ({ ...prev, [id]: state }))
+                  }
                 />
               </div>
             </div>

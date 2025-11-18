@@ -2,18 +2,23 @@
 
 import { Eye, Bookmark, Share2 } from "lucide-react";
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { toggleBookmark } from "@/features/shared/server/toggle-bookmark";
 
 type Props = {
   docId: string;
   initialBookmarked?: boolean;
+  onBookmarkChange?: (docId: string, bookmarked: boolean) => void;
 };
 
-export default function DocumentActionButtons({ docId, initialBookmarked = false }: Props) {
+export default function DocumentActionButtons({ docId, initialBookmarked = false, onBookmarkChange }: Props) {
   const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    setIsBookmarked(initialBookmarked);
+  }, [initialBookmarked]);
 
   const handleBookmarkToggle = () => {
     startTransition(async () => {
@@ -23,6 +28,9 @@ export default function DocumentActionButtons({ docId, initialBookmarked = false
         toast.error(result.error, { duration: 5000, position: "bottom-right" });
       } else {
         setIsBookmarked(result.bookmarked || false);
+        if (onBookmarkChange) {
+          onBookmarkChange(docId, result.bookmarked || false);
+        }
         toast.success(
           result.bookmarked
             ? "Document added to your bookmarks"
