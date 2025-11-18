@@ -24,8 +24,6 @@ export async function getLatestIssuances(page: number = 1, limit: number = 10) {
     return { data: [], totalCount: 0, currentPage: page, totalPages: 0 };
   }
 
-  console.log("First document date:", data[0]?.date_issued); // Debug log
-
   const totalPages = Math.ceil((count || 0) / limit);
 
   return {

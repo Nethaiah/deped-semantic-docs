@@ -10,6 +10,7 @@ import DocumentActions from "./document-actions"
 import DocumentAnalysis from "./document-summary"
 import DocumentPDFViewer from "./pdf-viewer"
 import SimilarDocuments from "./similar-documents"
+import { checkBookmark } from "../../shared/server/check-bookmark";
 
 type Props = {
   documentId: string;
@@ -18,6 +19,7 @@ type Props = {
 export default async function ViewDocument({ documentId }: Props) {
   const { data: doc, error } = await getDocumentById(documentId);
   const similar = await getSimilarDocuments(documentId, 3);
+  const { bookmarked } = await checkBookmark(documentId);
 
   if (error || !doc) {
     return;
@@ -38,7 +40,11 @@ export default async function ViewDocument({ documentId }: Props) {
       <div className="grid grid-cols-12 gap-8">
         <div className="col-span-12 lg:col-span-3">
           <DocumentInfoSidebar doc={doc} />
-          <DocumentActions sourcePath={doc.sourcePath} />
+          <DocumentActions 
+            sourcePath={doc.sourcePath} 
+            docId={doc.id}
+            initialBookmarked={bookmarked}
+          />
         </div>
 
         <div className="col-span-12 lg:col-span-6 space-y-6">
