@@ -40,7 +40,7 @@ export default async function UserDocuments({ name = "User" }) {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
+        <div className="relative bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-slate-100 rounded-xl">
               <FileText className="w-6 h-6 text-slate-700" />
@@ -54,9 +54,11 @@ export default async function UserDocuments({ name = "User" }) {
           <p className="text-xs text-green-600 font-medium mt-2">
             +12% from last month
           </p>
+          <div className="absolute top-0 right-0 w-40 h-30 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
+          <div className="absolute top-0 right-0 w-60 h-50 bg-gradient-to-br from-[#278fb6]/15   to-transparent rounded-bl-full"></div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
+        <div className="relative bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-slate-100 rounded-xl">
               <Eye className="w-6 h-6 text-slate-700" />
@@ -70,9 +72,11 @@ export default async function UserDocuments({ name = "User" }) {
           <p className="text-xs text-green-600 font-medium mt-2">
             +8% from last week
           </p>
+          <div className="absolute top-0 right-0 w-40 h-30 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
+          <div className="absolute top-0 right-0 w-60 h-50 bg-gradient-to-br from-[#278fb6]/15   to-transparent rounded-bl-full"></div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
+        <div className="relative bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow overflow-hidden">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-slate-100 rounded-xl">
               <Clock className="w-6 h-6 text-slate-700" />
@@ -90,6 +94,8 @@ export default async function UserDocuments({ name = "User" }) {
           <p className="text-xs text-slate-500 font-medium mt-2">
             November 2024
           </p>
+          <div className="absolute top-0 right-0 w-40 h-30 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
+          <div className="absolute top-0 right-0 w-60 h-50 bg-gradient-to-br from-[#278fb6]/15   to-transparent rounded-bl-full"></div>
         </div>
       </div>
 

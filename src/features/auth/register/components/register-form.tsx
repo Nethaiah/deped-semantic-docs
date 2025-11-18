@@ -129,7 +129,7 @@ export default function RegisterForm() {
             backgroundImage: `url('/depedbuilding2.png')`,
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/60 to-black/80" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/50 to-black/80" />
       </div>
 
       {/* Back to Landing Page - Top Right (outside register form)
@@ -161,30 +161,42 @@ export default function RegisterForm() {
         <div className="flex flex-1 lg:w-[75%] flex-col justify-between p-8 lg:p-12">
           {/* Logo/Title - Top Left */}
           <div>
-            <Link href="/" className="flex items-center gap-2">
-              <Image
+            <a href="/" className="flex items-center gap-2">
+              <img
                 src="/Logo.png"
                 alt="DocuLens Logo"
-                width={60}
-                height={60}
-                className="object-contain"
+                className="w-15 h-15 object-contain drop-shadow-lg"
               />
-              <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
-                Doculens
-              </h1>
-            </Link>
-            <p className="text-blue-200 text-sm lg:text-base">
-              See the core of every documents
-            </p>
+              <div className="flex flex-col">
+                <h1
+                  className="text-3xl lg:text-2xl font-bold text-white/90"
+                  style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
+                >
+                  Doculens
+                </h1>
+                <p
+                  className="text-blue-100 text-sm lg:text-base"
+                  style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.5)" }}
+                >
+                  Your intelligent document platform
+                </p>
+              </div>
+            </a>
           </div>
 
           {/* Tagline - Bottom Left */}
           <div className="max-w-3xl">
-            <p className="text-white/90 font-bold text-lg lg:text-5xl leading-relaxed">
+            <p
+              className="text-white/90 font-bold text-lg lg:text-5xl leading-relaxed"
+              style={{ textShadow: "2px 2px 8px rgba(0,0,0,0.6)" }}
+            >
               Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             </p>
-            <div className="mt-4 text-white/60 text-sm">
-              © 2025 Doculens. All rights reserved.
+            <div
+              className="mt-4 text-white/60 text-sm"
+              style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.5)" }}
+            >
+              © 2025 Documents. All rights reserved.
             </div>
           </div>
         </div>
