@@ -3,7 +3,7 @@
 import { Search as SearchIcon, Loader2, X, Funnel } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { RAGApiService, type DocumentSource } from "@/lib/api/rag-api";
 import ReactMarkdown from "react-markdown";
@@ -16,6 +16,13 @@ import {
 import DocumentActionButtons from "@/features/shared/components/document-action-buttons";
 import { checkBookmark } from "../../shared/server/check-bookmark";
 import SearchFilterDialog, { type SearchFilterValues } from "@/features/shared/components/search-filter-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Role = {
   role: string;
@@ -45,6 +52,9 @@ export default function Search({ role }: Role) {
     docType: "",
     searchMode: "keyword",
   });
+  const [sortBy, setSortBy] = useState<
+    "date_desc" | "date_asc" | "title_asc" | "title_desc"
+  >("date_desc");
 
   // Restore search state from sessionStorage on mount
   useEffect(() => {
@@ -243,6 +253,30 @@ export default function Search({ role }: Role) {
     searchFilters.tags ? "tags" : undefined,
   ].filter(Boolean).length;
 
+  const resultsToRender = useMemo(() => {
+    const arr = [...searchResults];
+    arr.sort((a, b) => {
+      switch (sortBy) {
+        case "date_asc": {
+          const da = a.date_issued ? new Date(a.date_issued).getTime() : 0;
+          const db = b.date_issued ? new Date(b.date_issued).getTime() : 0;
+          return da - db;
+        }
+        case "title_asc":
+          return (a.title || "").localeCompare(b.title || "");
+        case "title_desc":
+          return (b.title || "").localeCompare(a.title || "");
+        case "date_desc":
+        default: {
+          const da = a.date_issued ? new Date(a.date_issued).getTime() : 0;
+          const db = b.date_issued ? new Date(b.date_issued).getTime() : 0;
+          return db - da;
+        }
+      }
+    });
+    return arr;
+  }, [searchResults, sortBy]);
+
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
@@ -385,8 +419,19 @@ export default function Search({ role }: Role) {
             )}
           </div>
           {searchResults.length > 0 && (
-            <div className="text-xs text-gray-500">
-              Sorted by relevance
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Sort by:</span>
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="date_desc">Date (Newest)</SelectItem>
+                  <SelectItem value="date_asc">Date (Oldest)</SelectItem>
+                  <SelectItem value="title_asc">Title (A–Z)</SelectItem>
+                  <SelectItem value="title_desc">Title (Z–A)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           )}
         </div>
@@ -395,7 +440,7 @@ export default function Search({ role }: Role) {
       {/* Search Results */}
       {hasSearched && !isLoading && (
         <div className="space-y-4">
-          {searchResults.map((doc) => (
+          {resultsToRender.map((doc) => (
             <div
               key={doc.doc_id}
               className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"

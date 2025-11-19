@@ -1,6 +1,7 @@
 import Bookmarks from "@/features/bookmarks/components/bookmark";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { getBookmarkedDocuments } from "@/features/bookmarks/server/get-bookmark";
 
 export default async function DocumentsPage() {
   const supabase = await createClient();
@@ -20,7 +21,9 @@ export default async function DocumentsPage() {
 
   const role = userData?.role || "user";
 
+  const { data: docs } = await getBookmarkedDocuments();
+
   return (
-    <Bookmarks role={role} />
+    <Bookmarks role={role} docs={docs} />
   );
 }

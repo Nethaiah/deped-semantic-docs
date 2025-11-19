@@ -1,21 +1,82 @@
-import { Button } from "@/components/ui/button";
+"use client";
+
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { getBookmarkedDocuments } from "../server/get-bookmark";
 import {
   getBadgeVariant,
   getDynamicBadgeClasses,
 } from "@/features/shared/lib/badge-variants";
 import DocumentActionButtons from "@/features/shared/components/document-action-buttons";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-type Role = {
-  role: string;
+type BookmarkedDoc = {
+  id: string;
+  docNumber?: string | null;
+  title?: string | null;
+  dateIssued?: string | null;
+  issuer?: string | null;
+  summary?: string | null;
+  docType?: string | null;
+  categories?: string[] | null;
 };
 
-export default async function BookmarksPage({ role }: Role) {
-  const { data: bookmarkedDocs, error } = await getBookmarkedDocuments();
-  const activeColor =
-    String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
+type Props = {
+  role: string;
+  docs: BookmarkedDoc[];
+};
+
+export default function Bookmarks({ role, docs }: Props) {
+  const [query, setQuery] = useState("");
+  const [sortBy, setSortBy] = useState<
+    "date_desc" | "date_asc" | "title_asc" | "title_desc"
+  >("date_desc");
+  const activeColor = String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    let arr = q
+      ? docs.filter((doc) => {
+          const hay = [
+            doc.title || "",
+            doc.docNumber || "",
+            doc.issuer || "",
+            doc.summary || "",
+          ]
+            .join("\n")
+            .toLowerCase();
+          return hay.includes(q);
+        })
+      : docs;
+    arr = [...arr].sort((a, b) => {
+      switch (sortBy) {
+        case "date_asc": {
+          const da = a.dateIssued ? new Date(a.dateIssued).getTime() : 0;
+          const db = b.dateIssued ? new Date(b.dateIssued).getTime() : 0;
+          return da - db;
+        }
+        case "title_asc":
+          return (a.title || "").localeCompare(b.title || "");
+        case "title_desc":
+          return (b.title || "").localeCompare(a.title || "");
+        case "date_desc":
+        default: {
+          const da = a.dateIssued ? new Date(a.dateIssued).getTime() : 0;
+          const db = b.dateIssued ? new Date(b.dateIssued).getTime() : 0;
+          return db - da;
+        }
+      }
+    });
+    return arr;
+  }, [docs, query, sortBy]);
+
+  const hasAny = docs && docs.length > 0;
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -28,89 +89,151 @@ export default async function BookmarksPage({ role }: Role) {
           Quickly review the memoranda and orders you saved.
         </p>
       </div>
-
-      {/* Results Header */}
-      <div className="mb-4 text-sm text-gray-600">
-        Showing <span className="font-semibold">{bookmarkedDocs.length}</span>{" "}
-        bookmarked documents
-      </div>
-
-      {/* Bookmarked Documents */}
-      {bookmarkedDocs.length > 0 ? (
-        <div className="space-y-4">
-          {bookmarkedDocs.map((doc) => (
-            <div
-              key={doc.id}
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
-            >
-              <div className="flex justify-between gap-6">
-                {/* LEFT SECTION */}
-                <div className="flex-1">
-                  <Link href={`/view/${doc.id}`} className="block group">
-                    <h3
-                      className="text-xl font-semibold mb-1 group-hover:underline"
-                      style={{ color: activeColor }}
-                    >
-                      {doc.docNumber} - {doc.title}
-                    </h3>
-                  </Link>
-
-                  {doc.dateIssued && doc.issuer && (
-                    <p className="text-sm text-gray-600/60 mb-2">
-                      Issued: <span className="font-medium">{new Date(doc.dateIssued).toLocaleDateString('en-US', { 
-                        month: 'long', 
-                        day: 'numeric',
-                        year: 'numeric' 
-                      })}</span> | Issuer: <span className="font-medium">{doc.issuer || "N/A"}</span>
-                    </p>
-                  )}
-
-                  {doc.summary && (
-                    <p className="text-sm text-gray-700 mb-3 line-clamp-2">
-                      {doc.summary}
-                    </p>
-                  )}
-
-                  {/* Document Info */}
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 mb-3">
-                    {doc.docType && (
-                      <span>
-                        Type:{" "}
-                        <span className="font-medium">{doc.docType}</span>
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                      {/* Categories */}
-                  {doc.categories &&
-                    doc.categories.map((category: string) => {
-                      const variant = getBadgeVariant(category);
-                      return (
-                        <Badge
-                          key={category}
-                          size="md"
-                          {...(variant === "dynamic"
-                            ? { className: getDynamicBadgeClasses(category) }
-                            : { variant })}
-                        >
-                          {category}
-                        </Badge>
-                      );
-                    })}
-                  </div>
-                
-                </div>
-
-                {/* RIGHT SECTION - Action buttons with dynamic bookmark status */}
-                <DocumentActionButtons
-                  docId={doc.id}
-                  initialBookmarked={true}
-                />
-              </div>
+      {hasAny && (
+        <div className="flex flex-col gap-3 mb-4">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="Search by keyword, title, code, or issuer..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div className="flex items-center justify-end">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Sort by:</span>
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="date_desc">Date (Newest)</SelectItem>
+                  <SelectItem value="date_asc">Date (Oldest)</SelectItem>
+                  <SelectItem value="title_asc">Title (A–Z)</SelectItem>
+                  <SelectItem value="title_desc">Title (Z–A)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          ))}
+          </div>
         </div>
+      )}
+
+      {/* Results Header Count */}
+      {hasAny && (
+        <div className="mb-2 text-sm text-gray-600">
+          Showing <span className="font-semibold">{filtered.length}</span> bookmarked document{filtered.length !== 1 ? "s" : ""}
+        </div>
+      )}
+
+      {/* Lists */}
+      {hasAny ? (
+        filtered.length > 0 ? (
+          <div className="space-y-4">
+            {filtered.map((doc) => (
+              <div
+                key={doc.id}
+                className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
+              >
+                <div className="flex justify-between gap-6">
+                  {/* LEFT SECTION */}
+                  <div className="flex-1">
+                    <Link href={`/view/${doc.id}`} className="block group">
+                      <h3
+                        className="text-xl font-semibold mb-1 group-hover:underline"
+                        style={{ color: activeColor }}
+                      >
+                        {doc.docNumber} - {doc.title}
+                      </h3>
+                    </Link>
+
+                    {(doc.dateIssued || doc.issuer) && (
+                      <p className="text-sm text-gray-600/60 mb-2">
+                        {doc.dateIssued && (
+                          <>
+                            Issued: <span className="font-medium">{new Date(doc.dateIssued).toLocaleDateString('en-US', { 
+                              month: 'long', 
+                              day: 'numeric',
+                              year: 'numeric' 
+                            })}</span>
+                          </>
+                        )}
+                        {doc.dateIssued && doc.issuer && " | "}
+                        {doc.issuer && (
+                          <>
+                            Issuer: <span className="font-medium">{doc.issuer}</span>
+                          </>
+                        )}
+                      </p>
+                    )}
+
+                    {doc.summary && (
+                      <p className="text-sm text-gray-700 mb-3 line-clamp-2">
+                        {doc.summary}
+                      </p>
+                    )}
+
+                    {/* Document Info */}
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 mb-3">
+                      {doc.docType && (
+                        <span>
+                          Type: <span className="font-medium">{doc.docType}</span>
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                      {/* Categories */}
+                      {doc.categories &&
+                        doc.categories.map((category: string) => {
+                          const variant = getBadgeVariant(category);
+                          return (
+                            <Badge
+                              key={category}
+                              size="md"
+                              {...(variant === "dynamic"
+                                ? { className: getDynamicBadgeClasses(category) }
+                                : { variant })}
+                            >
+                              {category}
+                            </Badge>
+                          );
+                        })}
+                    </div>
+                  </div>
+
+                  {/* RIGHT SECTION - Action buttons with dynamic bookmark status */}
+                  <DocumentActionButtons
+                    docId={doc.id}
+                    initialBookmarked={true}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+            <svg
+              className="h-16 w-16 mx-auto mb-4 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+              />
+            </svg>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              No documents found
+            </h3>
+            <p className="text-sm text-gray-600">
+              Try adjusting your search query or using different keywords
+            </p>
+          </div>
+        )
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-lg border border-gray-200">
           <div className="text-gray-400 mb-4">
@@ -135,10 +258,10 @@ export default async function BookmarksPage({ role }: Role) {
             When you find documents you want to save for later, click the
             bookmark icon to add them here.
           </p>
-          <Link href="/dashboard">
-            <Button className="text-white bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer">
+          <Link href="/dashboard" className="inline-block">
+            <span className="inline-flex items-center px-4 py-2 rounded-md text-white bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer">
               Browse Documents
-            </Button>
+            </span>
           </Link>
         </div>
       )}
