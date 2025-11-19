@@ -8,7 +8,7 @@ export default function BackButton() {
 
   const handleBack = () => {
     // Navigate to search page - state will be restored from sessionStorage
-    router.push("/search");
+    router.back();
   };
 
   return (

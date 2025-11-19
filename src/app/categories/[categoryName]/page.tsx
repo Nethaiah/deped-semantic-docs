@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Category from "../../../features/categories/categories-name/components/category";
 import { redirect } from "next/navigation";
-import { getDocumentsByCategoryPaginated } from "@/features/categories/server/actions";
+import { getDocumentsByCategoryPaginated, type CategoryFilters } from "@/features/categories/server/actions";
 import { getBookmarkStatusesForDocuments } from "@/features/categories/categories-name/server/actions";
 
 type Props = {
@@ -24,7 +24,22 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
   const pageSize = 10;
 
-  const { data: documents, total } = await getDocumentsByCategoryPaginated(decodedCategoryName, page, pageSize);
+  // Extract filters & search from query params
+  const qParam = Array.isArray(sp.q) ? sp.q[0] : sp.q;
+  const fromDate = Array.isArray(sp.fromDate) ? sp.fromDate[0] : sp.fromDate;
+  const toDate = Array.isArray(sp.toDate) ? sp.toDate[0] : sp.toDate;
+  const issuerLevel = Array.isArray(sp.issuerLevel) ? sp.issuerLevel[0] : sp.issuerLevel;
+  const docType = Array.isArray(sp.docType) ? sp.docType[0] : sp.docType;
+
+  const filters: CategoryFilters = {
+    query: qParam || undefined,
+    fromDate: fromDate || undefined,
+    toDate: toDate || undefined,
+    issuerLevel: issuerLevel || undefined,
+    docType: docType || undefined,
+  };
+
+  const { data: documents, total } = await getDocumentsByCategoryPaginated(decodedCategoryName, page, pageSize, filters);
 
   // Batch fetch bookmarks for all documents in a single query
   const bookmarkStatuses: Record<string, boolean> =
@@ -43,6 +58,13 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       total={total || 0}
       page={page}
       pageSize={pageSize}
+      initialQuery={qParam || ""}
+      initialFilters={{
+        fromDate: fromDate || "",
+        toDate: toDate || "",
+        issuerLevel: issuerLevel || "",
+        docType: docType || "",
+      }}
     />
   );
 }

@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   getBadgeVariant,
@@ -30,31 +32,24 @@ type BookmarkedDoc = {
 type Props = {
   role: string;
   docs: BookmarkedDoc[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
+  initialQuery?: string;
 };
 
-export default function Bookmarks({ role, docs }: Props) {
-  const [query, setQuery] = useState("");
+export default function Bookmarks({ role, docs, total = 0, page = 1, pageSize = 10, initialQuery = "" }: Props) {
+  const router = useRouter();
+  const [query, setQuery] = useState(initialQuery);
   const [sortBy, setSortBy] = useState<
     "date_desc" | "date_asc" | "title_asc" | "title_desc"
   >("date_desc");
   const activeColor = String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    let arr = q
-      ? docs.filter((doc) => {
-          const hay = [
-            doc.title || "",
-            doc.docNumber || "",
-            doc.issuer || "",
-            doc.summary || "",
-          ]
-            .join("\n")
-            .toLowerCase();
-          return hay.includes(q);
-        })
-      : docs;
-    arr = [...arr].sort((a, b) => {
+  // Sort only the current server page slice
+  const sortedDocs = useMemo(() => {
+    const arr = [...docs];
+    arr.sort((a, b) => {
       switch (sortBy) {
         case "date_asc": {
           const da = a.dateIssued ? new Date(a.dateIssued).getTime() : 0;
@@ -74,9 +69,27 @@ export default function Bookmarks({ role, docs }: Props) {
       }
     });
     return arr;
-  }, [docs, query, sortBy]);
+  }, [docs, sortBy]);
 
-  const hasAny = docs && docs.length > 0;
+  const totalPages = Math.max(1, Math.ceil((total || 0) / (pageSize || 10)));
+  const shouldShowPagination = totalPages > 1;
+  const prevPage = page > 1 ? page - 1 : 1;
+  const nextPage = page < totalPages ? page + 1 : totalPages;
+
+  const buildQueryString = (targetPage: number, targetQuery?: string) => {
+    const params = new URLSearchParams();
+    params.set("page", String(targetPage));
+    const q = (targetQuery ?? query).trim();
+    if (q) params.set("q", q);
+    return params.toString();
+  };
+
+  const applySearch = (nextQuery: string, targetPage = 1) => {
+    const params = buildQueryString(targetPage, nextQuery);
+    router.push(`/bookmarks?${params}`);
+  };
+
+  const hasAny = (total || 0) > 0;
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -91,14 +104,41 @@ export default function Bookmarks({ role, docs }: Props) {
       </div>
       {hasAny && (
         <div className="flex flex-col gap-3 mb-4">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              placeholder="Search by keyword, title, code, or issuer..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Search by keyword, title, code, or issuer..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    applySearch((e.target as HTMLInputElement).value, 1);
+                  }
+                }}
+                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pr-10 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery("");
+                    applySearch("", 1);
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  aria-label="Clear search"
+                  title="Clear search"
+                >
+                  <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 8.586l3.536-3.536a1 1 0 111.414 1.414L11.414 10l3.536 3.536a1 1 0 01-1.414 1.414L10 11.414l-3.536 3.536a1 1 0 01-1.414-1.414L8.586 10 5.05 6.464A1 1 0 116.464 5.05L10 8.586z" clipRule="evenodd"/></svg>
+                </button>
+              )}
+            </div>
+            <Button
+              onClick={() => applySearch(query, 1)}
+              className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
+            >
+              Search
+            </Button>
           </div>
           <div className="flex items-center justify-end">
             <div className="flex items-center gap-2">
@@ -122,15 +162,15 @@ export default function Bookmarks({ role, docs }: Props) {
       {/* Results Header Count */}
       {hasAny && (
         <div className="mb-2 text-sm text-gray-600">
-          Showing <span className="font-semibold">{filtered.length}</span> bookmarked document{filtered.length !== 1 ? "s" : ""}
+          Showing <span className="font-semibold">{total}</span> bookmarked document{total !== 1 ? "s" : ""}
         </div>
       )}
 
       {/* Lists */}
       {hasAny ? (
-        filtered.length > 0 ? (
+        docs.length > 0 ? (
           <div className="space-y-4">
-            {filtered.map((doc) => (
+            {sortedDocs.map((doc) => (
               <div
                 key={doc.id}
                 className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
@@ -151,17 +191,21 @@ export default function Bookmarks({ role, docs }: Props) {
                       <p className="text-sm text-gray-600/60 mb-2">
                         {doc.dateIssued && (
                           <>
-                            Issued: <span className="font-medium">{new Date(doc.dateIssued).toLocaleDateString('en-US', { 
-                              month: 'long', 
-                              day: 'numeric',
-                              year: 'numeric' 
-                            })}</span>
+                            Issued:{" "}
+                            <span className="font-medium">
+                              {new Date(doc.dateIssued).toLocaleDateString("en-US", {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                              })}
+                            </span>
                           </>
                         )}
                         {doc.dateIssued && doc.issuer && " | "}
                         {doc.issuer && (
                           <>
-                            Issuer: <span className="font-medium">{doc.issuer}</span>
+                            Issuer:{" "}
+                            <span className="font-medium">{doc.issuer}</span>
                           </>
                         )}
                       </p>
@@ -173,96 +217,88 @@ export default function Bookmarks({ role, docs }: Props) {
                       </p>
                     )}
 
-                    {/* Document Info */}
                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 mb-3">
                       {doc.docType && (
                         <span>
-                          Type: <span className="font-medium">{doc.docType}</span>
+                          Type:{" "}
+                          <span className="font-medium">{doc.docType}</span>
                         </span>
                       )}
                     </div>
 
                     <div className="flex flex-wrap gap-1.5 mb-4">
-                      {/* Categories */}
-                      {doc.categories &&
-                        doc.categories.map((category: string) => {
-                          const variant = getBadgeVariant(category);
-                          return (
-                            <Badge
-                              key={category}
-                              size="md"
-                              {...(variant === "dynamic"
-                                ? { className: getDynamicBadgeClasses(category) }
-                                : { variant })}
-                            >
-                              {category}
-                            </Badge>
-                          );
-                        })}
+                      {doc.categories?.map((category) => {
+                        const variant = getBadgeVariant(category);
+                        return (
+                          <Badge
+                            key={category}
+                            {...(variant === "dynamic"
+                              ? { className: getDynamicBadgeClasses(category) }
+                              : { variant })}
+                          >
+                            {category}
+                          </Badge>
+                        );
+                      })}
                     </div>
                   </div>
 
-                  {/* RIGHT SECTION - Action buttons with dynamic bookmark status */}
-                  <DocumentActionButtons
-                    docId={doc.id}
-                    initialBookmarked={true}
-                  />
+                  {/* ACTION BUTTONS */}
+                  <DocumentActionButtons docId={doc.id} initialBookmarked={true} />
                 </div>
               </div>
             ))}
           </div>
         ) : (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <svg
-              className="h-16 w-16 mx-auto mb-4 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-              />
+            <svg className="h-16 w-16 mx-auto mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
             </svg>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               No documents found
             </h3>
             <p className="text-sm text-gray-600">
-              Try adjusting your search query or using different keywords
+              {query ? "Try adjusting your search query or using different keywords" : "You don't have any bookmarks yet."}
             </p>
           </div>
         )
       ) : (
+        // --- No Bookmarks At All ---
         <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-lg border border-gray-200">
-          <div className="text-gray-400 mb-4">
-            <svg
-              className="h-16 w-16 mx-auto"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-              />
-            </svg>
-          </div>
+          <svg className="h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+          </svg>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             No bookmarks yet
           </h3>
           <p className="text-gray-600 max-w-md mb-4">
-            When you find documents you want to save for later, click the
-            bookmark icon to add them here.
+            When you find documents you want to save for later, click the bookmark icon.
           </p>
-          <Link href="/dashboard" className="inline-block">
-            <span className="inline-flex items-center px-4 py-2 rounded-md text-white bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer">
+          <Link href="/dashboard">
+            <span className="px-4 py-2 rounded-md text-white bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer">
               Browse Documents
             </span>
           </Link>
+        </div>
+      )}
+
+      {shouldShowPagination && (
+        <div className="flex items-center justify-between mt-6">
+          <div className="text-sm text-gray-600">Page {page} of {totalPages}</div>
+          <div className="flex gap-2">
+            <Link
+              href={`/bookmarks?${buildQueryString(prevPage)}`}
+              className={`px-3 py-2 rounded-md border text-sm ${page === 1 ? "pointer-events-none opacity-50" : "hover:bg-slate-50"}`}
+            >
+              Previous
+            </Link>
+            <Link
+              href={`/bookmarks?${buildQueryString(nextPage)}`}
+              className={`px-3 py-2 rounded-md border text-sm ${page === totalPages ? "pointer-events-none opacity-50" : "hover:bg-slate-50"}`}
+            >
+              Next
+            </Link>
+          </div>
         </div>
       )}
     </div>

@@ -46,36 +46,7 @@ export default function IssuancesFilterDialog({
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Filter Fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Date Range */}
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="from-date" className="text-xs font-semibold text-slate-700">
-                From Date
-              </label>
-              <input
-                id="from-date"
-                type="date"
-                value={values.fromDate}
-                onChange={(e) => onValuesChange({ ...values, fromDate: e.target.value })}
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="to-date" className="text-xs font-semibold text-slate-700">
-                To Date
-              </label>
-              <input
-                id="to-date"
-                type="date"
-                value={values.toDate}
-                onChange={(e) => onValuesChange({ ...values, toDate: e.target.value })}
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-              />
-            </div>
-
-            {/* Issuer Level */}
             <div className="flex flex-col gap-1.5">
               <label htmlFor="issuer-level" className="text-xs font-semibold text-slate-700">
                 Issuer Level
@@ -94,7 +65,6 @@ export default function IssuancesFilterDialog({
               </Select>
             </div>
 
-            {/* Document Type */}
             <div className="flex flex-col gap-1.5">
               <label htmlFor="doc-type" className="text-xs font-semibold text-slate-700">
                 Document Type
@@ -112,51 +82,6 @@ export default function IssuancesFilterDialog({
                 </SelectContent>
               </Select>
             </div>
-
-            {/* Document Number */}
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="doc-number" className="text-xs font-semibold text-slate-700">
-                Document Number
-              </label>
-              <input
-                id="doc-number"
-                type="text"
-                placeholder="e.g. RM 123, DM 2024-001"
-                value={values.code}
-                onChange={(e) => onValuesChange({ ...values, code: e.target.value })}
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors placeholder:text-slate-400"
-              />
-            </div>
-
-            {/* Title */}
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="title" className="text-xs font-semibold text-slate-700">
-                Title
-              </label>
-              <input
-                id="title"
-                type="text"
-                placeholder="Search in title"
-                value={values.title}
-                onChange={(e) => onValuesChange({ ...values, title: e.target.value })}
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors placeholder:text-slate-400"
-              />
-            </div>
-
-            {/* Tags */}
-            <div className="flex flex-col gap-1.5 sm:col-span-2">
-              <label htmlFor="tags" className="text-xs font-semibold text-slate-700">
-                Tags
-              </label>
-              <input
-                id="tags"
-                type="text"
-                placeholder="e.g. policy, finance, HR (comma separated)"
-                value={values.tags}
-                onChange={(e) => onValuesChange({ ...values, tags: e.target.value })}
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors placeholder:text-slate-400"
-              />
-            </div>
           </div>
         </div>
 
@@ -164,7 +89,7 @@ export default function IssuancesFilterDialog({
           <Button 
             variant="outline" 
             onClick={onReset}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto mr-3"
           >
             Reset All
           </Button>

@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { Badge } from "@/components/ui/badge";
 import type { CategoryDocument } from "../../server/actions";
 import DocumentActionButtons from "@/features/shared/components/document-action-buttons";
@@ -9,11 +11,12 @@ import {
   getBadgeVariant,
   getDynamicBadgeClasses,
 } from "@/features/shared/lib/badge-variants";
-import { ChevronLeft, Funnel } from "lucide-react";
+import { ChevronLeft, Funnel, Search as SearchIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import IssuancesFilterDialog, {
-  type IssuancesFilterFormValues,
-} from "@/features/shared/components/issuances-filter-dialog";
+import CategoryFilterDialog, {
+  type CategoryFilterFormValues,
+} from "./category-filter-dialog";
+
 import {
   Select,
   SelectContent,
@@ -29,6 +32,9 @@ type Props = {
   total?: number;
   page?: number;
   pageSize?: number;
+  initialQuery?: string;
+  initialFilters?: CategoryFilterFormValues;
+  initialSort?: "date_desc" | "date_asc" | "title_asc" | "title_desc";
 };
 
 export default function Category({
@@ -38,24 +44,28 @@ export default function Category({
   total = 0,
   page = 1,
   pageSize = 10,
+  initialQuery = "",
+  initialFilters,
+  initialSort = "date_desc",
 }: Props) {
-  const [documents] = useState<CategoryDocument[]>(initialDocuments);
-  const [bookmarks] = useState<Record<string, boolean>>(initialBookmarks);
-  const [query, setQuery] = useState("");
+  const router = useRouter();
+  const documents = initialDocuments;
+  const bookmarks = initialBookmarks;
+
+  const [query, setQuery] = useState(initialQuery);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filters, setFilters] = useState<IssuancesFilterFormValues>({
-    fromDate: "",
-    toDate: "",
-    issuer: "",
-    issuerLevel: "",
-    code: "",
-    title: "",
-    tags: "",
-    docType: "",
-  });
+  const [filters, setFilters] = useState<CategoryFilterFormValues>(
+    initialFilters ?? {
+      fromDate: "",
+      toDate: "",
+      issuerLevel: "",
+      docType: "",
+    }
+  );
+
   const [sortBy, setSortBy] = useState<
     "date_desc" | "date_asc" | "title_asc" | "title_desc"
-  >("date_desc");
+  >(initialSort);
 
   const activeColor = "#3a7c94"; // Default user color
 
@@ -63,95 +73,52 @@ export default function Category({
     filters.fromDate,
     filters.toDate,
     filters.issuerLevel,
-    filters.code,
-    filters.title,
     filters.docType,
-    filters.tags ? "tags" : undefined,
   ].filter(Boolean).length;
 
-  const visibleDocs = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const tagsArray = filters.tags
-      .split(",")
-      .map((t) => t.trim().toLowerCase())
-      .filter(Boolean);
-    const fromDate = filters.fromDate ? new Date(filters.fromDate) : null;
-    const toDateNext = filters.toDate
-      ? (() => {
-          const d = new Date(filters.toDate);
-          d.setDate(d.getDate() + 1);
-          return d;
-        })()
-      : null;
-
-    let result = documents.filter((doc) => {
-      if (fromDate || toDateNext) {
-        if (!doc.date_issued) return false;
-        const d = new Date(doc.date_issued);
-        if (fromDate && d < fromDate) return false;
-        if (toDateNext && d >= toDateNext) return false;
-      }
-      if (filters.issuerLevel) {
-        const src = (doc.issuer || "").toLowerCase();
-        if (!src.includes(filters.issuerLevel.toLowerCase())) return false;
-      }
-      if (filters.docType) {
-        const dtype = (doc.doc_type || "").toLowerCase();
-        if (!dtype.includes(filters.docType.toLowerCase())) return false;
-      }
-      if (filters.code && filters.code.trim()) {
-        const code = (doc.doc_number || "").toLowerCase();
-        if (!code.includes(filters.code.trim().toLowerCase())) return false;
-      }
-      if (filters.title && filters.title.trim()) {
-        const title = (doc.title || "").toLowerCase();
-        if (!title.includes(filters.title.trim().toLowerCase())) return false;
-      }
-      if (tagsArray.length) {
-        const cats = (doc.categories || []).map((c) => ((c as string) || "").toLowerCase());
-        for (const tag of tagsArray) {
-          if (!cats.includes(tag)) return false;
-        }
-      }
-      if (!q) return true;
-      const hay = [
-        doc.title || "",
-        doc.doc_number || "",
-        doc.issuer || "",
-        doc.summary || "",
-      ]
-        .join("\n")
-        .toLowerCase();
-      return hay.includes(q);
-    });
-
-    result.sort((a, b) => {
-      switch (sortBy) {
-        case "date_asc": {
-          const da = a.date_issued ? new Date(a.date_issued).getTime() : 0;
-          const db = b.date_issued ? new Date(b.date_issued).getTime() : 0;
-          return da - db;
-        }
-        case "title_asc":
-          return (a.title || "").localeCompare(b.title || "");
-        case "title_desc":
-          return (b.title || "").localeCompare(a.title || "");
-        case "date_desc":
-        default: {
-          const da = a.date_issued ? new Date(a.date_issued).getTime() : 0;
-          const db = b.date_issued ? new Date(b.date_issued).getTime() : 0;
-          return db - da;
-        }
-      }
-    });
-
-    return result;
-  }, [documents, filters, query, sortBy]);
-
-  const shouldShowPagination = query.trim() === "" || (query.trim() !== "" && visibleDocs.length === 0);
   const totalPages = Math.max(1, Math.ceil((total || 0) / (pageSize || 10)));
+  const shouldShowPagination = totalPages > 1;
   const prevPage = page > 1 ? page - 1 : 1;
   const nextPage = page < totalPages ? page + 1 : totalPages;
+
+  const buildQueryString = (
+    targetPage: number,
+    targetSort?: string,
+    targetFilters?: CategoryFilterFormValues,
+    targetQuery?: string
+  ) => {
+    const params = new URLSearchParams();
+    params.set("page", String(targetPage));
+    
+    const trimmedQuery = (targetQuery ?? query).trim();
+    if (trimmedQuery) params.set("q", trimmedQuery);
+    
+    const useFilters = targetFilters ?? filters;
+    if (useFilters.fromDate) params.set("fromDate", useFilters.fromDate);
+    if (useFilters.toDate) params.set("toDate", useFilters.toDate);
+    if (useFilters.issuerLevel) params.set("issuerLevel", useFilters.issuerLevel);
+    if (useFilters.docType) params.set("docType", useFilters.docType);
+    
+    const useSort = targetSort ?? sortBy;
+    if (useSort !== "date_desc") params.set("sort", useSort);
+    
+    return params.toString();
+  };
+
+  const applyFiltersAndSearch = (
+    nextFilters: CategoryFilterFormValues,
+    nextQuery: string,
+    targetPage = 1
+  ) => {
+    const params = buildQueryString(targetPage, undefined, nextFilters, nextQuery);
+    router.push(`/categories/${encodeURIComponent(categoryName)}?${params}`);
+  };
+
+  const handleSortChange = (newSort: string) => {
+    setSortBy(newSort as any);
+    const params = buildQueryString(1, newSort);
+    router.push(`/categories/${encodeURIComponent(categoryName)}?${params}`);
+  };
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -175,13 +142,35 @@ export default function Category({
       <div className="flex flex-col gap-3 mb-6">
         <div className="flex items-center gap-3">
           <div className="relative flex-1">
+            <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by keyword, title, code, or issuer..."
+              placeholder="Search by keyword, title, or issuer..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  applyFiltersAndSearch(filters, (e.target as HTMLInputElement).value, 1);
+                }
+              }}
+              className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-10 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
+            {query && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery("");
+                  applyFiltersAndSearch(filters, "", 1);
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                aria-label="Clear search"
+                title="Clear search"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 8.586l3.536-3.536a1 1 0 111.414 1.414L11.414 10l3.536 3.536a1 1 0 01-1.414 1.414L10 11.414l-3.536 3.536a1 1 0 01-1.414-1.414L8.586 10 5.05 6.464A1 1 0 116.464 5.05L10 8.586z" clipRule="evenodd"/>
+                </svg>
+              </button>
+            )}
           </div>
           <Button
             variant="outline"
@@ -196,11 +185,17 @@ export default function Category({
               </span>
             )}
           </Button>
+          <Button
+            onClick={() => applyFiltersAndSearch(filters, query, 1)}
+            className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
+          >
+            Search
+          </Button>
         </div>
         <div className="flex items-center justify-end">
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">Sort by:</span>
-            <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+            <Select value={sortBy} onValueChange={handleSortChange}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -213,60 +208,56 @@ export default function Category({
             </Select>
           </div>
         </div>
-        <IssuancesFilterDialog
+        <CategoryFilterDialog
           open={isFilterOpen}
           onOpenChange={setIsFilterOpen}
           values={filters}
           onValuesChange={setFilters}
-          onApply={() => setIsFilterOpen(false)}
+          onApply={() => {
+            setIsFilterOpen(false);
+            applyFiltersAndSearch(filters, query, 1);
+          }}
           onReset={() => {
-            setFilters({
+            const resetFilters = {
               fromDate: "",
               toDate: "",
-              issuer: "",
               issuerLevel: "",
-              code: "",
-              title: "",
-              tags: "",
               docType: "",
-            });
+            };
+            setFilters(resetFilters);
+            setQuery("");
             setIsFilterOpen(false);
+            applyFiltersAndSearch(resetFilters, "", 1);
           }}
         />
       </div>
 
-      {/* Results Header */}
-      {/* <div className="flex items-center justify-between mb-4">
-        <div className="text-sm text-gray-600">
-          {documents.length > 0 ? (
-            <>
-              Found{" "}
-              <span className="font-semibold">{documents.length}</span>{" "}
-              document{documents.length !== 1 ? "s" : ""} in{" "}
-              <span className="font-semibold">"{categoryName}"</span>
-            </>
-          ) : (
-            <>
-              No documents found in{" "}
-              <span className="font-semibold">"{categoryName}"</span>
-            </>
+      {/* Results count */}
+      {total > 0 && (
+        <div className="mb-4 text-sm text-gray-600">
+          Showing <span className="font-semibold">{total}</span> document{total !== 1 ? "s" : ""}
+          {query && (
+            <> matching <span className="font-semibold">"{query}"</span></>
           )}
         </div>
-      </div> */}
+      )}
 
       {/* Documents List */}
       <div className="space-y-4">
-        {visibleDocs.length === 0 ? (
+        {documents.length === 0 ? (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+            <SearchIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               No documents found
             </h3>
             <p className="text-sm text-gray-600">
-              There are no documents in this category yet.
+              {query || activeFilterCount > 0
+                ? "Try adjusting your search or filters"
+                : "There are no documents in this category yet."}
             </p>
           </div>
         ) : (
-          visibleDocs.map((doc) => (
+          documents.map((doc) => (
             <div
               key={doc.doc_id}
               className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
@@ -283,13 +274,26 @@ export default function Category({
                       {doc.title}
                     </h3>
                   </Link>
-                  {doc.date_issued && doc.issuer && (
+                  {(doc.date_issued || doc.issuer) && (
                     <p className="text-sm text-gray-600/60 mb-2">
-                      Issued: <span className="font-medium"></span>{new Date(doc.date_issued).toLocaleDateString('en-US', { 
-                        month: 'long', 
-                        day: 'numeric',
-                        year: 'numeric' 
-                      })} | Issuer: <span className="font-medium">{doc.issuer || "N/A"}</span>
+                      {doc.date_issued && (
+                        <>
+                          Issued:{" "}
+                          <span className="font-medium">
+                            {new Date(doc.date_issued).toLocaleDateString("en-US", {
+                              month: "long",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </span>
+                        </>
+                      )}
+                      {doc.date_issued && doc.issuer && " | "}
+                      {doc.issuer && (
+                        <>
+                          Issuer: <span className="font-medium">{doc.issuer}</span>
+                        </>
+                      )}
                     </p>
                   )}
                   {doc.summary && (
@@ -305,25 +309,25 @@ export default function Category({
                         <span className="font-medium">{doc.doc_type}</span>
                       </span>
                     )}
-                  
                   </div>
                   {/* Categories */}
-                  {doc.categories &&
-                    doc.categories.map((category: string) => {
-                      const variant = getBadgeVariant(category);
-                      return (
-                        <Badge
-                          key={category}
-                          size="md"
-                          {...(variant === "dynamic"
-                            ? { className: getDynamicBadgeClasses(category) }
-                            : { variant })}
-                          className="mr-2 mb-2"
-                        >
-                          {category}
-                        </Badge>
-                      );
-                    })}
+                  <div className="flex flex-wrap gap-1.5">
+                    {doc.categories &&
+                      doc.categories.map((category: string) => {
+                        const variant = getBadgeVariant(category);
+                        return (
+                          <Badge
+                            key={category}
+                            size="md"
+                            {...(variant === "dynamic"
+                              ? { className: getDynamicBadgeClasses(category) }
+                              : { variant })}
+                          >
+                            {category}
+                          </Badge>
+                        );
+                      })}
+                  </div>
                 </div>
                 {/* RIGHT SECTION - Action buttons with dynamic bookmark status */}
                 <DocumentActionButtons
@@ -342,14 +346,14 @@ export default function Category({
           </div>
           <div className="flex gap-2">
             <Link
-              href={`/categories/${encodeURIComponent(categoryName)}?page=${prevPage}`}
+              href={`/categories/${encodeURIComponent(categoryName)}?${buildQueryString(prevPage)}`}
               className={`px-3 py-2 rounded-md border text-sm ${page === 1 ? "pointer-events-none opacity-50" : "hover:bg-slate-50"}`}
               aria-disabled={page === 1}
             >
               Previous
             </Link>
             <Link
-              href={`/categories/${encodeURIComponent(categoryName)}?page=${nextPage}`}
+              href={`/categories/${encodeURIComponent(categoryName)}?${buildQueryString(nextPage)}`}
               className={`px-3 py-2 rounded-md border text-sm ${page === totalPages ? "pointer-events-none opacity-50" : "hover:bg-slate-50"}`}
               aria-disabled={page === totalPages}
             >

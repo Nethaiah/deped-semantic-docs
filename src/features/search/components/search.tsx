@@ -15,7 +15,7 @@ import {
 } from "@/features/shared/lib/badge-variants";
 import DocumentActionButtons from "@/features/shared/components/document-action-buttons";
 import { checkBookmark } from "../../shared/server/check-bookmark";
-import SearchFilterDialog, { type SearchFilterValues } from "@/features/shared/components/search-filter-dialog";
+import SearchFilterDialog, { type SearchFilterValues } from "@/features/search/components/search-filter-dialog";
 import {
   Select,
   SelectContent,

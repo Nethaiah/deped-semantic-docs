@@ -58,24 +58,12 @@ export default function LatestIssuances({
     docType: "",
   });
   const [appliedFilters, setAppliedFilters] = useState<{
-    fromDate?: string;
-    toDate?: string;
-    issuer?: string;
     issuerLevel?: "Central" | "Division";
-    code?: string;
-    title?: string;
-    tags?: string[];
     docType?: "Order" | "Memorandum";
   }>({});
 
   const loadPage = async (page: number, overrideFilters?: {
-    fromDate?: string;
-    toDate?: string;
-    issuer?: string;
     issuerLevel?: "Central" | "Division";
-    code?: string;
-    title?: string;
-    tags?: string[];
     docType?: "Order" | "Memorandum";
   }) => {
     setIsLoading(true);
@@ -104,27 +92,11 @@ export default function LatestIssuances({
   };
 
   const onApplyFilters = async () => {
-    const tagsArray = formFilters.tags
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
     const nextApplied: {
-      fromDate?: string;
-      toDate?: string;
-      issuer?: string;
       issuerLevel?: "Central" | "Division";
-      code?: string;
-      title?: string;
-      tags?: string[];
       docType?: "Order" | "Memorandum";
     } = {
-      fromDate: formFilters.fromDate || undefined,
-      toDate: formFilters.toDate || undefined,
-      issuer: formFilters.issuer.trim() || undefined,
       issuerLevel: (formFilters.issuerLevel as "Central" | "Division") || undefined,
-      code: formFilters.code.trim() || undefined,
-      title: formFilters.title.trim() || undefined,
-      tags: tagsArray.length ? tagsArray : undefined,
       docType: (formFilters.docType as "Order" | "Memorandum") || undefined,
     };
     setAppliedFilters(nextApplied);
@@ -133,21 +105,24 @@ export default function LatestIssuances({
   };
 
   const onResetFilters = async () => {
-    setFormFilters({ fromDate: "", toDate: "", issuer: "", issuerLevel: "", code: "", title: "", tags: "", docType: "" });
+    setFormFilters({
+      fromDate: "",
+      toDate: "",
+      issuer: "",
+      issuerLevel: "",
+      code: "",
+      title: "",
+      tags: "",
+      docType: "",
+    });
     setAppliedFilters({});
     setIsFilterOpen(false);
     await loadPage(1, {});
   };
 
   const activeFilterCount = [
-    appliedFilters.fromDate,
-    appliedFilters.toDate,
-    appliedFilters.issuer,
     appliedFilters.issuerLevel,
-    appliedFilters.code,
-    appliedFilters.title,
     appliedFilters.docType,
-    appliedFilters.tags && appliedFilters.tags.length ? "tags" : undefined,
   ].filter(Boolean).length;
 
   return (

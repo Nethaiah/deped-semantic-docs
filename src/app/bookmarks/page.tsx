@@ -1,9 +1,13 @@
 import Bookmarks from "@/features/bookmarks/components/bookmark";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { getBookmarkedDocuments } from "@/features/bookmarks/server/get-bookmark";
+import { getBookmarkedDocumentsPaginated } from "@/features/bookmarks/server/get-bookmark";
 
-export default async function DocumentsPage() {
+type Props = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function DocumentsPage({ searchParams }: Props) {
   const supabase = await createClient();
 
   // Get authenticated user
@@ -21,9 +25,22 @@ export default async function DocumentsPage() {
 
   const role = userData?.role || "user";
 
-  const { data: docs } = await getBookmarkedDocuments();
+  const sp = await searchParams;
+  const pageParam = Array.isArray(sp.page) ? sp.page[0] : sp.page;
+  const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
+  const pageSize = 10;
+  const qParam = Array.isArray(sp.q) ? sp.q[0] : sp.q;
+
+  const { data: docs, total } = await getBookmarkedDocumentsPaginated(page, pageSize, qParam || undefined);
 
   return (
-    <Bookmarks role={role} docs={docs} />
+    <Bookmarks
+      role={role}
+      docs={docs}
+      total={total || 0}
+      page={page}
+      pageSize={pageSize}
+      initialQuery={qParam || ""}
+    />
   );
 }

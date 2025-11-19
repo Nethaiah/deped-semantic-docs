@@ -49,4 +49,92 @@ export async function getBookmarkedDocuments() {
   } catch {
     return { data: [], error: "Failed to fetch bookmarks" };
   }
+
+}
+
+export async function getBookmarkedDocumentsPaginated(
+  page: number,
+  pageSize: number,
+  query?: string
+): Promise<{ data: Array<{
+  id: string;
+  title?: string | null;
+  docNumber?: string | null;
+  docType?: string | null;
+  issuer?: string | null;
+  dateIssued?: string | null;
+  summary?: string | null;
+  categories?: string[] | null;
+}>; total: number; error: string | null }> {
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return { data: [], total: 0, error: "User not authenticated" };
+    }
+
+    // Get all bookmarked doc IDs for this user
+    const { data: bmIds, error: bmError } = await supabase
+      .from("bookmarks")
+      .select("doc_id")
+      .eq("user_id", user.id);
+
+    if (bmError) {
+      return { data: [], total: 0, error: bmError.message };
+    }
+
+    const ids = (bmIds || []).map((r: any) => r.doc_id).filter(Boolean);
+    if (!ids.length) {
+      return { data: [], total: 0, error: null };
+    }
+
+    const from = Math.max(0, (page - 1) * pageSize);
+    const to = from + pageSize - 1;
+
+    let qb = supabase
+      .from("documents")
+      .select("*", { count: "exact" })
+      .in("doc_id", ids);
+
+    if (query && query.trim()) {
+      const q = query.trim();
+      const pattern = `%${q}%`;
+      qb = qb.or(
+        [
+          `title.ilike.${pattern}`,
+          `doc_number.ilike.${pattern}`,
+          `issuer.ilike.${pattern}`,
+          `summary.ilike.${pattern}`,
+        ].join(",")
+      );
+    }
+
+    const { data, error, count } = await qb
+      .order("date_issued", { ascending: false, nullsFirst: false })
+      .range(from, to);
+
+    if (error) {
+      return { data: [], total: 0, error: error.message };
+    }
+
+    const docs = (data || []).map((d: any) => ({
+      id: d.doc_id,
+      title: d.title,
+      docNumber: d.doc_number,
+      docType: d.doc_type,
+      issuer: d.issuer,
+      dateIssued: d.date_issued,
+      summary: d.summary,
+      categories: (d.categories as string[]) || [],
+    }));
+
+    return { data: docs, total: count || 0, error: null };
+  } catch (e) {
+    return {
+      data: [],
+      total: 0,
+      error: e instanceof Error ? e.message : "Failed to fetch paginated bookmarks",
+    };
+  }
 }

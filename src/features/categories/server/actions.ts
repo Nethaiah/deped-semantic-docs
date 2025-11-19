@@ -90,20 +90,63 @@ export async function getDocumentsByCategory(
   }
 }
 
+export type CategoryFilters = {
+  query?: string;
+  fromDate?: string;
+  toDate?: string;
+  issuerLevel?: string;
+  docType?: string;
+};
+
 export async function getDocumentsByCategoryPaginated(
   categoryName: string,
   page: number,
-  pageSize: number
+  pageSize: number,
+  filters: CategoryFilters = {}
 ): Promise<{ data: CategoryDocument[]; total: number; error: string | null }> {
   try {
     const supabase = await createClient();
     const from = Math.max(0, (page - 1) * pageSize);
     const to = from + pageSize - 1;
 
-    const { data, error, count } = await supabase
+    let queryBuilder = supabase
       .from("documents")
       .select("*", { count: "exact" })
-      .contains("categories", [categoryName])
+      .contains("categories", [categoryName]);
+
+    // Date range filters
+    if (filters.fromDate) {
+      queryBuilder = queryBuilder.gte("date_issued", filters.fromDate);
+    }
+    if (filters.toDate) {
+      queryBuilder = queryBuilder.lte("date_issued", filters.toDate);
+    }
+
+    // Issuer level filter (match in issuer text)
+    if (filters.issuerLevel) {
+      queryBuilder = queryBuilder.ilike("issuer", `%${filters.issuerLevel}%`);
+    }
+
+    // Document type filter
+    if (filters.docType) {
+      queryBuilder = queryBuilder.ilike("doc_type", `%${filters.docType}%`);
+    }
+
+    // Text search across key fields
+    if (filters.query && filters.query.trim()) {
+      const q = filters.query.trim();
+      const pattern = `%${q}%`;
+      queryBuilder = queryBuilder.or(
+        [
+          `title.ilike.${pattern}`,
+          `doc_number.ilike.${pattern}`,
+          `issuer.ilike.${pattern}`,
+          `summary.ilike.${pattern}`,
+        ].join(",")
+      );
+    }
+
+    const { data, error, count } = await queryBuilder
       .order("date_issued", { ascending: false, nullsFirst: false })
       .range(from, to);
 
