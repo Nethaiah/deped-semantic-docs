@@ -135,7 +135,7 @@ export default function Home() {
                 Read 50 pages in 30 seconds
               </h3>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                Our GNN model extracts the core message from any official
+                Our Transformer model extracts the core message from any official
                 document and generates a clean, readable summary. No more
                 skimming through dense legal language trying to find what
                 matters.
@@ -231,7 +231,7 @@ export default function Home() {
                 Find documents by meaning, not keywords
               </h3>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                Graph-based semantic search understands what you're actually
+                Transformer-based semantic search understands what you're actually
                 looking for. Ask in plain language and get relevant documents
                 ranked by how related they are to your query.
               </p>
@@ -375,7 +375,7 @@ export default function Home() {
                     Instant Processing
                   </h4>
                   <p className="text-sm text-gray-600">
-                    Upload PDF or DOCX files and get organized results in
+                    Upload PDF files and get organized results in
                     seconds, not days
                   </p>
                 </div>
