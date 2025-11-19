@@ -143,7 +143,7 @@ export default function Bookmarks({ role, docs, total = 0, page = 1, pageSize = 
         <div className="flex items-center justify-between">
           {/* Results Header Count */}
           {hasAny && (
-            <div className="mb-2 text-sm text-gray-600">
+            <div className="text-sm text-gray-600">
               Showing <span className="font-semibold">{total}</span> bookmarked document{total !== 1 ? "s" : ""}
             </div>
           )}
