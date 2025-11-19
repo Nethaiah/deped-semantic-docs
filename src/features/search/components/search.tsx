@@ -1,6 +1,6 @@
 "use client";
 
-import { Search as SearchIcon, Loader2, X } from "lucide-react";
+import { Search as SearchIcon, Loader2, X, Funnel } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -15,6 +15,7 @@ import {
 } from "@/features/shared/lib/badge-variants";
 import DocumentActionButtons from "@/features/shared/components/document-action-buttons";
 import { checkBookmark } from "../../shared/server/check-bookmark";
+import SearchFilterDialog, { type SearchFilterValues } from "@/features/shared/components/search-filter-dialog";
 
 type Role = {
   role: string;
@@ -30,8 +31,20 @@ export default function Search({ role }: Role) {
   const [bookmarks, setBookmarks] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const [useRAG, setUseRAG] = useState(true);
+  const [useRAG, setUseRAG] = useState(false);
   const [searchType, setSearchType] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [searchFilters, setSearchFilters] = useState<SearchFilterValues>({
+    fromDate: "",
+    toDate: "",
+    issuer: "",
+    issuerLevel: "",
+    code: "",
+    title: "",
+    tags: "",
+    docType: "",
+    searchMode: "keyword",
+  });
 
   // Restore search state from sessionStorage on mount
   useEffect(() => {
@@ -44,8 +57,11 @@ export default function Search({ role }: Role) {
         setSearchResults(parsed.searchResults || []);
         setBookmarks(parsed.bookmarks || {});
         setHasSearched(parsed.hasSearched || false);
-        setUseRAG(parsed.useRAG !== undefined ? parsed.useRAG : true);
+        setUseRAG(parsed.useRAG !== undefined ? parsed.useRAG : false);
         setSearchType(parsed.searchType || "");
+        if (parsed.searchFilters) {
+          setSearchFilters(parsed.searchFilters);
+        }
       }
     } catch (err) {
       console.error("Error restoring search state:", err);
@@ -102,13 +118,14 @@ export default function Search({ role }: Role) {
           hasSearched,
           useRAG,
           searchType,
+          searchFilters,
         };
         sessionStorage.setItem(SEARCH_STATE_KEY, JSON.stringify(stateToSave));
       } catch (err) {
         console.error("Error saving search state:", err);
       }
     }
-  }, [searchQuery, answer, searchResults, bookmarks, hasSearched, useRAG, searchType]);
+  }, [searchQuery, answer, searchResults, bookmarks, hasSearched, useRAG, searchType, searchFilters]);
 
   const activeColor =
     String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
@@ -140,10 +157,56 @@ export default function Search({ role }: Role) {
         return bChunks - aChunks;
       });
 
+      // Apply client-side filters only in Keyword mode
+      let filteredResults = sortedResults;
+      if (!useRAG) {
+        const f = searchFilters; // ✅ Fixed: Changed from formFilters to searchFilters
+        const tagsArray = f.tags
+          .split(",")
+          .map((t: string) => t.trim().toLowerCase())
+          .filter(Boolean);
+        const fromDate = f.fromDate ? new Date(f.fromDate) : null;
+        const toDateNext = f.toDate
+          ? (() => { const d = new Date(f.toDate); d.setDate(d.getDate() + 1); return d; })()
+          : null;
+
+        filteredResults = sortedResults.filter((doc) => {
+          if (fromDate || toDateNext) {
+            if (!doc.date_issued) return false;
+            const d = new Date(doc.date_issued);
+            if (fromDate && d < fromDate) return false;
+            if (toDateNext && d >= toDateNext) return false;
+          }
+          if (f.issuerLevel) {
+            const src = (doc.issuer || "").toLowerCase();
+            if (!src.includes(f.issuerLevel.toLowerCase())) return false;
+          }
+          if (f.docType) {
+            const dtype = (doc.doc_type || "").toLowerCase();
+            if (!dtype.includes(f.docType.toLowerCase())) return false;
+          }
+          if (f.code && f.code.trim()) {
+            const code = (doc.doc_number || "").toLowerCase();
+            if (!code.includes(f.code.trim().toLowerCase())) return false;
+          }
+          if (f.title && f.title.trim()) {
+            const title = (doc.title || "").toLowerCase();
+            if (!title.includes(f.title.trim().toLowerCase())) return false;
+          }
+          if (tagsArray.length) {
+            const cats = (doc.categories || []).map((c) => (c || "").toLowerCase());
+            for (const tag of tagsArray) {
+              if (!cats.includes(tag)) return false;
+            }
+          }
+          return true;
+        });
+      }
+
       // ✅ Fetch bookmark statuses for all documents before rendering
       const bookmarkStatuses: Record<string, boolean> = {};
       await Promise.all(
-        sortedResults.map(async (doc) => {
+        filteredResults.map(async (doc) => {
           const { bookmarked } = await checkBookmark(doc.doc_id);
           bookmarkStatuses[doc.doc_id] = bookmarked;
         })
@@ -152,7 +215,7 @@ export default function Search({ role }: Role) {
       // ✅ Update all states once (no flicker)
       setBookmarks(bookmarkStatuses);
       setAnswer(result.answer);
-      setSearchResults(sortedResults);
+      setSearchResults(filteredResults);
       setSearchType(result.search_type);
     } catch (err) {
       console.error("Search error:", err);
@@ -169,6 +232,16 @@ export default function Search({ role }: Role) {
       setIsLoading(false);
     }
   };
+
+  const activeFilterCount = [
+    searchFilters.fromDate,
+    searchFilters.toDate,
+    searchFilters.issuerLevel,
+    searchFilters.code,
+    searchFilters.title,
+    searchFilters.docType,
+    searchFilters.tags ? "tags" : undefined,
+  ].filter(Boolean).length;
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -212,6 +285,20 @@ export default function Search({ role }: Role) {
             )}
           </div>
           <Button
+            variant="outline"
+            onClick={() => setIsFilterOpen(true)}
+            disabled={isLoading}
+            className="cursor-pointer px-4 py-6 text-md relative"
+          >
+            <Funnel className="h-4 w-4 mr-2" />
+            Filters
+            {activeFilterCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                {activeFilterCount}
+              </span>
+            )}
+          </Button>
+          <Button
             onClick={handleSearch}
             disabled={isLoading || !searchQuery.trim()}
             className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
@@ -229,34 +316,34 @@ export default function Search({ role }: Role) {
             )}
           </Button>
         </div>
-
-        {/* Search Mode Toggle */}
-        <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              checked={useRAG}
-              onChange={() => setUseRAG(true)}
-              disabled={isLoading}
-              className="cursor-pointer"
-            />
-            <span className="text-sm text-gray-700">
-              RAG Search (AI-powered with semantic understanding)
-            </span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              checked={!useRAG}
-              onChange={() => setUseRAG(false)}
-              disabled={isLoading}
-              className="cursor-pointer"
-            />
-            <span className="text-sm text-gray-700">
-              Keyword Search (Traditional text matching)
-            </span>
-          </label>
-        </div>
+        <SearchFilterDialog
+          open={isFilterOpen}
+          onOpenChange={setIsFilterOpen}
+          values={searchFilters}
+          onValuesChange={setSearchFilters}
+          onApply={() => {
+            setUseRAG(searchFilters.searchMode === "rag");
+            setIsFilterOpen(false);
+            if (hasSearched && searchQuery.trim()) {
+              handleSearch();
+            }
+          }}
+          onReset={() => {
+            setSearchFilters({
+              fromDate: "",
+              toDate: "",
+              issuer: "",
+              issuerLevel: "",
+              code: "",
+              title: "",
+              tags: "",
+              docType: "",
+              searchMode: "keyword",
+            });
+            setUseRAG(false);
+            setIsFilterOpen(false);
+          }}
+        />
       </div>
 
       {/* AI Answer Section */}
@@ -299,7 +386,7 @@ export default function Search({ role }: Role) {
           </div>
           {searchResults.length > 0 && (
             <div className="text-xs text-gray-500">
-              Sorted by number of relevant sections
+              Sorted by relevance
             </div>
           )}
         </div>
@@ -325,13 +412,23 @@ export default function Search({ role }: Role) {
                     </h3>
                   </Link>
 
-                  {doc.date_issued && doc.issuer && (
+                  {(doc.date_issued || doc.issuer) && (
                     <p className="text-sm text-gray-600/60 mb-2">
-                      Issued: <span className="font-medium">{new Date(doc.date_issued).toLocaleDateString('en-US', { 
-                        month: 'long', 
-                        day: 'numeric',
-                        year: 'numeric' 
-                      })}</span> | Issuer: <span className="font-medium">{doc.issuer || "N/A"}</span>
+                      {doc.date_issued && (
+                        <>
+                          Issued: <span className="font-medium">{new Date(doc.date_issued).toLocaleDateString('en-US', { 
+                            month: 'long', 
+                            day: 'numeric',
+                            year: 'numeric' 
+                          })}</span>
+                        </>
+                      )}
+                      {doc.date_issued && doc.issuer && " | "}
+                      {doc.issuer && (
+                        <>
+                          Issuer: <span className="font-medium">{doc.issuer}</span>
+                        </>
+                      )}
                     </p>
                   )}
 
@@ -358,24 +455,23 @@ export default function Search({ role }: Role) {
                   </div>
 
                   <div className="flex flex-wrap gap-1.5 mb-4">
-                      {/* Categories */}
-                  {doc.categories &&
-                    doc.categories.map((category: string) => {
-                      const variant = getBadgeVariant(category);
-                      return (
-                        <Badge
-                          key={category}
-                          size="md"
-                          {...(variant === "dynamic"
-                            ? { className: getDynamicBadgeClasses(category) }
-                            : { variant })}
-                        >
-                          {category}
-                        </Badge>
-                      );
-                    })}
+                    {/* Categories */}
+                    {doc.categories &&
+                      doc.categories.map((category: string) => {
+                        const variant = getBadgeVariant(category);
+                        return (
+                          <Badge
+                            key={category}
+                            size="md"
+                            {...(variant === "dynamic"
+                              ? { className: getDynamicBadgeClasses(category) }
+                              : { variant })}
+                          >
+                            {category}
+                          </Badge>
+                        );
+                      })}
                   </div>
-                
                 </div>
 
                 {/* RIGHT SECTION - Action buttons with dynamic bookmark status */}
