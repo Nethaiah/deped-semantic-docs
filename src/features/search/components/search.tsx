@@ -508,11 +508,11 @@ export default function Search({ role }: Role) {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Start your search
           </h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-md text-gray-600 mb-4">
             Enter a query above to search through DepEd documents with
             AI-powered semantic search
           </p>
-          <div className="text-xs text-gray-500 max-w-md mx-auto">
+          <div className="text-sm text-gray-500 max-w-md mx-auto">
             <p className="mb-2">Try asking questions like:</p>
             <ul className="text-left list-disc list-inside space-y-1">
               <li>"What is the ARAL Program?"</li>
