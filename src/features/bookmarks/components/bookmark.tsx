@@ -1,11 +1,3 @@
-import {
-  Search as SearchIcon,
-  SlidersHorizontal,
-  Trash2,
-  Eye,
-  Bookmark,
-  Share2,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -37,43 +29,10 @@ export default async function BookmarksPage({ role }: Role) {
         </p>
       </div>
 
-      {/* Search Bar */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="relative flex-1">
-          <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search for 'learning recovery plan' or 'DO 22 s. 2023'..."
-            className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-4 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-        <Button
-          variant="outline"
-          className="px-6 py-6 text-md border-gray-300 hover:bg-gray-50 flex items-center gap-2"
-        >
-          <SlidersHorizontal className="h-4 w-4" />
-          Advanced
-        </Button>
-        <Button className="px-8 py-6 text-md text-white bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer">
-          Search
-        </Button>
-      </div>
-
       {/* Results Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="text-sm text-gray-600">
-          Showing <span className="font-semibold">{bookmarkedDocs.length}</span>{" "}
-          bookmarked documents
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Sort by:</span>
-          <select className="text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="recent">Recently Added</option>
-            <option value="date">Date Issued (Newest)</option>
-            <option value="date-old">Date Issued (Oldest)</option>
-            <option value="title">Title (A-Z)</option>
-          </select>
-        </div>
+      <div className="mb-4 text-sm text-gray-600">
+        Showing <span className="font-semibold">{bookmarkedDocs.length}</span>{" "}
+        bookmarked documents
       </div>
 
       {/* Bookmarked Documents */}
