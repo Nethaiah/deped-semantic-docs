@@ -135,9 +135,9 @@ export default function Home() {
                 Read 50 pages in 30 seconds
               </h3>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                Our Transformer model extracts the core message from any official
-                document and generates a clean, readable summary. No more
-                skimming through dense legal language trying to find what
+                Our Transformer model extracts the core message from any
+                official document and generates a clean, readable summary. No
+                more skimming through dense legal language trying to find what
                 matters.
               </p>
               <ul className="space-y-3">
@@ -231,9 +231,9 @@ export default function Home() {
                 Find documents by meaning, not keywords
               </h3>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                Transformer-based semantic search understands what you're actually
-                looking for. Ask in plain language and get relevant documents
-                ranked by how related they are to your query.
+                Transformer-based semantic search understands what you're
+                actually looking for. Ask in plain language and get relevant
+                documents ranked by how related they are to your query.
               </p>
               <ul className="space-y-3">
                 <li className="flex gap-3 text-gray-700">
@@ -252,7 +252,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Feature 3 - Cards */}
           {/* Feature 3 - Cards */}
           <div>
             <div className="mb-8 text-center">
@@ -375,8 +374,8 @@ export default function Home() {
                     Instant Processing
                   </h4>
                   <p className="text-sm text-gray-600">
-                    Upload PDF files and get organized results in
-                    seconds, not days
+                    Upload PDF files and get organized results in seconds, not
+                    days
                   </p>
                 </div>
 

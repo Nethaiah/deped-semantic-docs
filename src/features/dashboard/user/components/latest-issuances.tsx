@@ -68,19 +68,26 @@ export default function LatestIssuances({
     docType?: "Order" | "Memorandum";
   }>({});
 
-  const loadPage = async (page: number, overrideFilters?: {
-    fromDate?: string;
-    toDate?: string;
-    issuer?: string;
-    issuerLevel?: "Central" | "Division";
-    code?: string;
-    title?: string;
-    tags?: string[];
-    docType?: "Order" | "Memorandum";
-  }) => {
+  const loadPage = async (
+    page: number,
+    overrideFilters?: {
+      fromDate?: string;
+      toDate?: string;
+      issuer?: string;
+      issuerLevel?: "Central" | "Division";
+      code?: string;
+      title?: string;
+      tags?: string[];
+      docType?: "Order" | "Memorandum";
+    }
+  ) => {
     setIsLoading(true);
     try {
-      const result = await getLatestIssuances(page, 10, overrideFilters ?? appliedFilters);
+      const result = await getLatestIssuances(
+        page,
+        10,
+        overrideFilters ?? appliedFilters
+      );
       setData(result.data);
       setCurrentPage(result.currentPage);
       setTotalPages(result.totalPages);
@@ -121,7 +128,8 @@ export default function LatestIssuances({
       fromDate: formFilters.fromDate || undefined,
       toDate: formFilters.toDate || undefined,
       issuer: formFilters.issuer.trim() || undefined,
-      issuerLevel: (formFilters.issuerLevel as "Central" | "Division") || undefined,
+      issuerLevel:
+        (formFilters.issuerLevel as "Central" | "Division") || undefined,
       code: formFilters.code.trim() || undefined,
       title: formFilters.title.trim() || undefined,
       tags: tagsArray.length ? tagsArray : undefined,
@@ -133,7 +141,16 @@ export default function LatestIssuances({
   };
 
   const onResetFilters = async () => {
-    setFormFilters({ fromDate: "", toDate: "", issuer: "", issuerLevel: "", code: "", title: "", tags: "", docType: "" });
+    setFormFilters({
+      fromDate: "",
+      toDate: "",
+      issuer: "",
+      issuerLevel: "",
+      code: "",
+      title: "",
+      tags: "",
+      docType: "",
+    });
     setAppliedFilters({});
     setIsFilterOpen(false);
     await loadPage(1, {});
@@ -153,14 +170,21 @@ export default function LatestIssuances({
   return (
     <div className="col-span-2 bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden">
       <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-50">
-        <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">Latest Issuance</h2>
+        <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+          Latest Issuance
+        </h2>
         <div className="flex items-center gap-2">
           {activeFilterCount > 0 && (
             <span className="text-xs font-semibold text-slate-600 px-2 py-1 rounded-md bg-slate-100 border border-slate-200">
               {activeFilterCount} active
             </span>
           )}
-          <Button variant="outline" size="sm" onClick={() => setIsFilterOpen(true)}>
+          <Button
+            className="cursor-pointer"
+            variant="outline"
+            size="sm"
+            onClick={() => setIsFilterOpen(true)}
+          >
             <Funnel className="mr-2 h-4 w-4" />
             Filters
           </Button>

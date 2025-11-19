@@ -108,7 +108,9 @@ export default function Category({
         if (!title.includes(filters.title.trim().toLowerCase())) return false;
       }
       if (tagsArray.length) {
-        const cats = (doc.categories || []).map((c) => ((c as string) || "").toLowerCase());
+        const cats = (doc.categories || []).map((c) =>
+          ((c as string) || "").toLowerCase()
+        );
         for (const tag of tagsArray) {
           if (!cats.includes(tag)) return false;
         }
@@ -148,7 +150,8 @@ export default function Category({
     return result;
   }, [documents, filters, query, sortBy]);
 
-  const shouldShowPagination = query.trim() === "" || (query.trim() !== "" && visibleDocs.length === 0);
+  const shouldShowPagination =
+    query.trim() === "" || (query.trim() !== "" && visibleDocs.length === 0);
   const totalPages = Math.max(1, Math.ceil((total || 0) / (pageSize || 10)));
   const prevPage = page > 1 ? page - 1 : 1;
   const nextPage = page < totalPages ? page + 1 : totalPages;
@@ -160,13 +163,15 @@ export default function Category({
         <div className="mb-4">
           <Link
             href="/categories"
-            className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline"
+            className="inline-flex items-center justify-center gap-2 text-sm text-[#278fb6] cursor-pointer bg-gray-200 hover:bg-gray-300 border-gray-300 border-1 px-5 py-1 rounded-sm"
           >
             <ChevronLeft className="h-4 w-4" />
             Back to Categories
           </Link>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{categoryName}</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          {categoryName}
+        </h1>
         <p className="text-sm text-gray-600">
           Browse documents in this category.
         </p>
@@ -285,11 +290,14 @@ export default function Category({
                   </Link>
                   {doc.date_issued && doc.issuer && (
                     <p className="text-sm text-gray-600/60 mb-2">
-                      Issued: <span className="font-medium"></span>{new Date(doc.date_issued).toLocaleDateString('en-US', { 
-                        month: 'long', 
-                        day: 'numeric',
-                        year: 'numeric' 
-                      })} | Issuer: <span className="font-medium">{doc.issuer || "N/A"}</span>
+                      Issued: <span className="font-medium"></span>
+                      {new Date(doc.date_issued).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}{" "}
+                      | Issuer:{" "}
+                      <span className="font-medium">{doc.issuer || "N/A"}</span>
                     </p>
                   )}
                   {doc.summary && (
@@ -305,7 +313,6 @@ export default function Category({
                         <span className="font-medium">{doc.doc_type}</span>
                       </span>
                     )}
-                  
                   </div>
                   {/* Categories */}
                   {doc.categories &&
@@ -342,15 +349,27 @@ export default function Category({
           </div>
           <div className="flex gap-2">
             <Link
-              href={`/categories/${encodeURIComponent(categoryName)}?page=${prevPage}`}
-              className={`px-3 py-2 rounded-md border text-sm ${page === 1 ? "pointer-events-none opacity-50" : "hover:bg-slate-50"}`}
+              href={`/categories/${encodeURIComponent(
+                categoryName
+              )}?page=${prevPage}`}
+              className={`px-3 py-2 rounded-md border text-sm ${
+                page === 1
+                  ? "pointer-events-none opacity-50"
+                  : "hover:bg-slate-50"
+              }`}
               aria-disabled={page === 1}
             >
               Previous
             </Link>
             <Link
-              href={`/categories/${encodeURIComponent(categoryName)}?page=${nextPage}`}
-              className={`px-3 py-2 rounded-md border text-sm ${page === totalPages ? "pointer-events-none opacity-50" : "hover:bg-slate-50"}`}
+              href={`/categories/${encodeURIComponent(
+                categoryName
+              )}?page=${nextPage}`}
+              className={`px-3 py-2 rounded-md border text-sm ${
+                page === totalPages
+                  ? "pointer-events-none opacity-50"
+                  : "hover:bg-slate-50"
+              }`}
               aria-disabled={page === totalPages}
             >
               Next

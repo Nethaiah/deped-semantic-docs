@@ -40,62 +40,92 @@ export default async function UserDocuments({ name = "User" }) {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="relative bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-slate-100 rounded-xl">
-              <FileText className="w-6 h-6 text-slate-700" />
-            </div>
-            <TrendingUp className="w-5 h-5 text-green-500" />
-          </div>
-          <h3 className="text-slate-600 text-sm font-semibold mb-1">
-            Total Issuances
-          </h3>
-          <p className="text-3xl font-bold text-slate-800">127</p>
-          <p className="text-xs text-green-600 font-medium mt-2">
-            +12% from last month
-          </p>
+        <div className="group relative bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-all duration-300 overflow-hidden">
+          {/* Gradient overlay on hover */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#278fb6]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
           <div className="absolute top-0 right-0 w-40 h-30 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
-          <div className="absolute top-0 right-0 w-60 h-50 bg-gradient-to-br from-[#278fb6]/15   to-transparent rounded-bl-full"></div>
+          <div className="absolute top-0 right-0 w-60 h-50 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
+
+          {/* Content with relative positioning */}
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-[#278fb6]/15 rounded-xl">
+                <FileText className="w-6 h-6 text-slate-700" />
+              </div>
+              <TrendingUp className="w-5 h-5 text-green-500" />
+            </div>
+            <h3 className="text-slate-600 text-sm font-semibold mb-1">
+              Total Orders
+            </h3>
+            <p className="text-3xl font-bold text-slate-800">127</p>
+            <p className="text-xs text-green-600 font-medium mt-2">
+              +12% from last month
+            </p>
+          </div>
+
+          {/* Bottom accent line */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#278fb6] to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
         </div>
 
-        <div className="relative bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-slate-100 rounded-xl">
-              <Eye className="w-6 h-6 text-slate-700" />
+        <div className="group relative bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-all duration-300 overflow-hidden">
+          {/* Gradient overlay on hover */}
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+          <div className="absolute top-0 right-0 w-40 h-30 bg-gradient-to-br from-emerald-500/15 to-transparent rounded-bl-full"></div>
+          <div className="absolute top-0 right-0 w-60 h-50 bg-gradient-to-br from-emerald-500/15 to-transparent rounded-bl-full"></div>
+
+          {/* Content with relative positioning */}
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-emerald-100 rounded-xl">
+                <Eye className="w-6 h-6 text-slate-700" />
+              </div>
+              <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <TrendingUp className="w-5 h-5 text-green-500" />
+            <h3 className="text-slate-600 text-sm font-semibold mb-1">
+              Total Memorandas
+            </h3>
+            <p className="text-3xl font-bold text-slate-800">45</p>
+            <p className="text-xs text-green-600 font-medium mt-2">
+              +8% from last week
+            </p>
           </div>
-          <h3 className="text-slate-600 text-sm font-semibold mb-1">
-            Documents Viewed
-          </h3>
-          <p className="text-3xl font-bold text-slate-800">45</p>
-          <p className="text-xs text-green-600 font-medium mt-2">
-            +8% from last week
-          </p>
-          <div className="absolute top-0 right-0 w-40 h-30 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
-          <div className="absolute top-0 right-0 w-60 h-50 bg-gradient-to-br from-[#278fb6]/15   to-transparent rounded-bl-full"></div>
+
+          {/* Bottom accent line */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
         </div>
 
-        <div className="relative bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-shadow overflow-hidden">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-slate-100 rounded-xl">
-              <Clock className="w-6 h-6 text-slate-700" />
+        <div className="group relative bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-all duration-300 overflow-hidden">
+          {/* Gradient overlay on hover */}
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+          <div className="absolute top-0 right-0 w-40 h-30 bg-gradient-to-br from-amber-500/15 to-transparent rounded-bl-full"></div>
+          <div className="absolute top-0 right-0 w-60 h-50 bg-gradient-to-br from-amber-500/15 to-transparent rounded-bl-full"></div>
+
+          {/* Content with relative positioning */}
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-amber-100 rounded-xl">
+                <Clock className="w-6 h-6 text-slate-700" />
+              </div>
+              <span className="text-xs text-slate-500 font-medium">
+                This Month
+              </span>
             </div>
-            <span className="text-xs text-slate-500 font-medium">
-              This Month
-            </span>
+            <h3 className="text-slate-600 text-sm font-semibold mb-1">
+              Recent Uploads
+            </h3>
+            <p className="text-3xl font-bold text-slate-800">
+              {monthlyData[monthlyData.length - 1].uploads}
+            </p>
+            <p className="text-xs text-slate-500 font-medium mt-2">
+              November 2024
+            </p>
           </div>
-          <h3 className="text-slate-600 text-sm font-semibold mb-1">
-            Recent Uploads
-          </h3>
-          <p className="text-3xl font-bold text-slate-800">
-            {monthlyData[monthlyData.length - 1].uploads}
-          </p>
-          <p className="text-xs text-slate-500 font-medium mt-2">
-            November 2024
-          </p>
-          <div className="absolute top-0 right-0 w-40 h-30 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
-          <div className="absolute top-0 right-0 w-60 h-50 bg-gradient-to-br from-[#278fb6]/15   to-transparent rounded-bl-full"></div>
+
+          {/* Bottom accent line */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
         </div>
       </div>
 

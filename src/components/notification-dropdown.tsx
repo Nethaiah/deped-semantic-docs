@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState, useRef } from "react";
@@ -48,7 +48,10 @@ export default function NotificationDropdown() {
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -66,7 +69,7 @@ export default function NotificationDropdown() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-white hover:bg-white/10 rounded-full transition"
+        className="relative p-2 text-white hover:bg-white/10 rounded-full transition cursor-pointer"
       >
         <Bell className="h-6 w-6" />
         {hasNotifications && (
@@ -77,15 +80,19 @@ export default function NotificationDropdown() {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
+            <h3 className="text-sm font-semibold text-gray-900">
+              Notifications
+            </h3>
           </div>
 
           <div className="max-h-96 overflow-y-auto">
             {hasNotifications ? (
               <div className="divide-y divide-gray-100">
                 {notifications.map((n, index) => (
-                  <div key={index} className="px-4 py-3 hover:bg-gray-50 cursor-pointer">
-                    <p className="text-sm font-medium text-gray-900">{n.memo_number}</p>
+                  <div key={index} className="px-4 py-3 hover:bg-gray-50">
+                    <p className="text-sm font-medium text-gray-900">
+                      {n.memo_number}
+                    </p>
                     <p className="text-xs text-gray-500">{n.title}</p>
                     <a
                       href={n.url}
@@ -101,7 +108,9 @@ export default function NotificationDropdown() {
             ) : (
               <div className="px-4 py-8 text-center">
                 <Bell className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-sm text-gray-500">There's no notification yet</p>
+                <p className="text-sm text-gray-500">
+                  There's no notification yet
+                </p>
               </div>
             )}
           </div>

@@ -47,7 +47,7 @@ export default async function Header() {
         </div>
 
         {/* Navigation Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4  cursor-pointer">
           {isAuthenticated ? (
             <>
               {/* Notification Dropdown */}

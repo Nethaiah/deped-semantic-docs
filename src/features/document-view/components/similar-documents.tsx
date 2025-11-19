@@ -16,7 +16,7 @@ export default function SimilarDocuments({ similar }: Props) {
           <Link
             key={s.id}
             href={`/view/${s.id}`}
-            className="block text-xs text-blue-600 hover:bg-slate-50 p-2 rounded-md transition-colors"
+            className="block text-xs text-[#278fb6] hover:bg-slate-100 p-2 rounded-md transition-colors"
           >
             <div className="flex justify-between font-semibold">
               <span>{s.code}</span>

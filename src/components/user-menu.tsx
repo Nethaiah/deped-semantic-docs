@@ -2,18 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  LogOutIcon,
-  SettingsIcon,
-  UserPenIcon,
-} from "lucide-react";
+import { LogOutIcon, SettingsIcon, UserPenIcon } from "lucide-react";
 import { toast } from "sonner";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -40,7 +32,7 @@ type UserMenuProps = {
   name: string;
   email: string;
   image: string;
-}
+};
 
 export default function UserMenu({ name, email, image }: UserMenuProps) {
   const supabase = createClient();
@@ -54,7 +46,7 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
       } else {
         // Clear any local state
         // Force a full page reload to ensure all components re-render
-        window.location.href = '/';
+        window.location.href = "/";
         toast.success("Logged out successfully");
       }
     } catch (error) {
@@ -66,20 +58,28 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
+          <Button
+            variant="ghost"
+            className="h-auto p-0 hover:bg-transparent  cursor-pointer"
+          >
             <Avatar className="size-10">
               {image && <AvatarImage src={image} alt={name} />}
               <AvatarFallback className="text-md bg-gray-100">
-                {name.split(' ')
-                .map((n: string) => n[0])
-                .join('')
-                .toUpperCase()
-                .substring(0, 2)}
+                {name
+                  .split(" ")
+                  .map((n: string) => n[0])
+                  .join("")
+                  .toUpperCase()
+                  .substring(0, 2)}
               </AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-70 py-2 px-4" align="end" sideOffset={8}>
+        <DropdownMenuContent
+          className="w-70 py-2 px-4"
+          align="end"
+          sideOffset={8}
+        >
           <DropdownMenuLabel className="flex min-w-0 flex-col">
             <span className="text-foreground truncate text-sm font-medium">
               {name}
@@ -91,24 +91,42 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href="/settings" className="flex items-center">
-                <SettingsIcon size={16} className="opacity-60 mr-2" aria-hidden="true" />
+              <Link
+                href="/settings"
+                className="flex items-center cursor-pointer"
+              >
+                <SettingsIcon
+                  size={16}
+                  className="opacity-60 mr-2"
+                  aria-hidden="true"
+                />
                 <span>Settings</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href="/profile" className="flex items-center">
-                <UserPenIcon size={16} className="opacity-60 mr-2" aria-hidden="true" />
+              <Link
+                href="/profile"
+                className="flex items-center cursor-pointer"
+              >
+                <UserPenIcon
+                  size={16}
+                  className="opacity-60 mr-2"
+                  aria-hidden="true"
+                />
                 <span>Edit Profile</span>
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem 
-            onClick={() => setShowLogoutDialog(true)} 
-            className="text-red-600 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white group"
+          <DropdownMenuItem
+            onClick={() => setShowLogoutDialog(true)}
+            className="text-red-600 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white group cursor-pointer"
           >
-            <LogOutIcon size={16} className="opacity-60 mr-2 group-hover:opacity-100" aria-hidden="true" />
+            <LogOutIcon
+              size={16}
+              className="opacity-60 mr-2 group-hover:opacity-100"
+              aria-hidden="true"
+            />
             <span>Logout</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -119,12 +137,13 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to logout? You will need to sign in again to access your account.
+              Are you sure you want to logout? You will need to sign in again to
+              access your account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleSignOut}
               className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
             >
@@ -134,5 +153,5 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }
