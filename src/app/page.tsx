@@ -374,7 +374,7 @@ export default function Home() {
                     Instant Processing
                   </h4>
                   <p className="text-sm text-gray-600">
-                    Upload PDF files and get organized results in seconds, not
+                    Get organized results from the latest memos in seconds, not 
                     days
                   </p>
                 </div>
