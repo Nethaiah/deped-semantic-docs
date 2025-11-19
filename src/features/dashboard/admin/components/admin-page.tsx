@@ -1,7 +1,7 @@
 import { TrendingUp, FileText, Clock, Eye } from "lucide-react";
 import { getLatestIssuances } from "@/features/shared/server/get-latest-issuances";
 import LatestIssuances from "./latest-issuances";
-import ClientTimeDisplay from "@/features/dashboard/shared/components/time"
+import ClientTimeDisplay from "@/features/shared/components/time"
 
 // Mock monthly data for chart - placeholder data
 const monthlyData = [
