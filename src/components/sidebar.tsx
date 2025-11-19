@@ -66,7 +66,7 @@ export default function Sidebar({
           <button
             type="button"
             onClick={toggleSidebar}
-            className="h-9 w-9 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            className="h-9 w-9 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors  cursor-pointer"
           >
             <PanelLeft size={20} />
           </button>

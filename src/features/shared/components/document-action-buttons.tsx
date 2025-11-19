@@ -12,7 +12,11 @@ type Props = {
   onBookmarkChange?: (docId: string, bookmarked: boolean) => void;
 };
 
-export default function DocumentActionButtons({ docId, initialBookmarked = false, onBookmarkChange }: Props) {
+export default function DocumentActionButtons({
+  docId,
+  initialBookmarked = false,
+  onBookmarkChange,
+}: Props) {
   const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
   const [isPending, startTransition] = useTransition();
 
@@ -80,19 +84,21 @@ export default function DocumentActionButtons({ docId, initialBookmarked = false
         <button
           onClick={handleBookmarkToggle}
           disabled={isPending}
-          className={`bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+          className={`bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer ${
             isBookmarked ? "text-blue-600" : ""
           }`}
           title={isBookmarked ? "Remove bookmark" : "Bookmark"}
         >
-          <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`} />
+          <Bookmark
+            className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
+          />
         </button>
 
         {/* Share Button */}
         <button
           type="button"
           onClick={handleShare}
-          className="bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors"
+          className="bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors cursor-pointer"
           title="Share"
         >
           <Share2 className="h-4 w-4" />

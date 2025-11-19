@@ -35,7 +35,7 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
 
     setIsLoading(true);
     setError(null);
-    
+
     const currentQuestion = question;
     setQuestion(""); // Clear input immediately
 
@@ -46,11 +46,11 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
       });
 
       setAnswer(result.answer);
-      
+
       // Add to conversation history
-      setConversationHistory(prev => [
+      setConversationHistory((prev) => [
         ...prev,
-        { question: currentQuestion, answer: result.answer }
+        { question: currentQuestion, answer: result.answer },
       ]);
     } catch (err) {
       console.error("Document Q&A error:", err);
@@ -67,12 +67,10 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md border border-slate-200">
-      <h3 className="text-2xl font-bold text-slate-800">
-        Document Analysis
-      </h3>
+      <h3 className="text-2xl font-bold text-slate-800">Document Analysis</h3>
       <p className="text-sm text-slate-500 mb-4">
-        {hasSummary 
-          ? "Summary of the document content." 
+        {hasSummary
+          ? "Summary of the document content."
           : "Ask questions to understand the document better."}
       </p>
 
@@ -92,7 +90,7 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
           <MessageSquare className="h-5 w-5" />
           Ask Questions About This Document
         </h4>
-        
+
         {/* Error Message */}
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
@@ -116,9 +114,13 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
                 <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                      <span className="text-green-700 font-semibold text-xs">AI</span>
+                      <span className="text-green-700 font-semibold text-xs">
+                        AI
+                      </span>
                     </div>
-                    <span className="text-xs font-semibold text-slate-700">Answer:</span>
+                    <span className="text-xs font-semibold text-slate-700">
+                      Answer:
+                    </span>
                   </div>
                   <div className="prose prose-sm max-w-none text-slate-700">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -138,7 +140,9 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
               <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
                 <span className="text-green-700 font-semibold text-xs">AI</span>
               </div>
-              <span className="text-sm font-semibold text-slate-700">Answer:</span>
+              <span className="text-sm font-semibold text-slate-700">
+                Answer:
+              </span>
             </div>
             <div className="prose prose-sm max-w-none text-slate-700">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -152,7 +156,9 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
         {isLoading && (
           <div className="mb-4 bg-slate-50 border border-slate-200 rounded-lg p-4 flex items-center gap-3">
             <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
-            <span className="text-sm text-slate-600">Getting answer from AI...</span>
+            <span className="text-sm text-slate-600">
+              Getting answer from AI...
+            </span>
           </div>
         )}
 
@@ -171,7 +177,7 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
             placeholder="e.g., What are the key requirements? When does this take effect?"
             className="flex-1 bg-slate-50 border border-slate-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none disabled:bg-slate-100 disabled:cursor-not-allowed text-sm"
           />
-          <button 
+          <button
             onClick={handleAskQuestion}
             disabled={isLoading || !question.trim()}
             className="bg-slate-700 text-white font-semibold py-2 px-6 rounded-lg hover:bg-slate-800 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center gap-2"
@@ -190,7 +196,8 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
         {/* Helper Text */}
         {conversationHistory.length === 0 && !answer && !isLoading && (
           <p className="mt-3 text-xs text-slate-500">
-            Ask specific questions about this document to get AI-powered answers based on its content.
+            Ask specific questions about this document to get AI-powered answers
+            based on its content.
           </p>
         )}
       </div>

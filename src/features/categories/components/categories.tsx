@@ -7,13 +7,13 @@ import type { CategoryWithCount } from "../server/actions";
 // Map category names to icon paths
 function getCategoryIcon(categoryName: string): string {
   const iconMap: Record<string, string> = {
-    "Policy": "/policy.svg",
+    Policy: "/policy.svg",
     "Curriculum Implementation": "/curriclum.svg",
     "Personnel/Human Resources": "/human-resource.svg",
     "Finance/Budget": "/finance.svg",
     "School Governance and Operations": "/school-operation.svg",
     "Legal/School Titling": "/policy.svg", // Default icon
-    "Others": "/policy.svg", // Default icon
+    Others: "/policy.svg", // Default icon
   };
 
   // Try exact match first
@@ -24,10 +24,13 @@ function getCategoryIcon(categoryName: string): string {
   // Try partial matches
   const lowerName = categoryName.toLowerCase();
   if (lowerName.includes("curriculum")) return "/curriclum.svg";
-  if (lowerName.includes("personnel") || lowerName.includes("human resource")) return "/human-resource.svg";
-  if (lowerName.includes("finance") || lowerName.includes("budget")) return "/finance.svg";
-  if (lowerName.includes("school") || lowerName.includes("operation")) return "/school-operation.svg";
-  
+  if (lowerName.includes("personnel") || lowerName.includes("human resource"))
+    return "/human-resource.svg";
+  if (lowerName.includes("finance") || lowerName.includes("budget"))
+    return "/finance.svg";
+  if (lowerName.includes("school") || lowerName.includes("operation"))
+    return "/school-operation.svg";
+
   // Default icon
   return "/policy.svg";
 }
@@ -37,14 +40,20 @@ function encodeCategoryName(name: string): string {
   return encodeURIComponent(name);
 }
 
-export default function Categories({ initialCategories }: { initialCategories: CategoryWithCount[] }) {
+export default function Categories({
+  initialCategories,
+}: {
+  initialCategories: CategoryWithCount[];
+}) {
   const categories = initialCategories;
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Browse by Categories</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Browse by Categories
+        </h1>
         <p className="text-sm text-gray-600">
           Streamlined document viewing based on specific categories.
         </p>
@@ -56,7 +65,7 @@ export default function Categories({ initialCategories }: { initialCategories: C
           <p className="text-gray-600">No categories found.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {categories.map((category) => (
             <Link
               key={category.name}
@@ -73,8 +82,12 @@ export default function Categories({ initialCategories }: { initialCategories: C
                 />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">{category.name}</h3>
-                <p className="text-sm text-gray-600">{category.count} Document{category.count !== 1 ? "s" : ""}</p>
+                <h3 className="text-lg font-bold text-gray-900">
+                  {category.name}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {category.count} Document{category.count !== 1 ? "s" : ""}
+                </p>
               </div>
             </Link>
           ))}
@@ -83,4 +96,3 @@ export default function Categories({ initialCategories }: { initialCategories: C
     </div>
   );
 }
-

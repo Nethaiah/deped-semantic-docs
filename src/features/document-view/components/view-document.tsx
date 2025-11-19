@@ -1,14 +1,14 @@
 import Link from "next/link";
+import { Files, History } from "lucide-react";
+import DocumentInfoSidebar from "./document-info";
 import {
-  Files,
-  History,
-} from "lucide-react";
-import DocumentInfoSidebar from "./document-info"
-import { getDocumentById, getSimilarDocuments } from "../server/get-document-data";
-import DocumentActions from "./document-actions"
-import DocumentAnalysis from "./document-summary"
-import DocumentPDFViewer from "./pdf-viewer"
-import SimilarDocuments from "./similar-documents"
+  getDocumentById,
+  getSimilarDocuments,
+} from "../server/get-document-data";
+import DocumentActions from "./document-actions";
+import DocumentAnalysis from "./document-summary";
+import DocumentPDFViewer from "./pdf-viewer";
+import SimilarDocuments from "./similar-documents";
 import { checkBookmark } from "../../shared/server/check-bookmark";
 import BackButton from "./back-button";
 
@@ -26,7 +26,7 @@ export default async function ViewDocument({ documentId }: Props) {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-8">
       <div className="mb-4">
         <BackButton />
       </div>
@@ -34,8 +34,8 @@ export default async function ViewDocument({ documentId }: Props) {
       <div className="grid grid-cols-12 gap-8">
         <div className="col-span-12 lg:col-span-3">
           <DocumentInfoSidebar doc={doc} />
-          <DocumentActions 
-            sourcePath={doc.sourcePath} 
+          <DocumentActions
+            sourcePath={doc.sourcePath}
             docId={doc.id}
             initialBookmarked={bookmarked}
           />
@@ -59,7 +59,7 @@ export default async function ViewDocument({ documentId }: Props) {
                   href={doc.sourcePath}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-slate-600 hover:text-blue-600"
+                  className="flex items-center gap-2 text-slate-600 hover:text-[#278fb6]"
                 >
                   <Files className="h-4 w-4" /> View Source Document
                 </Link>
