@@ -5,6 +5,17 @@ import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { toggleBookmark } from "@/features/shared/server/toggle-bookmark";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import ShareDialog from "./share-dialog";
 
 type Props = {
   docId: string;
@@ -19,12 +30,22 @@ export default function DocumentActionButtons({
 }: Props) {
   const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
   const [isPending, startTransition] = useTransition();
+  const [showUnbookmarkDialog, setShowUnbookmarkDialog] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
 
   useEffect(() => {
     setIsBookmarked(initialBookmarked);
   }, [initialBookmarked]);
 
   const handleBookmarkToggle = () => {
+    if (isBookmarked) {
+      setShowUnbookmarkDialog(true);
+      return;
+    }
+    performBookmarkToggle();
+  };
+
+  const performBookmarkToggle = () => {
     startTransition(async () => {
       const result = await toggleBookmark(docId);
 
@@ -45,27 +66,13 @@ export default function DocumentActionButtons({
     });
   };
 
-  const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/view/${docId}`;
-    const shareText = "Check out this document";
+  const handleConfirmUnbookmark = () => {
+    setShowUnbookmarkDialog(false);
+    performBookmarkToggle();
+  };
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Document Viewer",
-          text: shareText,
-          url: shareUrl,
-        });
-      } catch {
-        // user canceled or failed
-      }
-    } else {
-      await navigator.clipboard.writeText(shareUrl);
-      toast.success("Link copied to clipboard!", {
-        duration: 4000,
-        position: "bottom-right",
-      });
-    }
+  const handleShare = () => {
+    setShowShareDialog(true);
   };
 
   return (
@@ -104,6 +111,36 @@ export default function DocumentActionButtons({
           <Share2 className="h-4 w-4" />
         </button>
       </div>
+
+      {/* Unbookmark Confirmation Dialog */}
+      <AlertDialog open={showUnbookmarkDialog} onOpenChange={setShowUnbookmarkDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Bookmark</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove this document from your bookmarks? 
+              You can always bookmark it again later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmUnbookmark} 
+              disabled={isPending} 
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              {isPending ? "Removing..." : "Remove Bookmark"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Share Dialog */}
+      <ShareDialog 
+        isOpen={showShareDialog} 
+        onClose={() => setShowShareDialog(false)} 
+        docId={docId} 
+      />
     </div>
   );
 }

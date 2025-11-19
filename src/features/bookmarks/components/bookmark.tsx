@@ -102,72 +102,71 @@ export default function Bookmarks({ role, docs, total = 0, page = 1, pageSize = 
           Quickly review the memoranda and orders you saved.
         </p>
       </div>
-      {hasAny && (
-        <div className="flex flex-col gap-3 mb-4">
-          <div className="flex items-center gap-3">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                placeholder="Search by keyword, title, code, or issuer..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    applySearch((e.target as HTMLInputElement).value, 1);
-                  }
-                }}
-                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pr-10 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setQuery("");
-                    applySearch("", 1);
-                  }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  aria-label="Clear search"
-                  title="Clear search"
-                >
-                  <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 8.586l3.536-3.536a1 1 0 111.414 1.414L11.414 10l3.536 3.536a1 1 0 01-1.414 1.414L10 11.414l-3.536 3.536a1 1 0 01-1.414-1.414L8.586 10 5.05 6.464A1 1 0 116.464 5.05L10 8.586z" clipRule="evenodd"/></svg>
-                </button>
-              )}
-            </div>
-            <Button
-              onClick={() => applySearch(query, 1)}
-              className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
-            >
-              Search
-            </Button>
-          </div>
-          <div className="flex items-center justify-end">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Sort by:</span>
-              <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="date_desc">Date (Newest)</SelectItem>
-                  <SelectItem value="date_asc">Date (Oldest)</SelectItem>
-                  <SelectItem value="title_asc">Title (A–Z)</SelectItem>
-                  <SelectItem value="title_desc">Title (Z–A)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Results Header Count */}
-      {hasAny && (
-        <div className="mb-2 text-sm text-gray-600">
-          Showing <span className="font-semibold">{total}</span> bookmarked document{total !== 1 ? "s" : ""}
+      <div className="flex flex-col gap-3 mb-4">
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="Search by keyword, title, code, or issuer..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  applySearch((e.target as HTMLInputElement).value, 1);
+                }
+              }}
+              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pr-10 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery("");
+                  applySearch("", 1);
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                aria-label="Clear search"
+                title="Clear search"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 8.586l3.536-3.536a1 1 0 111.414 1.414L11.414 10l3.536 3.536a1 1 0 01-1.414 1.414L10 11.414l-3.536 3.536a1 1 0 01-1.414-1.414L8.586 10 5.05 6.464A1 1 0 116.464 5.05L10 8.586z" clipRule="evenodd"/></svg>
+              </button>
+            )}
+          </div>
+          <Button
+            onClick={() => applySearch(query, 1)}
+            className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
+          >
+            Search
+          </Button>
         </div>
-      )}
+        <div className="flex items-center justify-between">
+          {/* Results Header Count */}
+          {hasAny && (
+            <div className="mb-2 text-sm text-gray-600">
+              Showing <span className="font-semibold">{total}</span> bookmarked document{total !== 1 ? "s" : ""}
+            </div>
+          )}
+          {!hasAny && <div />}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">Sort by:</span>
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="date_desc">Date (Newest)</SelectItem>
+                <SelectItem value="date_asc">Date (Oldest)</SelectItem>
+                <SelectItem value="title_asc">Title (A–Z)</SelectItem>
+                <SelectItem value="title_desc">Title (Z–A)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
 
       {/* Lists */}
-      {hasAny ? (
+      {hasAny || query || initialQuery ? (
         docs.length > 0 ? (
           <div className="space-y-4">
             {sortedDocs.map((doc) => (
@@ -255,10 +254,10 @@ export default function Bookmarks({ role, docs, total = 0, page = 1, pageSize = 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
             </svg>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              No documents found
+              {query || initialQuery ? "No documents found" : "No bookmarks yet"}
             </h3>
             <p className="text-sm text-gray-600">
-              {query ? "Try adjusting your search query or using different keywords" : "You don't have any bookmarks yet."}
+              {query || initialQuery ? "Try adjusting your search query or using different keywords" : "When you find documents you want to save for later, click the bookmark icon."}
             </p>
           </div>
         )
@@ -274,7 +273,7 @@ export default function Bookmarks({ role, docs, total = 0, page = 1, pageSize = 
           <p className="text-gray-600 max-w-md mb-4">
             When you find documents you want to save for later, click the bookmark icon.
           </p>
-          <Link href="/dashboard">
+          <Link href="/search">
             <span className="px-4 py-2 rounded-md text-white bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer">
               Browse Documents
             </span>

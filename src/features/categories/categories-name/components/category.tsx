@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
@@ -75,6 +75,31 @@ export default function Category({
     filters.issuerLevel,
     filters.docType,
   ].filter(Boolean).length;
+
+  // Sort only the current server page slice
+  const sortedDocuments = useMemo(() => {
+    const arr = [...documents];
+    arr.sort((a, b) => {
+      switch (sortBy) {
+        case "date_asc": {
+          const da = a.date_issued ? new Date(a.date_issued).getTime() : 0;
+          const db = b.date_issued ? new Date(b.date_issued).getTime() : 0;
+          return da - db;
+        }
+        case "title_asc":
+          return (a.title || "").localeCompare(b.title || "");
+        case "title_desc":
+          return (b.title || "").localeCompare(a.title || "");
+        case "date_desc":
+        default: {
+          const da = a.date_issued ? new Date(a.date_issued).getTime() : 0;
+          const db = b.date_issued ? new Date(b.date_issued).getTime() : 0;
+          return db - da;
+        }
+      }
+    });
+    return arr;
+  }, [documents, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil((total || 0) / (pageSize || 10)));
   const shouldShowPagination = totalPages > 1;
@@ -194,7 +219,16 @@ export default function Category({
             Search
           </Button>
         </div>
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-between">
+          {/* Results count */}
+          {total > 0 && (
+            <div className="text-sm text-gray-600">
+              Showing <span className="font-semibold">{total}</span> document{total !== 1 ? "s" : ""}
+              {query && (
+                <> matching <span className="font-semibold">"{query}"</span></>
+              )}
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">Sort by:</span>
             <Select value={sortBy} onValueChange={handleSortChange}>
@@ -232,21 +266,11 @@ export default function Category({
             applyFiltersAndSearch(resetFilters, "", 1);
           }}
         />
-      </div>
-
-      {/* Results count */}
-      {total > 0 && (
-        <div className="mb-4 text-sm text-gray-600">
-          Showing <span className="font-semibold">{total}</span> document{total !== 1 ? "s" : ""}
-          {query && (
-            <> matching <span className="font-semibold">"{query}"</span></>
-          )}
-        </div>
-      )}
+      </div> 
 
       {/* Documents List */}
       <div className="space-y-4">
-        {documents.length === 0 ? (
+        {sortedDocuments.length === 0 ? (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
             <SearchIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -259,7 +283,7 @@ export default function Category({
             </p>
           </div>
         ) : (
-          documents.map((doc) => (
+          sortedDocuments.map((doc) => (
             <div
               key={doc.doc_id}
               className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
