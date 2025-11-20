@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +24,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 type Props = {
   categoryName: string;
@@ -49,7 +59,7 @@ export default function Category({
   initialSort = "date_desc",
 }: Props) {
   const router = useRouter();
-  
+
   // Local State
   const [query, setQuery] = useState(initialQuery);
   const [filters, setFilters] = useState<CategoryFilterFormValues>(
@@ -63,7 +73,7 @@ export default function Category({
   const [sortBy, setSortBy] = useState<
     "date_desc" | "date_asc" | "title_asc" | "title_desc"
   >(initialSort);
-  
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -72,10 +82,9 @@ export default function Category({
     setIsLoading(false);
   }, [initialDocuments, page, total]);
 
-  // Documents are now sorted by the server
   const documents = initialDocuments;
   const bookmarks = initialBookmarks;
-  const activeColor = "#3a7c94"; 
+  const activeColor = "#3a7c94";
 
   const activeFilterCount = [
     filters.fromDate,
@@ -86,8 +95,6 @@ export default function Category({
 
   const totalPages = Math.max(1, Math.ceil((total || 0) / (pageSize || 10)));
   const shouldShowPagination = totalPages > 1;
-  const prevPage = page > 1 ? page - 1 : 1;
-  const nextPage = page < totalPages ? page + 1 : totalPages;
 
   const buildQueryString = (
     targetPage: number,
@@ -97,39 +104,84 @@ export default function Category({
   ) => {
     const params = new URLSearchParams();
     params.set("page", String(targetPage));
-    
+
     const trimmedQuery = (targetQuery ?? query).trim();
     if (trimmedQuery) params.set("q", trimmedQuery);
-    
+
     const useFilters = targetFilters ?? filters;
     if (useFilters.fromDate) params.set("fromDate", useFilters.fromDate);
     if (useFilters.toDate) params.set("toDate", useFilters.toDate);
-    if (useFilters.issuerLevel) params.set("issuerLevel", useFilters.issuerLevel);
+    if (useFilters.issuerLevel)
+      params.set("issuerLevel", useFilters.issuerLevel);
     if (useFilters.docType) params.set("docType", useFilters.docType);
-    
+
     const useSort = targetSort ?? sortBy;
     if (useSort !== "date_desc") params.set("sort", useSort);
-    
+
     return params.toString();
   };
 
-  // Triggered by the SEARCH button or Enter key
   const handleExecuteSearch = () => {
     setIsLoading(true);
-    // Reset to page 1 when searching/filtering
     const params = buildQueryString(1, sortBy, filters, query);
     router.push(`/categories/${encodeURIComponent(categoryName)}?${params}`);
   };
 
-  // Triggered by Sort dropdown
   const handleSortChange = (newSort: string) => {
     setSortBy(newSort as any);
     setIsLoading(true);
-    // Keep current page or reset to 1? Usually reset to 1 on sort change is safer, 
-    // but keeping 1 is fine. Let's reset to 1 to be consistent.
     const params = buildQueryString(1, newSort, filters, query);
     router.push(`/categories/${encodeURIComponent(categoryName)}?${params}`);
   };
+
+  // --- Improved Pagination Logic ---
+  const paginationItems = useMemo(() => {
+    // Increased sibling count to 3 so you see at least 5 consecutive pages
+    const siblingCount = 3; 
+
+    // If we have fewer pages than we want to show in a "full" block (5 main + 2 edges), just show all
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const leftSiblingIndex = Math.max(page - siblingCount, 1);
+    const rightSiblingIndex = Math.min(page + siblingCount, totalPages);
+
+    // We show dots if there is a gap of more than 1 page to the edge
+    const shouldShowLeftDots = leftSiblingIndex > 2;
+    const shouldShowRightDots = rightSiblingIndex < totalPages - 1;
+
+    const firstPageIndex = 1;
+    const lastPageIndex = totalPages;
+
+    // Case 2: No left dots, but right dots (e.g., 1 2 3 4 5 ... 100)
+    if (!shouldShowLeftDots && shouldShowRightDots) {
+      const leftItemCount = 5; // Always show at least 5 items at the start
+      const leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
+      return [...leftRange, "...", totalPages];
+    }
+
+    // Case 3: Left dots, no right dots (e.g., 1 ... 96 97 98 99 100)
+    if (shouldShowLeftDots && !shouldShowRightDots) {
+      const rightItemCount = 5; // Always show at least 5 items at the end
+      const rightRange = Array.from(
+        { length: rightItemCount },
+        (_, i) => totalPages - rightItemCount + i + 1
+      );
+      return [firstPageIndex, "...", ...rightRange];
+    }
+
+    // Case 4: Both dots (e.g., 1 ... 48 49 50 51 52 ... 100)
+    if (shouldShowLeftDots && shouldShowRightDots) {
+      const middleRange = Array.from(
+        { length: rightSiblingIndex - leftSiblingIndex + 1 },
+        (_, i) => leftSiblingIndex + i
+      );
+      return [firstPageIndex, "...", ...middleRange, "...", lastPageIndex];
+    }
+    
+    return [];
+  }, [page, totalPages]);
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -179,12 +231,16 @@ export default function Category({
                 title="Clear search"
               >
                 <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 8.586l3.536-3.536a1 1 0 111.414 1.414L11.414 10l3.536 3.536a1 1 0 01-1.414 1.414L10 11.414l-3.536 3.536a1 1 0 01-1.414-1.414L8.586 10 5.05 6.464A1 1 0 116.464 5.05L10 8.586z" clipRule="evenodd"/>
+                  <path
+                    fillRule="evenodd"
+                    d="M10 8.586l3.536-3.536a1 1 0 111.414 1.414L11.414 10l3.536 3.536a1 1 0 01-1.414 1.414L10 11.414l-3.536 3.536a1 1 0 01-1.414-1.414L8.586 10 5.05 6.464A1 1 0 116.464 5.05L10 8.586z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </button>
             )}
           </div>
-          
+
           <Button
             variant="outline"
             onClick={() => setIsFilterOpen(true)}
@@ -199,7 +255,7 @@ export default function Category({
               </span>
             )}
           </Button>
-          
+
           <Button
             onClick={handleExecuteSearch}
             disabled={isLoading}
@@ -215,22 +271,32 @@ export default function Category({
             )}
           </Button>
         </div>
-        
+
         <div className="flex items-center justify-between">
           {/* Results count */}
           {total > 0 && (
             <div className="text-sm text-gray-600">
-              Showing <span className="font-semibold">{total}</span> document{total !== 1 ? "s" : ""}
+              Showing <span className="font-semibold">{total}</span> document
+              {total !== 1 ? "s" : ""}
               {initialQuery && (
-                <> matching <span className="font-semibold">"{initialQuery}"</span></>
+                <>
+                  {" "}
+                  matching <span className="font-semibold">
+                    "{initialQuery}"
+                  </span>
+                </>
               )}
             </div>
           )}
-          
+
           {/* Sort Control */}
           <div className="flex items-center gap-2 ml-auto">
             <span className="text-sm text-gray-600">Sort by:</span>
-            <Select value={sortBy} onValueChange={handleSortChange} disabled={isLoading}>
+            <Select
+              value={sortBy}
+              onValueChange={handleSortChange}
+              disabled={isLoading}
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -250,8 +316,6 @@ export default function Category({
           values={filters}
           onValuesChange={setFilters}
           onApply={() => {
-            // Only close the dialog. 
-            // User must click "Search" button to apply filters to data.
             setIsFilterOpen(false);
           }}
           onReset={() => {
@@ -263,17 +327,16 @@ export default function Category({
             };
             setFilters(resetFilters);
             setIsFilterOpen(false);
-            // Optional: If reset should immediately clear results, uncomment below:
-            // setIsLoading(true);
-            // setQuery("");
-            // const params = buildQueryString(1, sortBy, resetFilters, "");
-            // router.push(`/categories/${encodeURIComponent(categoryName)}?${params}`);
           }}
         />
-      </div> 
+      </div>
 
       {/* Documents List */}
-      <div className={`space-y-4 transition-opacity duration-200 ${isLoading ? "opacity-50 pointer-events-none" : "opacity-100"}`}>
+      <div
+        className={`space-y-4 transition-opacity duration-200 ${
+          isLoading ? "opacity-50 pointer-events-none" : "opacity-100"
+        }`}
+      >
         {documents.length === 0 ? (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
             <SearchIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -310,18 +373,22 @@ export default function Category({
                         <>
                           Issued:{" "}
                           <span className="font-medium">
-                            {new Date(doc.date_issued).toLocaleDateString("en-US", {
-                              month: "long",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
+                            {new Date(doc.date_issued).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                              }
+                            )}
                           </span>
                         </>
                       )}
                       {doc.date_issued && doc.issuer && " | "}
                       {doc.issuer && (
                         <>
-                          Issuer: <span className="font-medium">{doc.issuer}</span>
+                          Issuer:{" "}
+                          <span className="font-medium">{doc.issuer}</span>
                         </>
                       )}
                     </p>
@@ -359,7 +426,7 @@ export default function Category({
                       })}
                   </div>
                 </div>
-                {/* RIGHT SECTION - Action buttons with dynamic bookmark status */}
+                {/* RIGHT SECTION - Action buttons */}
                 <DocumentActionButtons
                   docId={doc.doc_id}
                   initialBookmarked={bookmarks[doc.doc_id]}
@@ -369,30 +436,79 @@ export default function Category({
           ))
         )}
       </div>
-      
-      {shouldShowPagination && totalPages > 1 && (
-        <div className="flex items-center justify-between mt-6">
-          <div className="text-sm text-gray-600">
-            Page {page} of {totalPages}
-          </div>
-          <div className="flex gap-2">
-            <Link
-              onClick={() => page !== 1 && setIsLoading(true)}
-              href={`/categories/${encodeURIComponent(categoryName)}?${buildQueryString(prevPage)}`}
-              className={`px-3 py-2 rounded-md border text-sm ${page === 1 ? "pointer-events-none opacity-50" : "hover:bg-slate-50"}`}
-              aria-disabled={page === 1}
-            >
-              Previous
-            </Link>
-            <Link
-              onClick={() => page !== totalPages && setIsLoading(true)}
-              href={`/categories/${encodeURIComponent(categoryName)}?${buildQueryString(nextPage)}`}
-              className={`px-3 py-2 rounded-md border text-sm ${page === totalPages ? "pointer-events-none opacity-50" : "hover:bg-slate-50"}`}
-              aria-disabled={page === totalPages}
-            >
-              Next
-            </Link>
-          </div>
+
+      {/* Pagination Component */}
+      {shouldShowPagination && (
+        <div className="mt-8 mb-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <Link
+                  href={`/categories/${encodeURIComponent(categoryName)}?${buildQueryString(page - 1)}`}
+                  legacyBehavior
+                  passHref
+                >
+                  <PaginationPrevious
+                    className={page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-slate-50"}
+                    onClick={(e) => {
+                      if (page <= 1) e.preventDefault();
+                      else setIsLoading(true);
+                    }}
+                  />
+                </Link>
+              </PaginationItem>
+
+              {paginationItems.map((item, index) => {
+                if (item === "...") {
+                  return (
+                    <PaginationItem key={`ellipsis-${index}`}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+
+                const pageNum = Number(item);
+                const isActive = page === pageNum;
+
+                return (
+                  <PaginationItem key={pageNum}>
+                    <Link
+                      href={`/categories/${encodeURIComponent(categoryName)}?${buildQueryString(pageNum)}`}
+                      legacyBehavior
+                      passHref
+                    >
+                      <PaginationLink
+                        isActive={isActive}
+                        className={isActive ? "pointer-events-none" : "cursor-pointer hover:bg-slate-50"}
+                        onClick={(e) => {
+                          if (isActive) e.preventDefault();
+                          else setIsLoading(true);
+                        }}
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    </Link>
+                  </PaginationItem>
+                );
+              })}
+
+              <PaginationItem>
+                <Link
+                  href={`/categories/${encodeURIComponent(categoryName)}?${buildQueryString(page + 1)}`}
+                  legacyBehavior
+                  passHref
+                >
+                  <PaginationNext
+                    className={page >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-slate-50"}
+                    onClick={(e) => {
+                      if (page >= totalPages) e.preventDefault();
+                      else setIsLoading(true);
+                    }}
+                  />
+                </Link>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       )}
     </div>

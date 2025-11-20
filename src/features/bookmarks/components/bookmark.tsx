@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 type BookmarkedDoc = {
   id: string;
@@ -65,8 +74,6 @@ export default function Bookmarks({
 
   const totalPages = Math.max(1, Math.ceil((total || 0) / (pageSize || 10)));
   const shouldShowPagination = totalPages > 1;
-  const prevPage = page > 1 ? page - 1 : 1;
-  const nextPage = page < totalPages ? page + 1 : totalPages;
 
   const buildQueryString = (targetPage: number, targetQuery?: string, targetSort?: string) => {
     const params = new URLSearchParams();
@@ -95,6 +102,49 @@ export default function Bookmarks({
   };
 
   const hasAny = (total || 0) > 0;
+
+  // --- Pagination Logic ---
+  const paginationItems = useMemo(() => {
+    const siblingCount = 3; 
+
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    const leftSiblingIndex = Math.max(page - siblingCount, 1);
+    const rightSiblingIndex = Math.min(page + siblingCount, totalPages);
+
+    const shouldShowLeftDots = leftSiblingIndex > 2;
+    const shouldShowRightDots = rightSiblingIndex < totalPages - 1;
+
+    const firstPageIndex = 1;
+    const lastPageIndex = totalPages;
+
+    if (!shouldShowLeftDots && shouldShowRightDots) {
+      const leftItemCount = 5; 
+      const leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
+      return [...leftRange, "...", totalPages];
+    }
+
+    if (shouldShowLeftDots && !shouldShowRightDots) {
+      const rightItemCount = 5;
+      const rightRange = Array.from(
+        { length: rightItemCount },
+        (_, i) => totalPages - rightItemCount + i + 1
+      );
+      return [firstPageIndex, "...", ...rightRange];
+    }
+
+    if (shouldShowLeftDots && shouldShowRightDots) {
+      const middleRange = Array.from(
+        { length: rightSiblingIndex - leftSiblingIndex + 1 },
+        (_, i) => leftSiblingIndex + i
+      );
+      return [firstPageIndex, "...", ...middleRange, "...", lastPageIndex];
+    }
+    
+    return [];
+  }, [page, totalPages]);
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -296,24 +346,76 @@ export default function Bookmarks({
       </div>
 
       {shouldShowPagination && (
-        <div className="flex items-center justify-between mt-6">
-          <div className="text-sm text-gray-600">Page {page} of {totalPages}</div>
-          <div className="flex gap-2">
-            <Link
-              onClick={() => page !== 1 && setIsLoading(true)}
-              href={`/bookmarks?${buildQueryString(prevPage)}`}
-              className={`px-3 py-2 rounded-md border text-sm ${page === 1 ? "pointer-events-none opacity-50" : "hover:bg-slate-50"}`}
-            >
-              Previous
-            </Link>
-            <Link
-              onClick={() => page !== totalPages && setIsLoading(true)}
-              href={`/bookmarks?${buildQueryString(nextPage)}`}
-              className={`px-3 py-2 rounded-md border text-sm ${page === totalPages ? "pointer-events-none opacity-50" : "hover:bg-slate-50"}`}
-            >
-              Next
-            </Link>
-          </div>
+        <div className="mt-8 mb-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <Link
+                  href={`/bookmarks?${buildQueryString(page - 1)}`}
+                  legacyBehavior
+                  passHref
+                >
+                  <PaginationPrevious
+                    className={page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-slate-50"}
+                    onClick={(e) => {
+                      if (page <= 1) e.preventDefault();
+                      else setIsLoading(true);
+                    }}
+                  />
+                </Link>
+              </PaginationItem>
+
+              {paginationItems.map((item, index) => {
+                if (item === "...") {
+                  return (
+                    <PaginationItem key={`ellipsis-${index}`}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+
+                const pageNum = Number(item);
+                const isActive = page === pageNum;
+
+                return (
+                  <PaginationItem key={pageNum}>
+                    <Link
+                      href={`/bookmarks?${buildQueryString(pageNum)}`}
+                      legacyBehavior
+                      passHref
+                    >
+                      <PaginationLink
+                        isActive={isActive}
+                        className={isActive ? "pointer-events-none" : "cursor-pointer hover:bg-slate-50"}
+                        onClick={(e) => {
+                          if (isActive) e.preventDefault();
+                          else setIsLoading(true);
+                        }}
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    </Link>
+                  </PaginationItem>
+                );
+              })}
+
+              <PaginationItem>
+                <Link
+                  href={`/bookmarks?${buildQueryString(page + 1)}`}
+                  legacyBehavior
+                  passHref
+                >
+                  <PaginationNext
+                    className={page >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer hover:bg-slate-50"}
+                    onClick={(e) => {
+                      if (page >= totalPages) e.preventDefault();
+                      else setIsLoading(true);
+                    }}
+                  />
+                </Link>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       )}
     </div>
