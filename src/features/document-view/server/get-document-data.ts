@@ -51,29 +51,48 @@ export async function getDocumentById(documentId: string) {
 }
 
 export async function getSimilarDocuments(documentId: string, limit: number = 3) {
-  const supabase = await createClient();
+  try {
+    // Call the RAG API backend for similar documents
+    const API_BASE_URL = process.env.NEXT_PUBLIC_RAG_API_URL || 'http://localhost:8000/api/v1';
+    const response = await fetch(`${API_BASE_URL}/document/${documentId}/similar?top_k=${limit}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Use cache to improve performance
+      next: { revalidate: 3600 } // Cache for 1 hour
+    });
 
-  const { data: similarDocs } = await supabase
-    .from("documents")
-    .select("*")
-    .neq("doc_id", documentId)
-    .limit(limit);
+    if (!response.ok) {
+      console.error('Failed to fetch similar documents from backend:', response.statusText);
+      // Fallback to empty array instead of random documents
+      return [];
+    }
 
-  const transformedSimilar = (similarDocs || []).map((s) => ({
-    id: s.doc_id,
-    code: s.doc_number || "N/A",
-    title: s.title,
-    issuedDate: s.date_issued 
-      ? new Date(s.date_issued).toLocaleDateString('en-US', { 
-          month: 'long', 
-          day: 'numeric',
-          year: 'numeric' 
-        })
-      : "N/A",
-    tags: s.categories || [],
-    office: s.issuer || "N/A",
-    slug: s.doc_id,
-  }));
+    const data = await response.json();
+    
+    // Transform the backend response to match the frontend format
+    const transformedSimilar = (data.similar_documents || []).map((s: any) => ({
+      id: s.doc_id,
+      code: s.doc_number || "N/A",
+      title: s.title,
+      issuedDate: s.date_issued 
+        ? new Date(s.date_issued).toLocaleDateString('en-US', { 
+            month: 'long', 
+            day: 'numeric',
+            year: 'numeric' 
+          })
+        : "N/A",
+      tags: s.categories || [],
+      office: s.issuer || "N/A",
+      slug: s.doc_id,
+      similarityScore: s.similarity_score, // Include similarity score for debugging
+    }));
 
-  return transformedSimilar;
+    return transformedSimilar;
+  } catch (error) {
+    console.error('Error fetching similar documents:', error);
+    // Return empty array on error instead of random documents
+    return [];
+  }
 }
