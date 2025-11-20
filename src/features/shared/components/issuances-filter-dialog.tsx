@@ -68,7 +68,7 @@ export default function IssuancesFilterDialog({
               >
                 <SelectTrigger
                   id="issuer-level"
-                  className="w-full  cursor-pointer"
+                  className="w-full cursor-pointer"
                 >
                   <SelectValue placeholder="All levels" />
                 </SelectTrigger>
@@ -96,7 +96,7 @@ export default function IssuancesFilterDialog({
                   onValuesChange({ ...values, docType: val })
                 }
               >
-                <SelectTrigger id="doc-type" className="w-full  cursor-pointer">
+                <SelectTrigger id="doc-type" className="w-full cursor-pointer">
                   <SelectValue placeholder="All types" />
                 </SelectTrigger>
                 <SelectContent>
@@ -112,20 +112,22 @@ export default function IssuancesFilterDialog({
           </div>
         </div>
 
-        <DialogFooter className="gap-2">
-          <Button
-            variant="outline"
-            onClick={onReset}
-            className="w-full sm:w-auto mr-3"
-          >
-            Reset All
-          </Button>
-          <Button
-            onClick={onApply}
-            className="w-full sm:w-auto bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer"
-          >
-            Apply Filters
-          </Button>
+        <DialogFooter className="w-full sm:justify-start sm:space-x-0 mb-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+            <Button
+              variant="outline"
+              onClick={onReset}
+              className="w-full cursor-pointer"
+            >
+              Reset All
+            </Button>
+            <Button
+              onClick={onApply}
+              className="w-full bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer"
+            >
+              Apply Filters
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

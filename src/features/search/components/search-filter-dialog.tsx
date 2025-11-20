@@ -280,20 +280,22 @@ export default function SearchFilterDialog({
           )}
         </div>
 
-        <DialogFooter className="gap-2">
-          <Button
-            variant="outline"
-            onClick={onReset}
-            className="w-full sm:w-auto cursor-pointer"
-          >
-            Reset All
-          </Button>
-          <Button
-            onClick={onApply}
-            className="w-full sm:w-auto bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer"
-          >
-            Apply Filters
-          </Button>
+        <DialogFooter className="w-full sm:justify-start sm:space-x-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+            <Button
+              variant="outline"
+              onClick={onReset}
+              className="w-full cursor-pointer"
+            >
+              Reset All
+            </Button>
+            <Button
+              onClick={onApply}
+              className="w-full bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer"
+            >
+              Apply Filters
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

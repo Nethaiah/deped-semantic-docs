@@ -48,6 +48,7 @@ export default function CategoryFilterDialog({
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Input Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label
@@ -63,7 +64,7 @@ export default function CategoryFilterDialog({
                 onChange={(e) =>
                   onValuesChange({ ...values, fromDate: e.target.value })
                 }
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] transition-colors cursor-pointer"
               />
             </div>
 
@@ -81,7 +82,7 @@ export default function CategoryFilterDialog({
                 onChange={(e) =>
                   onValuesChange({ ...values, toDate: e.target.value })
                 }
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] transition-colors cursor-pointer"
               />
             </div>
 
@@ -98,12 +99,12 @@ export default function CategoryFilterDialog({
                   onValuesChange({ ...values, issuerLevel: val })
                 }
               >
-                <SelectTrigger id="issuer-level" className="w-full">
+                <SelectTrigger id="issuer-level" className="w-full cursor-pointer">
                   <SelectValue placeholder="All levels" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Central">Central</SelectItem>
-                  <SelectItem value="Division">Division</SelectItem>
+                  <SelectItem value="Central" className="cursor-pointer">Central</SelectItem>
+                  <SelectItem value="Division" className="cursor-pointer">Division</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -117,34 +118,39 @@ export default function CategoryFilterDialog({
               </label>
               <Select
                 value={values.docType}
-                onValueChange={(val) => onValuesChange({ ...values, docType: val })}
+                onValueChange={(val) =>
+                  onValuesChange({ ...values, docType: val })
+                }
               >
-                <SelectTrigger id="doc-type" className="w-full">
+                <SelectTrigger id="doc-type" className="w-full cursor-pointer">
                   <SelectValue placeholder="All types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Order">Order</SelectItem>
-                  <SelectItem value="Memorandum">Memorandum</SelectItem>
+                  <SelectItem value="Order" className="cursor-pointer">Order</SelectItem>
+                  <SelectItem value="Memorandum" className="cursor-pointer">Memorandum</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button
-            variant="outline"
-            onClick={onReset}
-            className="w-full sm:w-auto mr-3"
-          >
-            Reset All
-          </Button>
-          <Button
-            onClick={onApply}
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
-          >
-            Apply Filters
-          </Button>
+        {/* Footer with Grid Layout */}
+        <DialogFooter className="w-full sm:justify-start sm:space-x-0 mb-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+            <Button
+              variant="outline"
+              onClick={onReset}
+              className="w-full cursor-pointer"
+            >
+              Reset All
+            </Button>
+            <Button
+              onClick={onApply}
+              className="w-full bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer"
+            >
+              Apply Filters
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
