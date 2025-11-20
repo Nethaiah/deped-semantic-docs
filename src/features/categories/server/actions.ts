@@ -102,7 +102,8 @@ export async function getDocumentsByCategoryPaginated(
   categoryName: string,
   page: number,
   pageSize: number,
-  filters: CategoryFilters = {}
+  filters: CategoryFilters = {},
+  sort: "date_desc" | "date_asc" | "title_asc" | "title_desc" = "date_desc"
 ): Promise<{ data: CategoryDocument[]; total: number; error: string | null }> {
   try {
     const supabase = await createClient();
@@ -114,25 +115,19 @@ export async function getDocumentsByCategoryPaginated(
       .select("*", { count: "exact" })
       .contains("categories", [categoryName]);
 
-    // Date range filters
+    // --- Filters ---
     if (filters.fromDate) {
       queryBuilder = queryBuilder.gte("date_issued", filters.fromDate);
     }
     if (filters.toDate) {
       queryBuilder = queryBuilder.lte("date_issued", filters.toDate);
     }
-
-    // Issuer level filter (match in issuer text)
     if (filters.issuerLevel) {
       queryBuilder = queryBuilder.ilike("issuer", `%${filters.issuerLevel}%`);
     }
-
-    // Document type filter
     if (filters.docType) {
       queryBuilder = queryBuilder.ilike("doc_type", `%${filters.docType}%`);
     }
-
-    // Text search across key fields
     if (filters.query && filters.query.trim()) {
       const q = filters.query.trim();
       const pattern = `%${q}%`;
@@ -146,9 +141,24 @@ export async function getDocumentsByCategoryPaginated(
       );
     }
 
-    const { data, error, count } = await queryBuilder
-      .order("date_issued", { ascending: false, nullsFirst: false })
-      .range(from, to);
+    // --- Server-Side Sorting ---
+    switch (sort) {
+      case "date_asc":
+        queryBuilder = queryBuilder.order("date_issued", { ascending: true, nullsFirst: false });
+        break;
+      case "title_asc":
+        queryBuilder = queryBuilder.order("title", { ascending: true, nullsFirst: false });
+        break;
+      case "title_desc":
+        queryBuilder = queryBuilder.order("title", { ascending: false, nullsFirst: false });
+        break;
+      case "date_desc":
+      default:
+        queryBuilder = queryBuilder.order("date_issued", { ascending: false, nullsFirst: false });
+        break;
+    }
+
+    const { data, error, count } = await queryBuilder.range(from, to);
 
     if (error) {
       console.error("Error fetching paginated documents by category:", error);

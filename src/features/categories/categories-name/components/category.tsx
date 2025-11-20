@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +11,7 @@ import {
   getBadgeVariant,
   getDynamicBadgeClasses,
 } from "@/features/shared/lib/badge-variants";
-import { ChevronLeft, Funnel, Search as SearchIcon } from "lucide-react";
+import { ChevronLeft, Funnel, Search as SearchIcon, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CategoryFilterDialog, {
   type CategoryFilterFormValues,
@@ -49,11 +49,9 @@ export default function Category({
   initialSort = "date_desc",
 }: Props) {
   const router = useRouter();
-  const documents = initialDocuments;
-  const bookmarks = initialBookmarks;
-
+  
+  // Local State
   const [query, setQuery] = useState(initialQuery);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState<CategoryFilterFormValues>(
     initialFilters ?? {
       fromDate: "",
@@ -62,12 +60,22 @@ export default function Category({
       docType: "",
     }
   );
-
   const [sortBy, setSortBy] = useState<
     "date_desc" | "date_asc" | "title_asc" | "title_desc"
   >(initialSort);
+  
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const activeColor = "#3a7c94"; // Default user color
+  // Stop loading when new data arrives from the server
+  useEffect(() => {
+    setIsLoading(false);
+  }, [initialDocuments, page, total]);
+
+  // Documents are now sorted by the server
+  const documents = initialDocuments;
+  const bookmarks = initialBookmarks;
+  const activeColor = "#3a7c94"; 
 
   const activeFilterCount = [
     filters.fromDate,
@@ -75,31 +83,6 @@ export default function Category({
     filters.issuerLevel,
     filters.docType,
   ].filter(Boolean).length;
-
-  // Sort only the current server page slice
-  const sortedDocuments = useMemo(() => {
-    const arr = [...documents];
-    arr.sort((a, b) => {
-      switch (sortBy) {
-        case "date_asc": {
-          const da = a.date_issued ? new Date(a.date_issued).getTime() : 0;
-          const db = b.date_issued ? new Date(b.date_issued).getTime() : 0;
-          return da - db;
-        }
-        case "title_asc":
-          return (a.title || "").localeCompare(b.title || "");
-        case "title_desc":
-          return (b.title || "").localeCompare(a.title || "");
-        case "date_desc":
-        default: {
-          const da = a.date_issued ? new Date(a.date_issued).getTime() : 0;
-          const db = b.date_issued ? new Date(b.date_issued).getTime() : 0;
-          return db - da;
-        }
-      }
-    });
-    return arr;
-  }, [documents, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil((total || 0) / (pageSize || 10)));
   const shouldShowPagination = totalPages > 1;
@@ -130,18 +113,21 @@ export default function Category({
     return params.toString();
   };
 
-  const applyFiltersAndSearch = (
-    nextFilters: CategoryFilterFormValues,
-    nextQuery: string,
-    targetPage = 1
-  ) => {
-    const params = buildQueryString(targetPage, undefined, nextFilters, nextQuery);
+  // Triggered by the SEARCH button or Enter key
+  const handleExecuteSearch = () => {
+    setIsLoading(true);
+    // Reset to page 1 when searching/filtering
+    const params = buildQueryString(1, sortBy, filters, query);
     router.push(`/categories/${encodeURIComponent(categoryName)}?${params}`);
   };
 
+  // Triggered by Sort dropdown
   const handleSortChange = (newSort: string) => {
     setSortBy(newSort as any);
-    const params = buildQueryString(1, newSort);
+    setIsLoading(true);
+    // Keep current page or reset to 1? Usually reset to 1 on sort change is safer, 
+    // but keeping 1 is fine. Let's reset to 1 to be consistent.
+    const params = buildQueryString(1, newSort, filters, query);
     router.push(`/categories/${encodeURIComponent(categoryName)}?${params}`);
   };
 
@@ -177,18 +163,17 @@ export default function Category({
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  applyFiltersAndSearch(filters, (e.target as HTMLInputElement).value, 1);
+                  handleExecuteSearch();
                 }
               }}
-              className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-10 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={isLoading}
+              className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-10 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
             />
             {query && (
               <button
                 type="button"
-                onClick={() => {
-                  setQuery("");
-                  applyFiltersAndSearch(filters, "", 1);
-                }}
+                onClick={() => setQuery("")}
+                disabled={isLoading}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 aria-label="Clear search"
                 title="Clear search"
@@ -199,9 +184,11 @@ export default function Category({
               </button>
             )}
           </div>
+          
           <Button
             variant="outline"
             onClick={() => setIsFilterOpen(true)}
+            disabled={isLoading}
             className="cursor-pointer px-4 py-6 text-md relative"
           >
             <Funnel className="h-4 w-4 mr-2" />
@@ -212,26 +199,38 @@ export default function Category({
               </span>
             )}
           </Button>
+          
           <Button
-            onClick={() => applyFiltersAndSearch(filters, query, 1)}
-            className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
+            onClick={handleExecuteSearch}
+            disabled={isLoading}
+            className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80 min-w-[120px]"
           >
-            Search
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Search...
+              </>
+            ) : (
+              "Search"
+            )}
           </Button>
         </div>
+        
         <div className="flex items-center justify-between">
           {/* Results count */}
           {total > 0 && (
             <div className="text-sm text-gray-600">
               Showing <span className="font-semibold">{total}</span> document{total !== 1 ? "s" : ""}
-              {query && (
-                <> matching <span className="font-semibold">"{query}"</span></>
+              {initialQuery && (
+                <> matching <span className="font-semibold">"{initialQuery}"</span></>
               )}
             </div>
           )}
-          <div className="flex items-center gap-2">
+          
+          {/* Sort Control */}
+          <div className="flex items-center gap-2 ml-auto">
             <span className="text-sm text-gray-600">Sort by:</span>
-            <Select value={sortBy} onValueChange={handleSortChange}>
+            <Select value={sortBy} onValueChange={handleSortChange} disabled={isLoading}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -244,14 +243,16 @@ export default function Category({
             </Select>
           </div>
         </div>
+
         <CategoryFilterDialog
           open={isFilterOpen}
           onOpenChange={setIsFilterOpen}
           values={filters}
           onValuesChange={setFilters}
           onApply={() => {
+            // Only close the dialog. 
+            // User must click "Search" button to apply filters to data.
             setIsFilterOpen(false);
-            applyFiltersAndSearch(filters, query, 1);
           }}
           onReset={() => {
             const resetFilters = {
@@ -261,16 +262,19 @@ export default function Category({
               docType: "",
             };
             setFilters(resetFilters);
-            setQuery("");
             setIsFilterOpen(false);
-            applyFiltersAndSearch(resetFilters, "", 1);
+            // Optional: If reset should immediately clear results, uncomment below:
+            // setIsLoading(true);
+            // setQuery("");
+            // const params = buildQueryString(1, sortBy, resetFilters, "");
+            // router.push(`/categories/${encodeURIComponent(categoryName)}?${params}`);
           }}
         />
       </div> 
 
       {/* Documents List */}
-      <div className="space-y-4">
-        {sortedDocuments.length === 0 ? (
+      <div className={`space-y-4 transition-opacity duration-200 ${isLoading ? "opacity-50 pointer-events-none" : "opacity-100"}`}>
+        {documents.length === 0 ? (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
             <SearchIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -283,7 +287,7 @@ export default function Category({
             </p>
           </div>
         ) : (
-          sortedDocuments.map((doc) => (
+          documents.map((doc) => (
             <div
               key={doc.doc_id}
               className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
@@ -365,6 +369,7 @@ export default function Category({
           ))
         )}
       </div>
+      
       {shouldShowPagination && totalPages > 1 && (
         <div className="flex items-center justify-between mt-6">
           <div className="text-sm text-gray-600">
@@ -372,6 +377,7 @@ export default function Category({
           </div>
           <div className="flex gap-2">
             <Link
+              onClick={() => page !== 1 && setIsLoading(true)}
               href={`/categories/${encodeURIComponent(categoryName)}?${buildQueryString(prevPage)}`}
               className={`px-3 py-2 rounded-md border text-sm ${page === 1 ? "pointer-events-none opacity-50" : "hover:bg-slate-50"}`}
               aria-disabled={page === 1}
@@ -379,6 +385,7 @@ export default function Category({
               Previous
             </Link>
             <Link
+              onClick={() => page !== totalPages && setIsLoading(true)}
               href={`/categories/${encodeURIComponent(categoryName)}?${buildQueryString(nextPage)}`}
               className={`px-3 py-2 rounded-md border text-sm ${page === totalPages ? "pointer-events-none opacity-50" : "hover:bg-slate-50"}`}
               aria-disabled={page === totalPages}
