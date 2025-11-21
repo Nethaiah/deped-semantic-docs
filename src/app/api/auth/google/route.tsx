@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,18 +33,25 @@ export async function syncGoogleUser(user: any) {
   try {
     const uid = user.id;
     const fullName = user.user_metadata?.full_name || user.user_metadata?.name || "Google User";
+    const supabase = await createClient();
 
     // Check if user exists in database
-    const [record] = await db.select().from(users).where(eq(users.id, uid)).limit(1);
+    const { data: record } = await supabase
+      .from("users")
+      .select("email, role")
+      .eq("id", uid)
+      .single();
     
     if (!record) {
       // Create new user in database
-      await db.insert(users).values({
-        id: uid,
-        email: user.email ?? "",
-        fullName,
-        role: "user",
-      });
+      await supabase
+        .from("users")
+        .insert({
+          id: uid,
+          email: user.email ?? "",
+          full_name: fullName,
+          role: "user",
+        });
       console.log("✅ New Google user inserted:", user.email);
     } else {
       console.log("✅ Existing Google user found:", record.email, "- Role:", record.role);
