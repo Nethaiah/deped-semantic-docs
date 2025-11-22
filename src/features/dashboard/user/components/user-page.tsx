@@ -3,7 +3,9 @@ import ClientTimeDisplay from "@/features/shared/components/time";
 import LatestIssuances from "./latest-issuances";
 import { getLatestIssuances } from "@/features/shared/server/get-latest-issuances";
 import { getStats } from "@/features/shared/server/get-stats";
+import { getRecentlyViewed } from "@/features/shared/server/get-recently-viewed";
 import StatsCards from "@/features/shared/components/stats-card";
+import RecentlyViewed from "@/features/dashboard/user/components/recently-viewed";
 
 // Mock monthly data for chart - placeholder data
 const monthlyData = [
@@ -18,6 +20,8 @@ const monthlyData = [
 export default async function UserDocuments({ name = "User" }) {
   const latestIssuances = await getLatestIssuances();
   const stats = await getStats();
+  const recentlyViewed = await getRecentlyViewed(4); // Get last 4 viewed documents
+  
   const maxUploads = Math.max(...monthlyData.map((d) => d.uploads));
   const totalUploads = monthlyData.reduce((sum, d) => sum + d.uploads, 0);
 
@@ -99,43 +103,7 @@ export default async function UserDocuments({ name = "User" }) {
           </div>
 
           {/* Recently Viewed */}
-          {/* <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6">
-            <h2 className="text-lg font-bold text-slate-800 mb-4">
-              Recently Viewed
-            </h2>
-            <div className="space-y-3">
-              {recentlyViewed.map((item, i) => (
-                <div
-                  key={i}
-                  onClick={() => router.push(`/view/${item.slug}`)}
-                  className="group relative bg-gradient-to-r from-slate-50 to-blue-50 hover:from-blue-50 hover:to-indigo-50 rounded-xl p-4 cursor-pointer transition-all duration-300 border border-slate-200 hover:border-blue-300 hover:shadow-md"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-bold text-[#278fb6] text-sm">
-                          {item.code}
-                        </p>
-                        <Badge
-                          variant={getBadgeVariant(item.tags?.[0] || "Policy")}
-                        >
-                          {item.tags?.[0] || "Policy"}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-slate-700 line-clamp-2 mb-2">
-                        {item.title}
-                      </p>
-                      <div className="flex items-center gap-1 text-xs text-slate-500">
-                        <Clock className="w-3 h-3" />
-                        <span>Recently</span>
-                      </div>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-[#278fb6] group-hover:translate-x-1 transition-transform flex-shrink-0" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div> */}
+          <RecentlyViewed documents={recentlyViewed} />
         </div>
       </div>
     </div>
