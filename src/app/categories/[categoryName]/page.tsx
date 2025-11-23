@@ -20,16 +20,22 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const { categoryName } = await params;
   const decodedCategoryName = decodeURIComponent(categoryName);
   const sp = await searchParams;
+  
   const pageParam = Array.isArray(sp.page) ? sp.page[0] : sp.page;
   const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
   const pageSize = 10;
 
-  // Extract filters & search from query params
+  // Extract filters
   const qParam = Array.isArray(sp.q) ? sp.q[0] : sp.q;
   const fromDate = Array.isArray(sp.fromDate) ? sp.fromDate[0] : sp.fromDate;
   const toDate = Array.isArray(sp.toDate) ? sp.toDate[0] : sp.toDate;
   const issuerLevel = Array.isArray(sp.issuerLevel) ? sp.issuerLevel[0] : sp.issuerLevel;
   const docType = Array.isArray(sp.docType) ? sp.docType[0] : sp.docType;
+  
+  // Extract Sort
+  const sortParam = Array.isArray(sp.sort) ? sp.sort[0] : sp.sort;
+  const validSorts = ["date_desc", "date_asc", "title_asc", "title_desc"];
+  const sort = (validSorts.includes(sortParam || "") ? sortParam : "date_desc") as "date_desc" | "date_asc" | "title_asc" | "title_desc";
 
   const filters: CategoryFilters = {
     query: qParam || undefined,
@@ -39,9 +45,15 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     docType: docType || undefined,
   };
 
-  const { data: documents, total } = await getDocumentsByCategoryPaginated(decodedCategoryName, page, pageSize, filters);
+  // Pass 'sort' to the server action
+  const { data: documents, total } = await getDocumentsByCategoryPaginated(
+    decodedCategoryName, 
+    page, 
+    pageSize, 
+    filters,
+    sort
+  );
 
-  // Batch fetch bookmarks for all documents in a single query
   const bookmarkStatuses: Record<string, boolean> =
     documents && documents.length > 0
       ? await getBookmarkStatusesForDocuments(
@@ -65,6 +77,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         issuerLevel: issuerLevel || "",
         docType: docType || "",
       }}
+      initialSort={sort}
     />
   );
 }

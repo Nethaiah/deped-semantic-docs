@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -9,9 +9,10 @@ import {
   getDynamicBadgeClasses,
 } from "@/features/shared/lib/badge-variants";
 import { getLatestIssuances } from "@/features/shared/server/get-latest-issuances";
-import { ChevronLeft, ChevronRight, Funnel } from "lucide-react";
+import { Funnel } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import IssuancesFilterDialog from "@/features/shared/components/issuances-filter-dialog";
+import NumberedPagination from "@/features/shared/components/numbered-pagination";
 
 type Issuance = {
   id: string;
@@ -83,18 +84,6 @@ export default function LatestIssuances({
     }
   };
 
-  const handlePrevious = () => {
-    if (currentPage > 1) {
-      loadPage(currentPage - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) {
-      loadPage(currentPage + 1);
-    }
-  };
-
   const onApplyFilters = async () => {
     const nextApplied: {
       issuerLevel?: "Central" | "Division";
@@ -128,6 +117,15 @@ export default function LatestIssuances({
     appliedFilters.issuerLevel,
     appliedFilters.docType,
   ].filter(Boolean).length;
+
+  // For numbered pagination - we don't use actual URLs, just trigger loadPage
+  const buildHref = (page: number) => {
+    return "#"; // Dummy href since we handle navigation programmatically
+  };
+
+  const handlePageChange = (page: number) => {
+    loadPage(page);
+  };
 
   return (
     <div className="col-span-2 bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden">
@@ -264,31 +262,16 @@ export default function LatestIssuances({
         </table>
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
-          <div className="text-sm text-slate-600">
-            Page {currentPage} of {totalPages}
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handlePrevious}
-              disabled={currentPage === 1 || isLoading}
-              className="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 shadow-sm text-slate-700"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Previous
-            </button>
-            <button
-              onClick={handleNext}
-              disabled={currentPage === totalPages || isLoading}
-              className="px-3 py-1 text-sm border border-slate-300 rounded-md hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 shadow-sm text-slate-700"
-            >
-              Next
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Numbered Pagination */}
+      <div className="px-6 py-4 border-t border-slate-200 bg-slate-50">
+        <NumberedPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          buildHref={buildHref}
+          onPageChange={handlePageChange}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 }

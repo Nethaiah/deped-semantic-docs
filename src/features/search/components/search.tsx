@@ -38,9 +38,13 @@ export default function Search({ role }: Role) {
   const [bookmarks, setBookmarks] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const [useRAG, setUseRAG] = useState(false);
+  
+  // Changed default to true (Semantic Search default)
+  const [useRAG, setUseRAG] = useState(true); 
   const [searchType, setSearchType] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  
+  // Changed default searchMode to "rag"
   const [searchFilters, setSearchFilters] = useState<SearchFilterValues>({
     fromDate: "",
     toDate: "",
@@ -50,8 +54,9 @@ export default function Search({ role }: Role) {
     title: "",
     tags: "",
     docType: "",
-    searchMode: "keyword",
+    searchMode: "rag", 
   });
+  
   const [sortBy, setSortBy] = useState<
     "date_desc" | "date_asc" | "title_asc" | "title_desc"
   >("date_desc");
@@ -67,7 +72,8 @@ export default function Search({ role }: Role) {
         setSearchResults(parsed.searchResults || []);
         setBookmarks(parsed.bookmarks || {});
         setHasSearched(parsed.hasSearched || false);
-        setUseRAG(parsed.useRAG !== undefined ? parsed.useRAG : false);
+        // Default to true if undefined in storage
+        setUseRAG(parsed.useRAG !== undefined ? parsed.useRAG : true);
         setSearchType(parsed.searchType || "");
         if (parsed.searchFilters) {
           setSearchFilters(parsed.searchFilters);
@@ -170,7 +176,7 @@ export default function Search({ role }: Role) {
       // Apply client-side filters only in Keyword mode
       let filteredResults = sortedResults;
       if (!useRAG) {
-        const f = searchFilters; // ✅ Fixed: Changed from formFilters to searchFilters
+        const f = searchFilters;
         const tagsArray = f.tags
           .split(",")
           .map((t: string) => t.trim().toLowerCase())
@@ -213,7 +219,6 @@ export default function Search({ role }: Role) {
         });
       }
 
-      // ✅ Fetch bookmark statuses for all documents before rendering
       const bookmarkStatuses: Record<string, boolean> = {};
       await Promise.all(
         filteredResults.map(async (doc) => {
@@ -222,7 +227,6 @@ export default function Search({ role }: Role) {
         })
       );
 
-      // ✅ Update all states once (no flicker)
       setBookmarks(bookmarkStatuses);
       setAnswer(result.answer);
       setSearchResults(filteredResults);
@@ -356,11 +360,10 @@ export default function Search({ role }: Role) {
           values={searchFilters}
           onValuesChange={setSearchFilters}
           onApply={() => {
+            // Set RAG mode based on dialog selection
             setUseRAG(searchFilters.searchMode === "rag");
             setIsFilterOpen(false);
-            if (hasSearched && searchQuery.trim()) {
-              handleSearch();
-            }
+            // Removed immediate handleSearch() call
           }}
           onReset={() => {
             setSearchFilters({
@@ -372,9 +375,9 @@ export default function Search({ role }: Role) {
               title: "",
               tags: "",
               docType: "",
-              searchMode: "keyword",
+              searchMode: "rag", // Reset to RAG default
             });
-            setUseRAG(false);
+            setUseRAG(true); // Reset to RAG default
             setIsFilterOpen(false);
           }}
         />

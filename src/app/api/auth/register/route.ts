@@ -1,9 +1,5 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
 import { registerSchema } from "@/lib/zodSchema";
 
 export async function OPTIONS() {
@@ -26,23 +22,20 @@ export async function POST(req: Request) {
 
     // Normalize email
     const normalizedEmail = email.trim().toLowerCase();
+    const supabase = await createClient();
 
     // Enforce local uniqueness early
-    const exists = await db.select().from(users).where(eq(users.email, normalizedEmail)).limit(1);
-    if (exists.length > 0) {
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("id")
+      .eq("email", normalizedEmail)
+      .single();
+
+    if (existingUser) {
       return NextResponse.json({ error: "Email already exists" }, { status: 409 });
     }
 
     // Create user in Supabase (email/password + confirm email)
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      return NextResponse.json({ error: "Server auth not configured" }, { status: 500 });
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
       password,
@@ -64,12 +57,14 @@ export async function POST(req: Request) {
     // Instantly insert user into database (password handled by Supabase)
     const uid = data.user?.id;
     if (uid) {
-      await db.insert(users).values({ 
-        id: uid,
-        email: normalizedEmail, 
-        fullName, 
-        role: 'user' 
-      }).onConflictDoNothing();
+      await supabase
+        .from("users")
+        .insert({ 
+          id: uid,
+          email: normalizedEmail, 
+          full_name: fullName, 
+          role: 'user' 
+        });
     }
 
     return NextResponse.json({ message: "Registered" });

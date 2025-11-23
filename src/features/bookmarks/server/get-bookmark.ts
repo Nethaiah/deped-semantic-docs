@@ -55,7 +55,8 @@ export async function getBookmarkedDocuments() {
 export async function getBookmarkedDocumentsPaginated(
   page: number,
   pageSize: number,
-  query?: string
+  query?: string,
+  sort: "date_desc" | "date_asc" | "title_asc" | "title_desc" = "date_desc"
 ): Promise<{ data: Array<{
   id: string;
   title?: string | null;
@@ -97,6 +98,7 @@ export async function getBookmarkedDocumentsPaginated(
       .select("*", { count: "exact" })
       .in("doc_id", ids);
 
+    // Apply Search Query
     if (query && query.trim()) {
       const q = query.trim();
       const pattern = `%${q}%`;
@@ -110,9 +112,24 @@ export async function getBookmarkedDocumentsPaginated(
       );
     }
 
-    const { data, error, count } = await qb
-      .order("date_issued", { ascending: false, nullsFirst: false })
-      .range(from, to);
+    // Apply Server-Side Sorting
+    switch (sort) {
+      case "date_asc":
+        qb = qb.order("date_issued", { ascending: true, nullsFirst: false });
+        break;
+      case "title_asc":
+        qb = qb.order("title", { ascending: true, nullsFirst: false });
+        break;
+      case "title_desc":
+        qb = qb.order("title", { ascending: false, nullsFirst: false });
+        break;
+      case "date_desc":
+      default:
+        qb = qb.order("date_issued", { ascending: false, nullsFirst: false });
+        break;
+    }
+
+    const { data, error, count } = await qb.range(from, to);
 
     if (error) {
       return { data: [], total: 0, error: error.message };

@@ -31,7 +31,12 @@ export default async function DocumentsPage({ searchParams }: Props) {
   const pageSize = 10;
   const qParam = Array.isArray(sp.q) ? sp.q[0] : sp.q;
 
-  const { data: docs, total } = await getBookmarkedDocumentsPaginated(page, pageSize, qParam || undefined);
+  // Extract Sort Parameter
+  const sortParam = Array.isArray(sp.sort) ? sp.sort[0] : sp.sort;
+  const validSorts = ["date_desc", "date_asc", "title_asc", "title_desc"];
+  const sort = (validSorts.includes(sortParam || "") ? sortParam : "date_desc") as "date_desc" | "date_asc" | "title_asc" | "title_desc";
+
+  const { data: docs, total } = await getBookmarkedDocumentsPaginated(page, pageSize, qParam || undefined, sort);
 
   return (
     <Bookmarks
@@ -41,6 +46,7 @@ export default async function DocumentsPage({ searchParams }: Props) {
       page={page}
       pageSize={pageSize}
       initialQuery={qParam || ""}
+      initialSort={sort}
     />
   );
 }
