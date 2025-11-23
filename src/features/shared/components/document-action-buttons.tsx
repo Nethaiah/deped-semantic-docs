@@ -113,21 +113,26 @@ export default function DocumentActionButtons({
       </div>
 
       {/* Unbookmark Confirmation Dialog */}
-      <AlertDialog open={showUnbookmarkDialog} onOpenChange={setShowUnbookmarkDialog}>
+      <AlertDialog
+        open={showUnbookmarkDialog}
+        onOpenChange={setShowUnbookmarkDialog}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Bookmark</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove this document from your bookmarks? 
+              Are you sure you want to remove this document from your bookmarks?
               You can always bookmark it again later.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleConfirmUnbookmark} 
-              disabled={isPending} 
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            <AlertDialogCancel className="cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmUnbookmark}
+              disabled={isPending}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600 cursor-pointer"
             >
               {isPending ? "Removing..." : "Remove Bookmark"}
             </AlertDialogAction>
@@ -136,10 +141,10 @@ export default function DocumentActionButtons({
       </AlertDialog>
 
       {/* Share Dialog */}
-      <ShareDialog 
-        isOpen={showShareDialog} 
-        onClose={() => setShowShareDialog(false)} 
-        docId={docId} 
+      <ShareDialog
+        isOpen={showShareDialog}
+        onClose={() => setShowShareDialog(false)}
+        docId={docId}
       />
     </div>
   );
