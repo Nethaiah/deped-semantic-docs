@@ -17,8 +17,7 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-6 pt-32 pb-20">
         <div className="grid gap-12 lg:grid-cols-12 items-center">
           <div className="lg:col-span-7 py-20">
-            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-700 mb-2">
-              <Sparkles className="h-4 w-4" />
+            <div className="inline-flex items-center rounded-full text-sm text-blue-500">
               AI-Powered Document Intelligence
             </div>
             <h1 className="text-[2.5em] font-bold leading-tight text-[#333] mb-6">
@@ -374,7 +373,7 @@ export default function Home() {
                     Instant Processing
                   </h4>
                   <p className="text-sm text-gray-600">
-                    Get organized results from the latest memos in seconds, not 
+                    Get organized results from the latest memos in seconds, not
                     days
                   </p>
                 </div>
