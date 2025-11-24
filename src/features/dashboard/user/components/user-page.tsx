@@ -6,24 +6,14 @@ import { getStats } from "@/features/shared/server/get-stats";
 import { getRecentlyViewed } from "@/features/shared/server/get-recently-viewed";
 import StatsCards from "@/features/shared/components/stats-card";
 import RecentlyViewed from "@/features/dashboard/user/components/recently-viewed";
-
-// Mock monthly data for chart - placeholder data
-const monthlyData = [
-  { month: "Jun", uploads: 12 },
-  { month: "Jul", uploads: 19 },
-  { month: "Aug", uploads: 15 },
-  { month: "Sep", uploads: 25 },
-  { month: "Oct", uploads: 22 },
-  { month: "Nov", uploads: 30 },
-];
+import MonthlyActivity from "./monthly-activity";
+import { getMonthlyActivity } from "../server/get-monthly-activity";
 
 export default async function UserDocuments({ name = "User" }) {
   const latestIssuances = await getLatestIssuances();
   const stats = await getStats();
   const recentlyViewed = await getRecentlyViewed(4); // Get last 4 viewed documents
-  
-  const maxUploads = Math.max(...monthlyData.map((d) => d.uploads));
-  const totalUploads = monthlyData.reduce((sum, d) => sum + d.uploads, 0);
+  const monthlyActivity = await getMonthlyActivity();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 p-6">
@@ -52,55 +42,13 @@ export default async function UserDocuments({ name = "User" }) {
         {/* Latest Issuances Table */}
         <LatestIssuances
           initialData={latestIssuances.data}
-          initialTotalPages={latestIssuances.totalPages}
+          initialTotalPages={latestIssuances?.totalPages}
         />
 
         {/* Right Column */}
         <div className="space-y-6">
           {/* Monthly Activity Chart */}
-          <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6">
-            <div className="mb-2">
-              <h2 className="text-lg font-bold text-slate-800">
-                Monthly Activity
-              </h2>
-              <p className="text-sm text-slate-500 mt-1">
-                New uploads and edits over the last 6 months.
-              </p>
-            </div>
-
-            <div className="mt-6 h-48 flex items-end justify-between gap-2 pb-8 relative">
-              {monthlyData.map((data, index) => (
-                <div
-                  key={index}
-                  className="flex-1 flex flex-col items-center gap-2"
-                >
-                  <div className="w-full flex flex-col items-center justify-end h-40 relative">
-                    {/* Number label above bar */}
-                    <span className="text-xs font-bold text-slate-700 mb-1">
-                      {data.uploads}
-                    </span>
-                    {/* Bar */}
-                    <div
-                      className="w-full bg-[#278fb6] rounded-t-lg transition-all duration-500 hover:bg-slate-600 relative group"
-                      style={{
-                        height: `${(data.uploads / maxUploads) * 100}%`,
-                      }}
-                    >
-                      {/* Tooltip on hover */}
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                        {data.uploads} uploads
-                      </div>
-                    </div>
-                  </div>
-                  {/* Month label */}
-                  <span className="text-xs font-medium text-slate-600">
-                    {data.month}
-                  </span>
-                </div>
-              ))}
-              <div className="absolute bottom-8 left-0 right-0 h-px bg-slate-200"></div>
-            </div>
-          </div>
+          <MonthlyActivity data={monthlyActivity} />
 
           {/* Recently Viewed */}
           <RecentlyViewed documents={recentlyViewed} />

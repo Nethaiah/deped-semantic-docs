@@ -21,7 +21,7 @@ export async function getLatestIssuances(
   const { isAuth, user, supabase, error: authError } = await verifySession();
 
   if (!isAuth || !user) {
-    return { error: "User not authenticated", data: null };
+    return { error: "User not authenticated", data: [] };
   }
 
   const offset = (page - 1) * limit;

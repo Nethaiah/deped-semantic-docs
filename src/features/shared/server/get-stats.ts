@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 
 export interface Stats {
   totalOrders: number;
@@ -10,9 +10,13 @@ export interface Stats {
 }
 
 export async function getStats(): Promise<Stats> {
-  const supabase = await createClient();
-
   try {
+    const { isAuth, user, supabase } = await verifySession();
+
+    if (!isAuth || !user) {
+      throw new Error("Unauthorized");
+    }
+
     // Get total orders
     const { count: totalOrders } = await supabase
       .from("documents")
