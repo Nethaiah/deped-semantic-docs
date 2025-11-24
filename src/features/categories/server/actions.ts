@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 
 export type CategoryWithCount = {
   name: string;
@@ -24,7 +24,12 @@ export type CategoryDocument = {
  */
 export async function getAllCategories(): Promise<CategoryWithCount[]> {
   try {
-    const supabase = await createClient();
+    const { isAuth, user, supabase } = await verifySession();
+    
+    if (!isAuth || !user) {
+      return [];
+    }
+
     // Try RPC for efficient aggregation if available
     const rpc = await supabase.rpc("category_counts");
     if (!rpc.error && Array.isArray(rpc.data)) {
@@ -66,7 +71,11 @@ export async function getDocumentsByCategory(
   categoryName: string
 ): Promise<{ data: CategoryDocument[]; error: string | null }> {
   try {
-    const supabase = await createClient();
+    const { isAuth, user, supabase } = await verifySession();
+
+    if (!isAuth || !user) {
+      return { data: [], error: "Unauthorized" };
+    }
 
     // Query documents where categories array contains the categoryName
     const { data, error } = await supabase
@@ -106,7 +115,12 @@ export async function getDocumentsByCategoryPaginated(
   sort: "date_desc" | "date_asc" | "title_asc" | "title_desc" = "date_desc"
 ): Promise<{ data: CategoryDocument[]; total: number; error: string | null }> {
   try {
-    const supabase = await createClient();
+    const { isAuth, user, supabase } = await verifySession();
+
+    if (!isAuth || !user) {
+      return { data: [], total: 0, error: "Unauthorized" };
+    }
+
     const from = Math.max(0, (page - 1) * pageSize);
     const to = from + pageSize - 1;
 

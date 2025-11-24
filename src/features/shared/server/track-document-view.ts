@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 
 /**
  * Track a document view for the current user
@@ -8,12 +8,10 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function trackDocumentView(docId: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createClient();
+    const { isAuth, user, supabase, error: authError } = await verifySession();
     
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      return { success: false, error: "User not authenticated" };
+    if (!isAuth || !user) {
+      return { success: false, error: authError || "User not authenticated" };
     }
 
     // Upsert: Insert new view or update timestamp if exists
@@ -48,12 +46,10 @@ export async function trackDocumentView(docId: string): Promise<{ success: boole
  */
 export async function clearDocumentViewHistory(): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createClient();
+    const { isAuth, user, supabase, error: authError } = await verifySession();
     
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      return { success: false, error: "User not authenticated" };
+    if (!isAuth || !user) {
+      return { success: false, error: authError || "User not authenticated" };
     }
 
     const { error } = await supabase

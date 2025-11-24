@@ -1,16 +1,15 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 
 export async function getBookmarkedDocuments() {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { isAuth, user, supabase, error } = await verifySession();
 
-    if (userError || !user)
-      return { data: [], error: "User not authenticated" };
+    if (!isAuth || !user)
+      return { data: [], error };
 
-    const { data, error } = await supabase
+    const { data, error: dbError } = await supabase
       .from("bookmarks")
       .select(`
         id,
@@ -30,7 +29,7 @@ export async function getBookmarkedDocuments() {
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
-    if (error) return { data: [], error: error.message };
+    if (dbError) return { data: [], error: dbError.message };
 
     const bookmarkedDocs = data.map((bookmark: any) => ({
       id: bookmark.documents.doc_id,
@@ -68,11 +67,10 @@ export async function getBookmarkedDocumentsPaginated(
   categories?: string[] | null;
 }>; total: number; error: string | null }> {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { isAuth, user, supabase, error } = await verifySession();
 
-    if (userError || !user) {
-      return { data: [], total: 0, error: "User not authenticated" };
+    if (!isAuth || !user) {
+      return { data: [], total: 0, error: error || "Unauthorized" };
     }
 
     // Get all bookmarked doc IDs for this user
@@ -129,10 +127,10 @@ export async function getBookmarkedDocumentsPaginated(
         break;
     }
 
-    const { data, error, count } = await qb.range(from, to);
+    const { data, error: dbError, count } = await qb.range(from, to);
 
-    if (error) {
-      return { data: [], total: 0, error: error.message };
+    if (dbError) {
+      return { data: [], total: 0, error: dbError.message };
     }
 
     const docs = (data || []).map((d: any) => ({

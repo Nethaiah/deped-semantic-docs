@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 import { resetPasswordSchema } from "@/lib/zodSchema";
 
 export async function updatePassword(newPassword: string, confirmPassword: string) {
@@ -14,12 +14,10 @@ export async function updatePassword(newPassword: string, confirmPassword: strin
 		return { error: firstError?.message || "Invalid password" };
 	}
 
-	const supabase = await createClient();
-	
 	// Check if user has a valid session (from the recovery token)
-	const { data: { user }, error: userError } = await supabase.auth.getUser();
+	const { isAuth, user, supabase, error: sessionError } = await verifySession();
 	
-	if (userError || !user) {
+	if (!isAuth || !user) {
 		return { error: "Session expired. Please request a new password reset link." };
 	}
 

@@ -1,13 +1,17 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 
 export async function getBookmarkStatusesForDocuments(
   userId: string,
   docIds: string[]
 ): Promise<Record<string, boolean>> {
   try {
-    const supabase = await createClient();
+    const { isAuth, user, supabase } = await verifySession();
+
+    if (!isAuth || !user) {
+      return {};
+    }
 
     if (!docIds || docIds.length === 0) {
       return {};

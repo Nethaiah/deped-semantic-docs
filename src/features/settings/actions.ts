@@ -1,11 +1,16 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 import { profileSchema, passwordSchema, type ProfileSchema, type PasswordSchema } from "@/lib/zodSchema";
 import { revalidatePath } from "next/cache";
 
 export async function updateProfile(data: ProfileSchema) {
-  const supabase = await createClient();
+  const { isAuth, user, supabase, error } = await verifySession();
+
+  if (!isAuth || !user) {
+    return { error };
+  }
+
   const result = profileSchema.safeParse(data);
 
   if (!result.success) {
@@ -13,15 +18,6 @@ export async function updateProfile(data: ProfileSchema) {
   }
 
   const { fullName } = result.data;
-
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    return { error: "Unauthorized" };
-  }
 
   // Update Supabase Auth metadata
   const { error: authError } = await supabase.auth.updateUser({
@@ -47,7 +43,12 @@ export async function updateProfile(data: ProfileSchema) {
 }
 
 export async function updatePassword(data: PasswordSchema) {
-  const supabase = await createClient();
+  const { isAuth, supabase, error } = await verifySession();
+
+  if (!isAuth) {
+    return { error };
+  }
+
   const result = passwordSchema.safeParse(data);
 
   if (!result.success) {
@@ -56,12 +57,12 @@ export async function updatePassword(data: PasswordSchema) {
 
   const { newPassword } = result.data;
 
-  const { error } = await supabase.auth.updateUser({
+  const { error: updateError } = await supabase.auth.updateUser({
     password: newPassword,
   });
 
-  if (error) {
-    return { error: error.message };
+  if (updateError) {
+    return { error: updateError.message };
   }
 
   return { success: true };

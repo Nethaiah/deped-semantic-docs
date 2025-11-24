@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 
 export type RecentlyViewedDocument = {
   id: string;
@@ -18,11 +18,9 @@ export type RecentlyViewedDocument = {
  */
 export async function getRecentlyViewed(limit: number = 5): Promise<RecentlyViewedDocument[]> {
   try {
-    const supabase = await createClient();
+    const { isAuth, user, supabase } = await verifySession();
     
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
+    if (!isAuth || !user) {
       return [];
     }
 

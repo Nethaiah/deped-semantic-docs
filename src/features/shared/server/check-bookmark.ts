@@ -1,13 +1,12 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 
 export async function checkBookmark(docId: string) {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { isAuth, user, supabase } = await verifySession();
 
-    if (userError || !user) return { bookmarked: false };
+    if (!isAuth || !user) return { bookmarked: false };
 
     const { data, error } = await supabase
       .from("bookmarks")

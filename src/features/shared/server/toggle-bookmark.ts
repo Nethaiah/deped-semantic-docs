@@ -1,14 +1,13 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 import { revalidatePath } from "next/cache";
 
 export async function toggleBookmark(docId: string) {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { isAuth, user, supabase, error } = await verifySession();
 
-    if (userError || !user) return { error: "User not authenticated" };
+    if (!isAuth || !user) return { error };
 
     // Check if bookmark already exists
     const { data: existing, error: checkError } = await supabase
