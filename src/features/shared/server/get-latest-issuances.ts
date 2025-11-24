@@ -1,6 +1,6 @@
 "use server";
 
-import { verifySession } from "@/lib/dal";
+import { createClient } from "@/lib/supabase/server";
 
 type IssuanceFilters = {
   fromDate?: string;
@@ -18,11 +18,7 @@ export async function getLatestIssuances(
   limit: number = 10,
   filters: IssuanceFilters = {}
 ) {
-  const { isAuth, user, supabase, error: authError } = await verifySession();
-
-  if (!isAuth || !user) {
-    return { error: "User not authenticated", data: [] };
-  }
+  const supabase = await createClient();
 
   const offset = (page - 1) * limit;
 

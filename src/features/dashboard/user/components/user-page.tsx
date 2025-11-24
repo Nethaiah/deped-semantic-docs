@@ -7,7 +7,7 @@ import { getRecentlyViewed } from "@/features/shared/server/get-recently-viewed"
 import StatsCards from "@/features/shared/components/stats-card";
 import RecentlyViewed from "@/features/dashboard/user/components/recently-viewed";
 import MonthlyActivity from "./monthly-activity";
-import { getMonthlyActivity } from "../server/get-monthly-activity";
+import { getMonthlyActivity } from "../../../shared/server/get-monthly-activity";
 
 export default async function UserDocuments({ name = "User" }) {
   const latestIssuances = await getLatestIssuances();

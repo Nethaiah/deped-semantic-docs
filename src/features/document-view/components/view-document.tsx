@@ -49,7 +49,7 @@ export default async function ViewDocument({ documentId }: Props) {
           <DocumentPDFViewer sourcePath={doc.sourcePath} title={doc.title} />
           <SimilarDocuments similar={similar} />
 
-          <div className="bg-white p-4 rounded-xl shadow-sm border">
+          {/* <div className="bg-white p-4 rounded-xl shadow-sm border">
             <h4 className="font-bold text-slate-800 mb-2">
               Attachments & History
             </h4>
@@ -68,7 +68,7 @@ export default async function ViewDocument({ documentId }: Props) {
                 <History className="h-4 w-4" /> Version History (1)
               </span>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

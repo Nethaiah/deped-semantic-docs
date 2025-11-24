@@ -132,7 +132,7 @@ export default function DocumentActionButtons({
             <AlertDialogAction
               onClick={handleConfirmUnbookmark}
               disabled={isPending}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600 cursor-pointer"
+              className="bg-[#278fb6] hover:bg-[#278fb6] focus:ring-[#278fb6] cursor-pointer"
             >
               {isPending ? "Removing..." : "Remove Bookmark"}
             </AlertDialogAction>

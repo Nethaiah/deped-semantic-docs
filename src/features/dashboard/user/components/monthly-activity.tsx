@@ -1,7 +1,7 @@
 "use client";
 
 import { HighlightedBarChart } from "@/features/dashboard/user/components/highlighted-bar-chart";
-import { MonthlyActivityData } from "../server/get-monthly-activity";
+import { MonthlyActivityData } from "../../../shared/server/get-monthly-activity";
 
 interface MonthlyActivityProps {
   data: MonthlyActivityData[];
