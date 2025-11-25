@@ -142,7 +142,7 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">
+            <AlertDialogCancel className="cursor-pointer" autoFocus>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
