@@ -12,7 +12,7 @@ import { getMonthlyActivity } from "../../../shared/server/get-monthly-activity"
 export default async function UserDocuments({ name = "User" }) {
   const latestIssuances = await getLatestIssuances();
   const stats = await getStats();
-  const recentlyViewed = await getRecentlyViewed(4); // Get last 4 viewed documents
+  const recentlyViewed = await getRecentlyViewed(3); // Get last 4 viewed documents
   const monthlyActivity = await getMonthlyActivity();
 
   return (

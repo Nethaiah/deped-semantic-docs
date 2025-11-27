@@ -9,8 +9,16 @@ import {
   Network,
 } from "lucide-react";
 import Header from "@/components/header";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    redirect("/dashboard");
+  }
+  
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section - Asymmetric Layout */}
