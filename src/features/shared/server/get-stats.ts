@@ -4,8 +4,8 @@ export interface Stats {
   totalOrders: number;
   totalMemorandums: number;
   recentUploads: number;
-  orderPercentageChange: number;
-  memorandumPercentageChange: number;
+  ordersDailyChange: number;
+  memorandumsDailyChange: number;
   currentMonth: string;
 }
 
@@ -37,12 +37,6 @@ export async function getStats(): Promise<Stats> {
     
     // Calculate first day of current month (for date_issued comparison)
     const firstDayOfMonth = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`;
-    
-    // Calculate first day of last month
-    const lastMonth = currentMonth === 1 ? 12 : currentMonth - 1;
-    const lastMonthYear = currentMonth === 1 ? currentYear - 1 : currentYear;
-    const firstDayOfLastMonth = `${lastMonthYear}-${String(lastMonth).padStart(2, '0')}-01`;
-    const lastDayOfLastMonth = new Date(currentYear, currentMonth - 1, 0).toISOString().split('T')[0];
 
     // Get uploads for current month based on date_issued
     const { count: recentUploads } = await supabase
@@ -50,61 +44,53 @@ export async function getStats(): Promise<Stats> {
       .select("*", { count: "exact", head: true })
       .gte("date_issued", firstDayOfMonth);
 
-    // Get orders from last month for percentage calculation (based on date_issued)
-    const { count: lastMonthOrders } = await supabase
-      .from("documents")
-      .select("*", { count: "exact", head: true })
-      .eq("doc_type", "Order")
-      .gte("date_issued", firstDayOfLastMonth)
-      .lte("date_issued", lastDayOfLastMonth);
-
-    // Get orders from current month (based on date_issued)
-    const { count: currentMonthOrders } = await supabase
-      .from("documents")
-      .select("*", { count: "exact", head: true })
-      .eq("doc_type", "Order")
-      .gte("date_issued", firstDayOfMonth);
-
-    // Calculate date for one week ago
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    const oneWeekAgoDate = oneWeekAgo.toISOString().split('T')[0];
+    // Get today's date (YYYY-MM-DD format)
+    const today = new Date();
+    const todayDate = today.toISOString().split('T')[0];
     
-    // Calculate date for two weeks ago
-    const twoWeeksAgo = new Date();
-    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-    const twoWeeksAgoDate = twoWeeksAgo.toISOString().split('T')[0];
+    // Get yesterday's date
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayDate = yesterday.toISOString().split('T')[0];
 
-    // Get memorandums from last week (8-14 days ago) for percentage calculation
-    const { count: lastWeekMemorandums } = await supabase
+    // Get orders issued today
+    const { count: todayOrders } = await supabase
+      .from("documents")
+      .select("*", { count: "exact", head: true })
+      .eq("doc_type", "Order")
+      .eq("date_issued", todayDate);
+
+    // Get orders issued yesterday
+    const { count: yesterdayOrders } = await supabase
+      .from("documents")
+      .select("*", { count: "exact", head: true })
+      .eq("doc_type", "Order")
+      .eq("date_issued", yesterdayDate);
+
+    // Get memorandums issued today
+    const { count: todayMemorandums } = await supabase
       .from("documents")
       .select("*", { count: "exact", head: true })
       .eq("doc_type", "Memorandum")
-      .gte("date_issued", twoWeeksAgoDate)
-      .lt("date_issued", oneWeekAgoDate);
+      .eq("date_issued", todayDate);
 
-    // Get memorandums from current week (last 7 days)
-    const { count: currentWeekMemorandums } = await supabase
+    // Get memorandums issued yesterday
+    const { count: yesterdayMemorandums } = await supabase
       .from("documents")
       .select("*", { count: "exact", head: true })
       .eq("doc_type", "Memorandum")
-      .gte("date_issued", oneWeekAgoDate);
+      .eq("date_issued", yesterdayDate);
 
-    // Calculate percentage changes
-    const orderPercentageChange = lastMonthOrders && lastMonthOrders > 0
-      ? Math.round(((currentMonthOrders || 0) - lastMonthOrders) / lastMonthOrders * 100)
-      : 0;
-
-    const memorandumPercentageChange = lastWeekMemorandums && lastWeekMemorandums > 0
-      ? Math.round(((currentWeekMemorandums || 0) - lastWeekMemorandums) / lastWeekMemorandums * 100)
-      : 0;
+    // Calculate daily changes (today - yesterday)
+    const ordersDailyChange = (todayOrders || 0) - (yesterdayOrders || 0);
+    const memorandumsDailyChange = (todayMemorandums || 0) - (yesterdayMemorandums || 0);
 
     return {
       totalOrders: totalOrders || 0,
       totalMemorandums: totalMemorandums || 0,
       recentUploads: recentUploads || 0,
-      orderPercentageChange,
-      memorandumPercentageChange,
+      ordersDailyChange,
+      memorandumsDailyChange,
       currentMonth: `${currentMonthName} ${currentYear}`,
     };
   } catch (error) {
@@ -114,8 +100,8 @@ export async function getStats(): Promise<Stats> {
       totalOrders: 0,
       totalMemorandums: 0,
       recentUploads: 0,
-      orderPercentageChange: 0,
-      memorandumPercentageChange: 0,
+      ordersDailyChange: 0,
+      memorandumsDailyChange: 0,
       currentMonth: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
     };
   }

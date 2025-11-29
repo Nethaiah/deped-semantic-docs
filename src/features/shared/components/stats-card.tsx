@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, FileText, Clock, Eye } from "lucide-react";
+import { FileText, Clock, Eye } from "lucide-react";
 import { Stats } from "@/features/shared/server/get-stats";
 
 interface StatsCardsProps {
@@ -6,8 +6,8 @@ interface StatsCardsProps {
 }
 
 export default function StatsCards({ stats }: StatsCardsProps) {
-  const isOrdersPositive = stats.orderPercentageChange >= 0;
-  const isMemosPositive = stats.memorandumPercentageChange >= 0;
+  const isOrdersPositive = stats.ordersDailyChange >= 0;
+  const isMemosPositive = stats.memorandumsDailyChange >= 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -25,19 +25,14 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             <div className="p-3 bg-[#278fb6]/15 rounded-xl">
               <FileText className="w-6 h-6 text-slate-700" />
             </div>
-            {isOrdersPositive ? (
-              <TrendingUp className="w-5 h-5 text-green-500" />
-            ) : (
-              <TrendingDown className="w-5 h-5 text-red-500" />
-            )}
+            <span className={`text-sm font-semibold ${isOrdersPositive ? 'text-green-600' : 'text-red-600'}`}>
+              {isOrdersPositive ? '+' : ''}{stats.ordersDailyChange}
+            </span>
           </div>
           <h3 className="text-slate-600 text-sm font-semibold mb-1">
             Total Orders
           </h3>
           <p className="text-3xl font-bold text-slate-800">{stats.totalOrders}</p>
-          {/* <p className={`text-xs font-medium mt-2 ${isOrdersPositive ? 'text-green-600' : 'text-red-600'}`}>
-            {isOrdersPositive ? '+' : ''}{stats.orderPercentageChange}% from last month
-          </p> */}
         </div>
 
         {/* Bottom accent line */}
@@ -58,19 +53,14 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             <div className="p-3 bg-emerald-100 rounded-xl">
               <Eye className="w-6 h-6 text-slate-700" />
             </div>
-            {isMemosPositive ? (
-              <TrendingUp className="w-5 h-5 text-green-500" />
-            ) : (
-              <TrendingDown className="w-5 h-5 text-red-500" />
-            )}
+            <span className={`text-sm font-semibold ${isMemosPositive ? 'text-green-600' : 'text-red-600'}`}>
+              {isMemosPositive ? '+' : ''}{stats.memorandumsDailyChange}
+            </span>
           </div>
           <h3 className="text-slate-600 text-sm font-semibold mb-1">
             Total Memorandums
           </h3>
           <p className="text-3xl font-bold text-slate-800">{stats.totalMemorandums}</p>
-          {/* <p className={`text-xs font-medium mt-2 ${isMemosPositive ? 'text-green-600' : 'text-red-600'}`}>
-            {isMemosPositive ? '+' : ''}{stats.memorandumPercentageChange}% from last week
-          </p> */}
         </div>
 
         {/* Bottom accent line */}
@@ -91,7 +81,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             <div className="p-3 bg-amber-100 rounded-xl">
               <Clock className="w-6 h-6 text-slate-700" />
             </div>
-            <span className="text-xs text-slate-500 font-medium">
+            <span className="text-sm text-slate-500 font-medium">
               This Month
             </span>
           </div>
