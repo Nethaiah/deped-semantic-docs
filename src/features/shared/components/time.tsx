@@ -6,7 +6,7 @@ export default function ClientTimeDisplay() {
   const { formattedTime, formattedDate } = useCurrentTime();
 
   return (
-    <div className="text-right w-full">
+    <div className="text-right w-[30%]">
       <div className="text-xl lg:text-3xl text-[#333] font-bold tracking-[0.2rem]">
         {formattedTime}
       </div>
