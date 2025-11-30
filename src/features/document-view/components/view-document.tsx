@@ -26,7 +26,7 @@ export default async function ViewDocument({ documentId }: Props) {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-5 lg:p-8">
       <div className="mb-4">
         <BackButton />
       </div>

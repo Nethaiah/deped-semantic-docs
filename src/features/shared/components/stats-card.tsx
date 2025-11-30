@@ -16,8 +16,8 @@ export default function StatsCards({ stats }: StatsCardsProps) {
         {/* Gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#278fb6]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-        <div className="absolute top-0 right-0 w-40 h-30 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
-        <div className="absolute top-0 right-0 w-60 h-50 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
+        <div className="absolute top-0 right-0 w-20 lg:w-40 h-15 lg:h-30 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
+        <div className="absolute top-0 right-0 w-40 lg:w-60 h-40 lg:h-50 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
 
         {/* Content with relative positioning */}
         <div className="relative z-10">
@@ -25,14 +25,21 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             <div className="p-3 bg-[#278fb6]/15 rounded-xl">
               <FileText className="w-6 h-6 text-slate-700" />
             </div>
-            <span className={`text-sm font-semibold ${isOrdersPositive ? 'text-green-600' : 'text-red-600'}`}>
-              {isOrdersPositive ? '+' : ''}{stats.ordersDailyChange}
+            <span
+              className={`text-sm font-semibold ${
+                isOrdersPositive ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {isOrdersPositive ? "+" : ""}
+              {stats.ordersDailyChange}
             </span>
           </div>
           <h3 className="text-slate-600 text-sm font-semibold mb-1">
             Total Orders
           </h3>
-          <p className="text-3xl font-bold text-slate-800">{stats.totalOrders}</p>
+          <p className="text-3xl font-bold text-slate-800">
+            {stats.totalOrders}
+          </p>
         </div>
 
         {/* Bottom accent line */}
@@ -44,8 +51,8 @@ export default function StatsCards({ stats }: StatsCardsProps) {
         {/* Gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-        <div className="absolute top-0 right-0 w-40 h-30 bg-gradient-to-br from-emerald-500/15 to-transparent rounded-bl-full"></div>
-        <div className="absolute top-0 right-0 w-60 h-50 bg-gradient-to-br from-emerald-500/15 to-transparent rounded-bl-full"></div>
+        <div className="absolute top-0 right-0 w-20 lg:w-40 h-15 lg:h-30 bg-gradient-to-br from-emerald-500/15 to-transparent rounded-bl-full"></div>
+        <div className="absolute top-0 right-0 w-40 lg:w-60 h-40 lg:h-50 bg-gradient-to-br from-emerald-500/15 to-transparent rounded-bl-full"></div>
 
         {/* Content with relative positioning */}
         <div className="relative z-10">
@@ -53,14 +60,21 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             <div className="p-3 bg-emerald-100 rounded-xl">
               <Eye className="w-6 h-6 text-slate-700" />
             </div>
-            <span className={`text-sm font-semibold ${isMemosPositive ? 'text-green-600' : 'text-red-600'}`}>
-              {isMemosPositive ? '+' : ''}{stats.memorandumsDailyChange}
+            <span
+              className={`text-sm font-semibold ${
+                isMemosPositive ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {isMemosPositive ? "+" : ""}
+              {stats.memorandumsDailyChange}
             </span>
           </div>
           <h3 className="text-slate-600 text-sm font-semibold mb-1">
             Total Memorandums
           </h3>
-          <p className="text-3xl font-bold text-slate-800">{stats.totalMemorandums}</p>
+          <p className="text-3xl font-bold text-slate-800">
+            {stats.totalMemorandums}
+          </p>
         </div>
 
         {/* Bottom accent line */}
@@ -72,8 +86,8 @@ export default function StatsCards({ stats }: StatsCardsProps) {
         {/* Gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-        <div className="absolute top-0 right-0 w-40 h-30 bg-gradient-to-br from-amber-500/15 to-transparent rounded-bl-full"></div>
-        <div className="absolute top-0 right-0 w-60 h-50 bg-gradient-to-br from-amber-500/15 to-transparent rounded-bl-full"></div>
+        <div className="absolute top-0 right-0 w-20 lg:w-40 h-15 lg:h-30 bg-gradient-to-br from-amber-500/15 to-transparent rounded-bl-full"></div>
+        <div className="absolute top-0 right-0 w-40 lg:w-60 h-40 lg:h-50 bg-gradient-to-br from-amber-500/15 to-transparent rounded-bl-full"></div>
 
         {/* Content with relative positioning */}
         <div className="relative z-10">
