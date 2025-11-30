@@ -75,7 +75,7 @@ export default function LatestIssuances({
     <div className="col-span-2 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gray-50">
         <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          Latest Issuance
+          Issuances
         </h2>
       </div>
 
