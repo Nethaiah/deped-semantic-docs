@@ -52,12 +52,12 @@ export default function SearchFilterDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl ">
         <DialogHeader>
           <DialogTitle>Search Filters</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 ">
           {/* Search Mode Toggle */}
           <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
             <div className="flex flex-col gap-1">

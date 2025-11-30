@@ -209,7 +209,7 @@ export default function Category({
               variant="outline"
               onClick={() => setIsFilterOpen(true)}
               disabled={isLoading}
-              className="cursor-pointer px-4 py-6 text-md relative"
+              className="cursor-pointer px-4 py-4 lg:py-6 text-md relative"
             >
               <Funnel className="h-4 w-4 mr-2" />
               Filters
@@ -223,7 +223,7 @@ export default function Category({
             <Button
               onClick={handleExecuteSearch}
               disabled={isLoading}
-              className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80 min-w-[120px]"
+              className="cursor-pointer px-4 lg:px-8 py-4 lg:py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80 "
             >
               {isLoading ? (
                 <>
@@ -237,7 +237,7 @@ export default function Category({
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
           {/* Results count */}
           {total > 0 && (
             <div className="text-sm text-gray-600">
@@ -254,7 +254,7 @@ export default function Category({
           )}
 
           {/* Sort Control */}
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-2 mt-3 lg:mt-0">
             <span className="text-sm text-gray-600">Sort by:</span>
             <Select
               value={sortBy}

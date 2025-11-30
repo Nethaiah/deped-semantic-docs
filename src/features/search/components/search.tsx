@@ -344,7 +344,7 @@ export default function Search({ role }: Role) {
               variant="outline"
               onClick={() => setIsFilterOpen(true)}
               disabled={isLoading}
-              className="cursor-pointer px-4 py-6 text-md relative"
+              className="cursor-pointer px-4 py-4 lg:py-6 text-md relative"
             >
               <Funnel className="h-4 w-4 mr-2" />
               Filters
@@ -357,7 +357,7 @@ export default function Search({ role }: Role) {
             <Button
               onClick={handleSearch}
               disabled={isLoading || !searchQuery.trim()}
-              className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
+              className="cursor-pointer px-4 lg:px-8 py-4 lg:py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
               style={{
                 opacity: isLoading || !searchQuery.trim() ? 0.5 : 1,
               }}
@@ -562,7 +562,7 @@ export default function Search({ role }: Role) {
 
           {/* Empty State */}
           {searchResults.length === 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+            <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-12 text-center">
               <SearchIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 No documents found
@@ -577,7 +577,7 @@ export default function Search({ role }: Role) {
 
       {/* Initial State */}
       {!hasSearched && (
-        <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+        <div className="bg-white rounded-lg border border-gray-200 p-6 lg:p-12 text-center">
           <SearchIcon className="h-16 w-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Start your search
