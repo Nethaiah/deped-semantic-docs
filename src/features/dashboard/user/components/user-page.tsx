@@ -21,7 +21,7 @@ export default async function UserDocuments({ name = "User" }) {
       <div className="bg-white rounded-lg shadow-md border border-slate-200 px-8 py-10 lg:py-15 mb-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-slate-400/10 to-slate-500/10 rounded-full blur-3xl"></div>
         <div className="relative z-10 gap-5 lg:gap-0 flex-col lg:flex-row flex justify-between items-start">
-          <div className="w-[70%]">
+          <div className="w-full lg:w-[70%]">
             <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2">
               Welcome Back, <span className="text-[#278fb6]">{name}!</span>
             </h1>
