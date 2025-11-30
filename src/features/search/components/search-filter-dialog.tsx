@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { useState, useEffect } from "react";
 
 export type SearchMode = "rag" | "keyword";
 
@@ -36,7 +37,7 @@ type SearchFilterDialogProps = {
   onOpenChange: (open: boolean) => void;
   values: SearchFilterValues;
   onValuesChange: (next: SearchFilterValues) => void;
-  onApply: () => void;
+  onApply: (newValues: SearchFilterValues) => void;
   onReset: () => void;
 };
 
@@ -48,7 +49,31 @@ export default function SearchFilterDialog({
   onApply,
   onReset,
 }: SearchFilterDialogProps) {
-  const filtersDisabled = values.searchMode === "rag";
+  // Local state to track pending changes
+  const [localValues, setLocalValues] = useState<SearchFilterValues>(values);
+
+  // Sync local values with props when dialog opens or values change externally
+  useEffect(() => {
+    if (open) {
+      setLocalValues(values);
+    }
+  }, [open, values]);
+
+  const filtersDisabled = localValues.searchMode === "rag";
+
+  // Handler for applying filters - commits local changes to parent
+  const handleApply = () => {
+    // Pass the localValues directly to the onApply callback
+    // This ensures the parent gets the fresh data immediately
+    onValuesChange(localValues);
+    onApply(localValues);
+  };
+
+  // Handler for resetting filters
+  const handleReset = () => {
+    onReset();
+    // Reset will be handled by parent, which will update values prop
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -68,17 +93,17 @@ export default function SearchFilterDialog({
                 Semantic Search
               </label>
               <p className="text-xs text-slate-600">
-                {values.searchMode === "rag"
+                {localValues.searchMode === "rag"
                   ? "AI-powered semantic understanding (filters disabled)"
                   : "Traditional keyword matching with filters"}
               </p>
             </div>
             <Switch
               id="search-mode"
-              checked={values.searchMode === "rag"}
+              checked={localValues.searchMode === "rag"}
               onCheckedChange={(checked) =>
-                onValuesChange({
-                  ...values,
+                setLocalValues({
+                  ...localValues,
                   searchMode: checked ? "rag" : "keyword",
                 })
               }
@@ -99,9 +124,9 @@ export default function SearchFilterDialog({
               <input
                 id="from-date"
                 type="date"
-                value={values.fromDate}
+                value={localValues.fromDate}
                 onChange={(e) =>
-                  onValuesChange({ ...values, fromDate: e.target.value })
+                  setLocalValues({ ...localValues, fromDate: e.target.value })
                 }
                 disabled={filtersDisabled}
                 className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors cursor-text"
@@ -118,9 +143,9 @@ export default function SearchFilterDialog({
               <input
                 id="to-date"
                 type="date"
-                value={values.toDate}
+                value={localValues.toDate}
                 onChange={(e) =>
-                  onValuesChange({ ...values, toDate: e.target.value })
+                  setLocalValues({ ...localValues, toDate: e.target.value })
                 }
                 disabled={filtersDisabled}
                 className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors cursor-text"
@@ -136,9 +161,9 @@ export default function SearchFilterDialog({
                 Issuer Level
               </label>
               <Select
-                value={values.issuerLevel}
+                value={localValues.issuerLevel}
                 onValueChange={(val) =>
-                  onValuesChange({ ...values, issuerLevel: val })
+                  setLocalValues({ ...localValues, issuerLevel: val })
                 }
                 disabled={filtersDisabled}
               >
@@ -169,9 +194,9 @@ export default function SearchFilterDialog({
                 Document Type
               </label>
               <Select
-                value={values.docType}
+                value={localValues.docType}
                 onValueChange={(val) =>
-                  onValuesChange({ ...values, docType: val })
+                  setLocalValues({ ...localValues, docType: val })
                 }
                 disabled={filtersDisabled}
               >
@@ -205,9 +230,9 @@ export default function SearchFilterDialog({
                 id="doc-number"
                 type="text"
                 placeholder="e.g. RM 123, DM 2024-001"
-                value={values.code}
+                value={localValues.code}
                 onChange={(e) =>
-                  onValuesChange({ ...values, code: e.target.value })
+                  setLocalValues({ ...localValues, code: e.target.value })
                 }
                 disabled={filtersDisabled}
                 className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors placeholder:text-slate-400"
@@ -226,9 +251,9 @@ export default function SearchFilterDialog({
                 id="title"
                 type="text"
                 placeholder="Search in title"
-                value={values.title}
+                value={localValues.title}
                 onChange={(e) =>
-                  onValuesChange({ ...values, title: e.target.value })
+                  setLocalValues({ ...localValues, title: e.target.value })
                 }
                 disabled={filtersDisabled}
                 className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors placeholder:text-slate-400"
@@ -247,9 +272,9 @@ export default function SearchFilterDialog({
                 id="tags"
                 type="text"
                 placeholder="e.g. policy, finance, HR (comma separated)"
-                value={values.tags}
+                value={localValues.tags}
                 onChange={(e) =>
-                  onValuesChange({ ...values, tags: e.target.value })
+                  setLocalValues({ ...localValues, tags: e.target.value })
                 }
                 disabled={filtersDisabled}
                 className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors placeholder:text-slate-400"
@@ -284,13 +309,13 @@ export default function SearchFilterDialog({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
             <Button
               variant="outline"
-              onClick={onReset}
+              onClick={handleReset}
               className="w-full cursor-pointer"
             >
               Reset All
             </Button>
             <Button
-              onClick={onApply}
+              onClick={handleApply}
               className="w-full bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer"
             >
               Apply Filters
