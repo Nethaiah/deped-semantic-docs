@@ -20,7 +20,7 @@ type PDFViewerClientProps = {
 };
 
 // ----------------------------------------------------------------------
-// 2. Custom Portal (Same as before)
+// 2. Custom Portal (Modal)
 // ----------------------------------------------------------------------
 const FullScreenPortal = ({ 
   isOpen, 
@@ -48,8 +48,14 @@ const FullScreenPortal = ({
   if (!mounted || !isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-6xl h-[90vh] rounded-lg shadow-2xl flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200 border border-gray-200">
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white w-full max-w-6xl h-[90vh] rounded-lg shadow-2xl flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200 border border-gray-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         {children}
       </div>
     </div>,
@@ -58,7 +64,7 @@ const FullScreenPortal = ({
 };
 
 // ----------------------------------------------------------------------
-// 3. The Viewer Component (Continuous Scroll)
+// 3. The Viewer Component
 // ----------------------------------------------------------------------
 
 type PDFInstanceProps = {
@@ -79,12 +85,11 @@ function PDFInstance({ file, title, initialScale = 1, onMaximize, onClose, isMod
   const containerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // 1. Measure Container for "Fit Width"
+  // Measure Width
   useEffect(() => {
     if (!containerRef.current) return;
     const observer = new ResizeObserver((entries) => {
       if (entries[0]) {
-        // Subtract padding/scrollbar space
         setContainerWidth(entries[0].contentRect.width - 40);
       }
     });
@@ -92,14 +97,14 @@ function PDFInstance({ file, title, initialScale = 1, onMaximize, onClose, isMod
     return () => observer.disconnect();
   }, [isModal]);
 
-  // 2. Setup Scroll Observer (To update Page Number as you scroll)
+  // Scroll Observer
   const setupIntersectionObserver = useCallback(() => {
     if (observerRef.current) observerRef.current.disconnect();
 
     const options = {
       root: containerRef.current,
       rootMargin: "0px",
-      threshold: 0.5, // Page is considered "active" when 50% visible
+      threshold: 0.5,
     };
 
     observerRef.current = new IntersectionObserver((entries) => {
@@ -111,31 +116,27 @@ function PDFInstance({ file, title, initialScale = 1, onMaximize, onClose, isMod
       });
     }, options);
 
-    // Attach observer to all page elements
     const pages = document.querySelectorAll(`[data-instance-id="${isModal ? 'modal' : 'preview'}"] .pdf-page-wrapper`);
     pages.forEach((page) => observerRef.current?.observe(page));
-  }, [numPages, isModal]); // Re-run when pages are rendered
+  }, [numPages, isModal]);
 
-  // Trigger observer setup when numPages changes
   useEffect(() => {
-    if (numPages > 0) {
-      // Small timeout to allow React to render DOM nodes
-      setTimeout(setupIntersectionObserver, 500);
-    }
+    if (numPages > 0) setTimeout(setupIntersectionObserver, 500);
     return () => observerRef.current?.disconnect();
   }, [numPages, setupIntersectionObserver]);
 
-  // 3. Navigation Helpers
+  // Scroll to Page
   const scrollToPage = (pageNumber: number) => {
     const targetPage = pageNumber;
     if (targetPage < 1 || targetPage > numPages) return;
 
-    // We can just scroll the container or use scrollIntoView
     const pageId = `pdf-page-${isModal ? 'modal' : 'preview'}-${targetPage}`;
     const element = document.getElementById(pageId);
+    const container = containerRef.current;
     
-    if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (element && container) {
+        const topPos = element.offsetTop - 24; 
+        container.scrollTo({ top: topPos, behavior: 'smooth' });
         setCurrentPage(targetPage);
     }
   };
@@ -144,87 +145,109 @@ function PDFInstance({ file, title, initialScale = 1, onMaximize, onClose, isMod
     <div className={`flex flex-col h-full bg-white ${isModal ? 'overflow-hidden' : ''}`} data-instance-id={isModal ? 'modal' : 'preview'}>
       
       {/* --- TOOLBAR --- */}
-      <div className="px-4 py-3 border-b flex flex-wrap items-center justify-center gap-3 bg-white text-gray-700 z-10 shadow-sm shrink-0">
+      {/* 
+          LAYOUT LOGIC:
+          - If Modal: Use 'sm:flex-row' to go side-by-side on desktop.
+          - If Preview: ALWAYS use 'flex-col' to Stack (Title Top, Buttons Bottom) so title doesn't crush.
+      */}
+      <div className={`
+        flex gap-3 p-3 border-b bg-white z-10 shadow-sm shrink-0
+        ${isModal ? 'flex-col sm:flex-row sm:items-center justify-between' : 'flex-col justify-start'}
+      `}>
         
-        {/* Title with Tooltip */}
-        <div className="flex-shrink min-w-0 group relative">
-          <p className="text-sm font-semibold text-gray-700 truncate max-w-[150px] sm:max-w-[200px] md:max-w-[300px]" 
-            title={isModal ? title : `${title || "Document"}`}
-            >
-            {isModal ? title : `${title || "Document"}`}
-          </p>
+        {/* Title Section */}
+        <div className={`min-w-0 ${isModal ? 'flex-1 mr-4' : 'w-full mb-1'}`} title={title}>
+            <p className="text-sm font-semibold text-gray-700 leading-snug whitespace-normal break-words">
+              {title || "Untitled Document"}
+            </p>
         </div>
         
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Pagination (Now triggers Scroll) */}
-          <div className="flex items-center gap-2 mr-2">
+        {/* Controls Section */}
+        <div className={`flex items-center gap-2 flex-wrap shrink-0 ${!isModal ? 'justify-between w-full' : ''}`}>
+          
+          {/* Pagination */}
+          <div className="flex items-center gap-1">
             <button
               onClick={() => scrollToPage(currentPage - 1)}
               disabled={currentPage <= 1}
               className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-100 disabled:opacity-50 transition-colors"
             >
-              <ChevronLeft className="w-4 h-4"/>
+              <ChevronLeft className="w-4 h-4 text-gray-600"/>
             </button>
-            <div className="flex items-center gap-1 min-w-[3rem] justify-center">
-              <span className="text-xs text-gray-500 font-medium"> {currentPage} / {numPages || "–"}</span>
+            <div className="flex items-center justify-center min-w-[3.5rem] px-2 h-8 border border-gray-200 rounded-md bg-gray-50">
+              <span className="text-xs text-gray-600 font-medium whitespace-nowrap"> 
+                <span className="text-gray-900">{currentPage}</span> / {numPages || "-"}
+              </span>
             </div>
             <button
               onClick={() => scrollToPage(currentPage + 1)}
               disabled={numPages === 0 || currentPage >= numPages}
               className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-100 disabled:opacity-50 transition-colors"
             >
-              <ChevronRight className="w-4 h-4"/>
+              <ChevronRight className="w-4 h-4 text-gray-600"/>
             </button>
           </div>
 
-          {/* Zoom Controls */}
-          <div className="flex items-center gap-2 border-l pl-2 border-gray-200">
+          <div className="w-px h-6 bg-gray-300 mx-1 hidden sm:block" />
+
+          {/* Zoom */}
+          <div className="flex items-center gap-1">
             <button
               onClick={() => setScale((s) => Math.max(0.5, +(s - 0.1).toFixed(2)))}
               className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-100"
             >
-              <Minus className="w-4 h-4" />
+              <Minus className="w-4 h-4 text-gray-600" />
             </button>
-            <span className="text-xs text-gray-600 w-10 text-center font-medium">{Math.round(scale * 100)}%</span>
+            <div className="flex items-center justify-center w-12 h-8 border border-gray-200 rounded-md bg-gray-50">
+               <span className="text-xs text-gray-700 font-medium">{Math.round(scale * 100)}%</span>
+            </div>
             <button
               onClick={() => setScale((s) => Math.min(3, +(s + 0.1).toFixed(2)))}
               className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-100"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 text-gray-600" />
             </button>
+            
+            {/* Hide Reset button on small Preview cards to save space if needed, otherwise keep it */}
             <button
               onClick={() => setScale(1)}
               className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-100"
+              title="Reset Zoom"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-4 h-4 text-gray-600" />
             </button>
           </div>
 
-          {onMaximize && (
-            <div className="flex items-center gap-1 border-l pl-2 border-gray-200">
-              <button
-                onClick={onMaximize}
-                className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-100 text-gray-600"
-              >
-                <Maximize className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-
-          {onClose && (
-            <div className="flex items-center gap-1 border-l pl-2 border-gray-200">
-              <button
-                onClick={onClose}
-                className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-red-50 text-gray-500 hover:text-red-600 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+          {/* Actions */}
+          {(onMaximize || onClose) && (
+            <>
+               <div className="w-px h-6 bg-gray-300 mx-1 hidden sm:block" />
+               <div className="flex items-center gap-1">
+                  {onMaximize && (
+                      <button
+                        onClick={onMaximize}
+                        className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-100 text-gray-600"
+                        title="Full Screen"
+                      >
+                        <Maximize className="w-4 h-4" />
+                      </button>
+                  )}
+                  {onClose && (
+                      <button
+                        onClick={onClose}
+                        className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-200 hover:bg-red-50 text-gray-500 hover:text-red-600 transition-colors"
+                        title="Close"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                  )}
+               </div>
+            </>
           )}
         </div>
       </div>
 
-      {/* --- CONTENT AREA (SCROLLABLE) --- */}
+      {/* --- CONTENT AREA --- */}
       <div className="flex-1 overflow-hidden p-0 bg-gray-50 relative">
         <div ref={containerRef} className="absolute inset-0 overflow-y-auto overflow-x-hidden p-4">
            <Document
@@ -239,9 +262,8 @@ function PDFInstance({ file, title, initialScale = 1, onMaximize, onClose, isMod
               error={
                 <div className="mt-20 text-red-500 font-medium text-sm text-center">Unable to load document.</div>
               }
-              className="flex flex-col items-center gap-6" // Gap between pages
+              className="flex flex-col items-center gap-6"
            >
-              {/* LOOP THROUGH ALL PAGES */}
               {Array.from(new Array(numPages), (el, index) => (
                 <div 
                     key={`page_${index + 1}`}
@@ -251,17 +273,14 @@ function PDFInstance({ file, title, initialScale = 1, onMaximize, onClose, isMod
                 >
                     <Page 
                         pageNumber={index + 1} 
-                        // Width Logic:
-                        // 1. Modal: Fits available container width
-                        // 2. Preview: Uses scale
                         width={isModal && containerWidth ? containerWidth : undefined}
                         scale={isModal ? undefined : scale} 
                         renderTextLayer={false} 
                         renderAnnotationLayer={false}
                         className="bg-white"
                         loading={
-                            <div className="bg-white h-[800px] w-[600px] flex items-center justify-center text-gray-300">
-                                Loading Page {index + 1}...
+                            <div className="bg-white h-[600px] w-full flex items-center justify-center text-gray-300">
+                                <Loader2 className="h-8 w-8 animate-spin" />
                             </div>
                         }
                     />
@@ -283,7 +302,6 @@ export default function PDFViewerClient({ file, title, initialScale = 1 }: PDFVi
 
   return (
     <>
-      {/* 1. Small Preview */}
       <PDFInstance 
         file={file} 
         title={title} 
@@ -291,7 +309,6 @@ export default function PDFViewerClient({ file, title, initialScale = 1 }: PDFVi
         onMaximize={() => setIsFullScreen(true)}
       />
 
-      {/* 2. Full Screen Popup */}
       <FullScreenPortal isOpen={isFullScreen} onClose={() => setIsFullScreen(false)}>
         <PDFInstance 
           file={file} 
