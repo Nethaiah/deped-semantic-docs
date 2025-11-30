@@ -15,7 +15,9 @@ import {
 } from "@/features/shared/lib/badge-variants";
 import DocumentActionButtons from "@/features/shared/components/document-action-buttons";
 import { checkBookmark } from "../../shared/server/check-bookmark";
-import SearchFilterDialog, { type SearchFilterValues } from "@/features/search/components/search-filter-dialog";
+import SearchFilterDialog, {
+  type SearchFilterValues,
+} from "@/features/search/components/search-filter-dialog";
 import {
   Select,
   SelectContent,
@@ -38,12 +40,12 @@ export default function Search({ role }: Role) {
   const [bookmarks, setBookmarks] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  
+
   // Changed default to true (Semantic Search default)
-  const [useRAG, setUseRAG] = useState(true); 
+  const [useRAG, setUseRAG] = useState(true);
   const [searchType, setSearchType] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  
+
   // Changed default searchMode to "rag"
   const [searchFilters, setSearchFilters] = useState<SearchFilterValues>({
     fromDate: "",
@@ -54,9 +56,9 @@ export default function Search({ role }: Role) {
     title: "",
     tags: "",
     docType: "",
-    searchMode: "rag", 
+    searchMode: "rag",
   });
-  
+
   const [sortBy, setSortBy] = useState<
     "date_desc" | "date_asc" | "title_asc" | "title_desc"
   >("date_desc");
@@ -141,7 +143,16 @@ export default function Search({ role }: Role) {
         console.error("Error saving search state:", err);
       }
     }
-  }, [searchQuery, answer, searchResults, bookmarks, hasSearched, useRAG, searchType, searchFilters]);
+  }, [
+    searchQuery,
+    answer,
+    searchResults,
+    bookmarks,
+    hasSearched,
+    useRAG,
+    searchType,
+    searchFilters,
+  ]);
 
   const activeColor =
     String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
@@ -183,7 +194,11 @@ export default function Search({ role }: Role) {
           .filter(Boolean);
         const fromDate = f.fromDate ? new Date(f.fromDate) : null;
         const toDateNext = f.toDate
-          ? (() => { const d = new Date(f.toDate); d.setDate(d.getDate() + 1); return d; })()
+          ? (() => {
+              const d = new Date(f.toDate);
+              d.setDate(d.getDate() + 1);
+              return d;
+            })()
           : null;
 
         filteredResults = sortedResults.filter((doc) => {
@@ -210,7 +225,9 @@ export default function Search({ role }: Role) {
             if (!title.includes(f.title.trim().toLowerCase())) return false;
           }
           if (tagsArray.length) {
-            const cats = (doc.categories || []).map((c) => (c || "").toLowerCase());
+            const cats = (doc.categories || []).map((c) =>
+              (c || "").toLowerCase()
+            );
             for (const tag of tagsArray) {
               if (!cats.includes(tag)) return false;
             }
@@ -282,10 +299,10 @@ export default function Search({ role }: Role) {
   }, [searchResults, sortBy]);
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
           Document Search
         </h1>
         <p className="text-sm text-gray-600">
@@ -295,8 +312,8 @@ export default function Search({ role }: Role) {
 
       {/* Search Bar */}
       <div className="flex flex-col gap-3 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="relative flex-1">
+        <div className="flex flex-col lg:flex-row items-center gap-3">
+          <div className="relative flex-1 w-full">
             <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -322,37 +339,39 @@ export default function Search({ role }: Role) {
               </button>
             )}
           </div>
-          <Button
-            variant="outline"
-            onClick={() => setIsFilterOpen(true)}
-            disabled={isLoading}
-            className="cursor-pointer px-4 py-6 text-md relative"
-          >
-            <Funnel className="h-4 w-4 mr-2" />
-            Filters
-            {activeFilterCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                {activeFilterCount}
-              </span>
-            )}
-          </Button>
-          <Button
-            onClick={handleSearch}
-            disabled={isLoading || !searchQuery.trim()}
-            className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
-            style={{
-              opacity: isLoading || !searchQuery.trim() ? 0.5 : 1,
-            }}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Searching...
-              </>
-            ) : (
-              "Search"
-            )}
-          </Button>
+          <div className="flex items-start justify-end gap-2 w-full lg:w-auto">
+            <Button
+              variant="outline"
+              onClick={() => setIsFilterOpen(true)}
+              disabled={isLoading}
+              className="cursor-pointer px-4 py-6 text-md relative"
+            >
+              <Funnel className="h-4 w-4 mr-2" />
+              Filters
+              {activeFilterCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {activeFilterCount}
+                </span>
+              )}
+            </Button>
+            <Button
+              onClick={handleSearch}
+              disabled={isLoading || !searchQuery.trim()}
+              className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
+              style={{
+                opacity: isLoading || !searchQuery.trim() ? 0.5 : 1,
+              }}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Searching...
+                </>
+              ) : (
+                "Search"
+              )}
+            </Button>
+          </div>
         </div>
         <SearchFilterDialog
           open={isFilterOpen}
@@ -464,17 +483,24 @@ export default function Search({ role }: Role) {
                     <p className="text-sm text-gray-600/60 mb-2">
                       {doc.date_issued && (
                         <>
-                          Issued: <span className="font-medium">{new Date(doc.date_issued).toLocaleDateString('en-US', { 
-                            month: 'long', 
-                            day: 'numeric',
-                            year: 'numeric' 
-                          })}</span>
+                          Issued:{" "}
+                          <span className="font-medium">
+                            {new Date(doc.date_issued).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                              }
+                            )}
+                          </span>
                         </>
                       )}
                       {doc.date_issued && doc.issuer && " | "}
                       {doc.issuer && (
                         <>
-                          Issuer: <span className="font-medium">{doc.issuer}</span>
+                          Issuer:{" "}
+                          <span className="font-medium">{doc.issuer}</span>
                         </>
                       )}
                     </p>

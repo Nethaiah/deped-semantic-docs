@@ -2,7 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { getBadgeVariant, getDynamicBadgeClasses } from "@/features/shared/lib/badge-variants";
+import {
+  getBadgeVariant,
+  getDynamicBadgeClasses,
+} from "@/features/shared/lib/badge-variants";
 import { Clock, ArrowRight, History } from "lucide-react";
 
 type RecentlyViewedDoc = {
@@ -24,7 +27,7 @@ export default function RecentlyViewed({ documents }: Props) {
 
   if (documents.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6">
+      <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-4">
         <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
           <History className="w-5 h-5" />
           Recently Viewed
@@ -52,7 +55,7 @@ export default function RecentlyViewed({ documents }: Props) {
         {documents.map((item) => {
           const firstTag = item.tags?.[0];
           const variant = firstTag ? getBadgeVariant(firstTag) : null;
-          
+
           return (
             <div
               key={item.id}
@@ -111,9 +114,9 @@ function formatTimeAgo(dateString: string): string {
   if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays < 7) return `${diffDays}d ago`;
   if (diffWeeks < 4) return `${diffWeeks}w ago`;
-  
-  return date.toLocaleDateString("en-US", { 
-    month: "short", 
-    day: "numeric" 
+
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
   });
 }

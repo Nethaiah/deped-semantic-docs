@@ -63,10 +63,13 @@ export default function LatestIssuances({
     docType?: "Order" | "Memorandum";
   }>({});
 
-  const loadPage = async (page: number, overrideFilters?: {
-    issuerLevel?: "Central" | "Division";
-    docType?: "Order" | "Memorandum";
-  }) => {
+  const loadPage = async (
+    page: number,
+    overrideFilters?: {
+      issuerLevel?: "Central" | "Division";
+      docType?: "Order" | "Memorandum";
+    }
+  ) => {
     setIsLoading(true);
     try {
       const result = await getLatestIssuances(
@@ -89,7 +92,8 @@ export default function LatestIssuances({
       issuerLevel?: "Central" | "Division";
       docType?: "Order" | "Memorandum";
     } = {
-      issuerLevel: (formFilters.issuerLevel as "Central" | "Division") || undefined,
+      issuerLevel:
+        (formFilters.issuerLevel as "Central" | "Division") || undefined,
       docType: (formFilters.docType as "Order" | "Memorandum") || undefined,
     };
     setAppliedFilters(nextApplied);
@@ -128,9 +132,9 @@ export default function LatestIssuances({
   };
 
   return (
-    <div className="col-span-2 bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden">
+    <div className="col-span-2 bg-white rounded-lg shadow-md border border-slate-200 overflow-scroll">
       <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-50">
-        <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+        <h2 className="text-xl lg:text-2xl font-bold text-slate-800 flex items-center gap-2">
           Latest Issuance
         </h2>
         <div className="flex items-center gap-2">

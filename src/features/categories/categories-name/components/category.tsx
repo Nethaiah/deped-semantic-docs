@@ -11,7 +11,12 @@ import {
   getBadgeVariant,
   getDynamicBadgeClasses,
 } from "@/features/shared/lib/badge-variants";
-import { ChevronLeft, Funnel, Search as SearchIcon, Loader2 } from "lucide-react";
+import {
+  ChevronLeft,
+  Funnel,
+  Search as SearchIcon,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CategoryFilterDialog, {
   type CategoryFilterFormValues,
@@ -50,7 +55,7 @@ export default function Category({
   initialSort = "date_desc",
 }: Props) {
   const router = useRouter();
-  
+
   // Local State
   const [query, setQuery] = useState(initialQuery);
   const [filters, setFilters] = useState<CategoryFilterFormValues>(
@@ -64,7 +69,7 @@ export default function Category({
   const [sortBy, setSortBy] = useState<
     "date_desc" | "date_asc" | "title_asc" | "title_desc"
   >(initialSort);
-  
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,7 +81,7 @@ export default function Category({
   // Documents are now sorted by the server
   const documents = initialDocuments;
   const bookmarks = initialBookmarks;
-  const activeColor = "#3a7c94"; 
+  const activeColor = "#3a7c94";
 
   const activeFilterCount = [
     filters.fromDate,
@@ -95,24 +100,27 @@ export default function Category({
   ) => {
     const params = new URLSearchParams();
     params.set("page", String(targetPage));
-    
+
     const trimmedQuery = (targetQuery ?? query).trim();
     if (trimmedQuery) params.set("q", trimmedQuery);
-    
+
     const useFilters = targetFilters ?? filters;
     if (useFilters.fromDate) params.set("fromDate", useFilters.fromDate);
     if (useFilters.toDate) params.set("toDate", useFilters.toDate);
-    if (useFilters.issuerLevel) params.set("issuerLevel", useFilters.issuerLevel);
+    if (useFilters.issuerLevel)
+      params.set("issuerLevel", useFilters.issuerLevel);
     if (useFilters.docType) params.set("docType", useFilters.docType);
-    
+
     const useSort = targetSort ?? sortBy;
     if (useSort !== "date_desc") params.set("sort", useSort);
-    
+
     return params.toString();
   };
 
   const buildHref = (targetPage: number) => {
-    return `/categories/${encodeURIComponent(categoryName)}?${buildQueryString(targetPage)}`;
+    return `/categories/${encodeURIComponent(categoryName)}?${buildQueryString(
+      targetPage
+    )}`;
   };
 
   // Triggered by the SEARCH button or Enter key
@@ -136,7 +144,7 @@ export default function Category({
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-5 lg:p-5 bg-gray-50 min-h-screen">
       {/* Header Section */}
       <div className="mb-6">
         <div className="mb-4">
@@ -148,7 +156,7 @@ export default function Category({
             Back to Categories
           </Link>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
           {categoryName}
         </h1>
         <p className="text-sm text-gray-600">
@@ -157,8 +165,8 @@ export default function Category({
       </div>
 
       <div className="flex flex-col gap-3 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="relative flex-1">
+        <div className="flex flex-col lg:flex-row items-center gap-3">
+          <div className="relative flex-1 w-full">
             <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -182,59 +190,77 @@ export default function Category({
                 aria-label="Clear search"
                 title="Clear search"
               >
-                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 8.586l3.536-3.536a1 1 0 111.414 1.414L11.414 10l3.536 3.536a1 1 0 01-1.414 1.414L10 11.414l-3.536 3.536a1 1 0 01-1.414-1.414L8.586 10 5.05 6.464A1 1 0 116.464 5.05L10 8.586z" clipRule="evenodd"/>
+                <svg
+                  className="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 8.586l3.536-3.536a1 1 0 111.414 1.414L11.414 10l3.536 3.536a1 1 0 01-1.414 1.414L10 11.414l-3.536 3.536a1 1 0 01-1.414-1.414L8.586 10 5.05 6.464A1 1 0 116.464 5.05L10 8.586z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </button>
             )}
           </div>
-          
-          <Button
-            variant="outline"
-            onClick={() => setIsFilterOpen(true)}
-            disabled={isLoading}
-            className="cursor-pointer px-4 py-6 text-md relative"
-          >
-            <Funnel className="h-4 w-4 mr-2" />
-            Filters
-            {activeFilterCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                {activeFilterCount}
-              </span>
-            )}
-          </Button>
-          
-          <Button
-            onClick={handleExecuteSearch}
-            disabled={isLoading}
-            className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80 min-w-[120px]"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Search...
-              </>
-            ) : (
-              "Search"
-            )}
-          </Button>
+          <div className="flex items-start justify-end gap-2 w-full lg:w-auto">
+            <Button
+              variant="outline"
+              onClick={() => setIsFilterOpen(true)}
+              disabled={isLoading}
+              className="cursor-pointer px-4 py-6 text-md relative"
+            >
+              <Funnel className="h-4 w-4 mr-2" />
+              Filters
+              {activeFilterCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {activeFilterCount}
+                </span>
+              )}
+            </Button>
+
+            <Button
+              onClick={handleExecuteSearch}
+              disabled={isLoading}
+              className="cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80 min-w-[120px]"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Search...
+                </>
+              ) : (
+                "Search"
+              )}
+            </Button>
+          </div>
         </div>
-        
+
         <div className="flex items-center justify-between">
           {/* Results count */}
           {total > 0 && (
             <div className="text-sm text-gray-600">
-              Showing <span className="font-semibold">{total}</span> document{total !== 1 ? "s" : ""}
+              Showing <span className="font-semibold">{total}</span> document
+              {total !== 1 ? "s" : ""}
               {initialQuery && (
-                <> matching <span className="font-semibold">"{initialQuery}"</span></>
+                <>
+                  {" "}
+                  matching{" "}
+                  <span className="font-semibold">"{initialQuery}"</span>
+                </>
               )}
             </div>
           )}
-          
+
           {/* Sort Control */}
           <div className="flex items-center gap-2 ml-auto">
             <span className="text-sm text-gray-600">Sort by:</span>
-            <Select value={sortBy} onValueChange={handleSortChange} disabled={isLoading}>
+            <Select
+              value={sortBy}
+              onValueChange={handleSortChange}
+              disabled={isLoading}
+            >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -267,10 +293,14 @@ export default function Category({
             setIsFilterOpen(false);
           }}
         />
-      </div> 
+      </div>
 
       {/* Documents List */}
-      <div className={`space-y-4 transition-opacity duration-200 ${isLoading ? "opacity-50 pointer-events-none" : "opacity-100"}`}>
+      <div
+        className={`space-y-4 transition-opacity duration-200 ${
+          isLoading ? "opacity-50 pointer-events-none" : "opacity-100"
+        }`}
+      >
         {documents.length === 0 ? (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
             <SearchIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -289,12 +319,12 @@ export default function Category({
               key={doc.doc_id}
               className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
             >
-              <div className="flex justify-between gap-6">
+              <div className="flex flex-col lg:flex-row justify-between gap-6">
                 {/* LEFT SECTION */}
                 <div className="flex-1">
                   <Link href={`/view/${doc.doc_id}`} className="block group">
                     <h3
-                      className="text-xl font-semibold mb-1 group-hover:underline"
+                      className="text-md lg:text-xl font-semibold mb-1 group-hover:underline"
                       style={{ color: activeColor }}
                     >
                       {doc.doc_number ? `${doc.doc_number} - ` : ""}
@@ -307,18 +337,22 @@ export default function Category({
                         <>
                           Issued:{" "}
                           <span className="font-medium">
-                            {new Date(doc.date_issued).toLocaleDateString("en-US", {
-                              month: "long",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
+                            {new Date(doc.date_issued).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                              }
+                            )}
                           </span>
                         </>
                       )}
                       {doc.date_issued && doc.issuer && " | "}
                       {doc.issuer && (
                         <>
-                          Issuer: <span className="font-medium">{doc.issuer}</span>
+                          Issuer:{" "}
+                          <span className="font-medium">{doc.issuer}</span>
                         </>
                       )}
                     </p>
@@ -366,7 +400,7 @@ export default function Category({
           ))
         )}
       </div>
-      
+
       {/* Numbered Pagination */}
       <NumberedPagination
         currentPage={page}
