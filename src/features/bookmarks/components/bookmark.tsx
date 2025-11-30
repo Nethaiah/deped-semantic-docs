@@ -164,7 +164,7 @@ export default function Bookmarks({
             <Button
               onClick={handleSearch}
               disabled={isLoading}
-              className=" cursor-pointer px-8 py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80 min-w-[120px]"
+              className=" cursor-pointer px-4 lg:px-8 py-4 lg:py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
             >
               {isLoading ? (
                 <>
@@ -177,7 +177,7 @@ export default function Bookmarks({
             </Button>
           </div>
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
           {/* Results Header Count */}
           {hasAny && (
             <div className="text-sm text-gray-600">
@@ -186,7 +186,7 @@ export default function Bookmarks({
             </div>
           )}
           {!hasAny && <div />}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-3 lg:mt-0">
             <span className="text-sm text-gray-600">Sort by:</span>
             <Select
               value={sortBy}
@@ -333,7 +333,7 @@ export default function Bookmarks({
           )
         ) : (
           // --- No Bookmarks At All ---
-          <div className="flex flex-col items-center justify-center py-16 text-center bg-white rounded-lg border border-gray-200">
+          <div className="flex flex-col items-center justify-center p-6 lg:p-12 text-center bg-white rounded-lg border border-gray-200">
             <svg
               className="h-16 w-16 text-gray-400 mb-4"
               fill="none"
@@ -355,7 +355,7 @@ export default function Bookmarks({
               bookmark icon.
             </p>
             <Link href="/search">
-              <span className="px-4 py-2 rounded-md text-white bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer">
+              <span className="px-4 py-2 rounded-md text-sm text-white bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer">
                 Browse Documents
               </span>
             </Link>
