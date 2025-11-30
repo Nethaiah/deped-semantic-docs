@@ -29,7 +29,7 @@ export default async function Header() {
 
   return (
     <nav
-      className={`fixed top-0 z-50 w-full border-b border-gray-200 ${headerBgColor} backdrop-blur-sm`}
+      className={`fixed top-0 z-1220 w-full border-b border-gray-200 ${headerBgColor} backdrop-blur-sm`}
     >
       <div className={containerClass}>
         {/* Logo */}

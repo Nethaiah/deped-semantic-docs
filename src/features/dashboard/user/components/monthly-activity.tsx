@@ -8,14 +8,14 @@ interface MonthlyActivityProps {
 }
 
 export default function MonthlyActivity({ data }: MonthlyActivityProps) {
-  const currentData = data.map(d => ({
+  const currentData = data.map((d) => ({
     month: d.month,
     desktop: d.uploads,
-    label: d.fullMonth
+    label: d.fullMonth,
   }));
 
   return (
-    <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6 relative">
+    <div className="bg-white rounded-lg shadow-md border border-slate-200 p-4 relative">
       <HighlightedBarChart
         data={currentData}
         title="Monthly Activity"

@@ -96,10 +96,10 @@ export default function Categories({
   const categories = initialCategories;
 
   return (
-    <div className="p-8 bg-gray-50">
+    <div className="p-5 lg:p-8 bg-gray-50">
       {/* Header Section */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
           Browse by Categories
         </h1>
         <p className="text-sm text-gray-600">
@@ -113,7 +113,7 @@ export default function Categories({
           <p className="text-gray-600">No categories found.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {categories.map((category) => {
             const Icon = getCategoryIcon(category.name);
             const colorClass = getCategoryColor(category.name);
@@ -122,7 +122,7 @@ export default function Categories({
               <Link
                 key={category.name}
                 href={`/categories/${encodeCategoryName(category.name)}`}
-                className="flex items-center gap-4 p-6 shadow-sm bg-white rounded-2xl border border-gray-100 hover:shadow-md transition-shadow cursor-pointer group"
+                className="flex items-center gap-4 px-6 py-4 shadow-sm bg-white rounded-2xl border border-gray-100 hover:shadow-md transition-shadow cursor-pointer group"
               >
                 <div
                   className={`flex-shrink-0 p-4 rounded-xl ${colorClass} group-hover:scale-110 transition-transform`}
@@ -130,7 +130,7 @@ export default function Categories({
                   <Icon className="w-8 h-8" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">
+                  <h3 className="text-md font-bold text-[#333]">
                     {category.name}
                   </h3>
                   <p className="text-sm text-gray-600">

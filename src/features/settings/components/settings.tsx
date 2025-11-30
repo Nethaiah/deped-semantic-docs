@@ -98,10 +98,10 @@ function ProfileForm({ setOpen }: { setOpen: (open: boolean) => void }) {
             fullName: profile.full_name,
           });
         } else {
-            // Fallback to metadata if public.users record missing (shouldn't happen ideally)
-             form.reset({
-                fullName: user.user_metadata.full_name || "",
-             })
+          // Fallback to metadata if public.users record missing (shouldn't happen ideally)
+          form.reset({
+            fullName: user.user_metadata.full_name || "",
+          });
         }
       }
       setIsLoading(false);
@@ -130,7 +130,10 @@ function ProfileForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
-        <label htmlFor="fullName" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+        <label
+          htmlFor="fullName"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
           Full Name
         </label>
         <input
@@ -146,7 +149,11 @@ function ProfileForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         )}
       </div>
       <div className="flex justify-end">
-        <Button type="submit" disabled={form.formState.isSubmitting} className="bg-[#278fb6]">
+        <Button
+          type="submit"
+          disabled={form.formState.isSubmitting}
+          className="bg-[#278fb6]"
+        >
           {form.formState.isSubmitting && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           )}
@@ -181,7 +188,10 @@ function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
-        <label htmlFor="currentPassword" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+        <label
+          htmlFor="currentPassword"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
           Current Password
         </label>
         <input
@@ -198,7 +208,10 @@ function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         )}
       </div>
       <div className="space-y-2">
-        <label htmlFor="newPassword" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+        <label
+          htmlFor="newPassword"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
           New Password
         </label>
         <input
@@ -215,7 +228,10 @@ function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         )}
       </div>
       <div className="space-y-2">
-        <label htmlFor="confirmPassword" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+        <label
+          htmlFor="confirmPassword"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
           Confirm New Password
         </label>
         <input
@@ -232,7 +248,11 @@ function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         )}
       </div>
       <div className="flex justify-end">
-        <Button type="submit" disabled={form.formState.isSubmitting} className="bg-[#278fb6]">
+        <Button
+          type="submit"
+          disabled={form.formState.isSubmitting}
+          className="bg-[#278fb6]"
+        >
           {form.formState.isSubmitting && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           )}
@@ -248,9 +268,9 @@ export default function Settings() {
   const [passwordOpen, setPasswordOpen] = useState(false);
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="space-y-8 p-5 lg:p-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+        <h1 className="text-2xl lg:text-3xl font-bold tracking-tight flex items-center gap-2">
           <Settings2 className="h-7 w-7 text-primary" />
           Settings
         </h1>
@@ -278,7 +298,8 @@ export default function Settings() {
                 <DialogHeader>
                   <DialogTitle>Edit Profile</DialogTitle>
                   <DialogDescription>
-                    Make changes to your profile here. Click save when you're done.
+                    Make changes to your profile here. Click save when you're
+                    done.
                   </DialogDescription>
                 </DialogHeader>
                 <ProfileForm setOpen={setProfileOpen} />
