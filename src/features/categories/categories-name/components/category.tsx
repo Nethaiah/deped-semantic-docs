@@ -324,7 +324,7 @@ export default function Category({
                 <div className="flex-1">
                   <Link href={`/view/${doc.doc_id}`} className="block group">
                     <h3
-                      className="text-xl font-semibold mb-1 group-hover:underline"
+                      className="text-md lg:text-xl font-semibold mb-1 group-hover:underline"
                       style={{ color: activeColor }}
                     >
                       {doc.doc_number ? `${doc.doc_number} - ` : ""}
