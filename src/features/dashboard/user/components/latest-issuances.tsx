@@ -135,7 +135,7 @@ export default function LatestIssuances({
     <div className="col-span-2 bg-white rounded-lg shadow-md border border-slate-200 overflow-scroll">
       <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-50">
         <h2 className="text-xl lg:text-2xl font-bold text-slate-800 flex items-center gap-2">
-          Latest Issuance
+          Issuances
         </h2>
         <div className="flex items-center gap-2">
           {activeFilterCount > 0 && (
