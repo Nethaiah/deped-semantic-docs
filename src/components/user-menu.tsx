@@ -103,19 +103,6 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
                 <span>Settings</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                href="/profile"
-                className="flex items-center cursor-pointer"
-              >
-                <UserPenIcon
-                  size={16}
-                  className="opacity-60 mr-2"
-                  aria-hidden="true"
-                />
-                <span>Edit Profile</span>
-              </Link>
-            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem
