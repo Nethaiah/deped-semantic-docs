@@ -15,9 +15,7 @@ import {
 } from "@/features/shared/lib/badge-variants";
 import DocumentActionButtons from "@/features/shared/components/document-action-buttons";
 import { checkBookmark } from "../../shared/server/check-bookmark";
-import SearchFilterDialog, {
-  type SearchFilterValues,
-} from "@/features/search/components/search-filter-dialog";
+import SearchFilterDialog, { type SearchFilterValues } from "@/features/search/components/search-filter-dialog";
 import {
   Select,
   SelectContent,
@@ -40,12 +38,12 @@ export default function Search({ role }: Role) {
   const [bookmarks, setBookmarks] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-
+  
   // Changed default to true (Semantic Search default)
-  const [useRAG, setUseRAG] = useState(true);
+  const [useRAG, setUseRAG] = useState(true); 
   const [searchType, setSearchType] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-
+  
   // Changed default searchMode to "rag"
   const [searchFilters, setSearchFilters] = useState<SearchFilterValues>({
     fromDate: "",
@@ -56,12 +54,13 @@ export default function Search({ role }: Role) {
     title: "",
     tags: "",
     docType: "",
-    searchMode: "rag",
+    searchMode: "rag", 
   });
-
+  
+  // Changed to "relevance" as default - null means use relevance sorting
   const [sortBy, setSortBy] = useState<
-    "date_desc" | "date_asc" | "title_asc" | "title_desc"
-  >("date_desc");
+    "relevance" | "date_desc" | "date_asc" | "title_asc" | "title_desc"
+  >("relevance");
 
   // Restore search state from sessionStorage on mount
   useEffect(() => {
@@ -80,6 +79,8 @@ export default function Search({ role }: Role) {
         if (parsed.searchFilters) {
           setSearchFilters(parsed.searchFilters);
         }
+        // Restore sortBy, default to relevance
+        setSortBy(parsed.sortBy || "relevance");
       }
     } catch (err) {
       console.error("Error restoring search state:", err);
@@ -93,6 +94,7 @@ export default function Search({ role }: Role) {
     setBookmarks({});
     setHasSearched(false);
     setSearchType("");
+    setSortBy("relevance"); // Reset to relevance
     sessionStorage.removeItem(SEARCH_STATE_KEY);
   };
 
@@ -137,22 +139,14 @@ export default function Search({ role }: Role) {
           useRAG,
           searchType,
           searchFilters,
+          sortBy, // Save sortBy state
         };
         sessionStorage.setItem(SEARCH_STATE_KEY, JSON.stringify(stateToSave));
       } catch (err) {
         console.error("Error saving search state:", err);
       }
     }
-  }, [
-    searchQuery,
-    answer,
-    searchResults,
-    bookmarks,
-    hasSearched,
-    useRAG,
-    searchType,
-    searchFilters,
-  ]);
+  }, [searchQuery, answer, searchResults, bookmarks, hasSearched, useRAG, searchType, searchFilters, sortBy]);
 
   const activeColor =
     String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
@@ -169,6 +163,9 @@ export default function Search({ role }: Role) {
 
     setIsLoading(true);
     setHasSearched(true);
+    
+    // Reset sort based on search mode: relevance for RAG, date_desc for keyword
+    setSortBy(useRAG ? "relevance" : "date_desc");
 
     try {
       const result = await RAGApiService.search({
@@ -177,7 +174,7 @@ export default function Search({ role }: Role) {
         top_k: 10,
       });
 
-      // Sort results by number of relevant sections (descending)
+      // Sort results by number of relevant sections (descending) - this is the default relevance sort
       const sortedResults = [...result.sources].sort((a, b) => {
         const aChunks = a.num_relevant_chunks || 0;
         const bChunks = b.num_relevant_chunks || 0;
@@ -194,11 +191,7 @@ export default function Search({ role }: Role) {
           .filter(Boolean);
         const fromDate = f.fromDate ? new Date(f.fromDate) : null;
         const toDateNext = f.toDate
-          ? (() => {
-              const d = new Date(f.toDate);
-              d.setDate(d.getDate() + 1);
-              return d;
-            })()
+          ? (() => { const d = new Date(f.toDate); d.setDate(d.getDate() + 1); return d; })()
           : null;
 
         filteredResults = sortedResults.filter((doc) => {
@@ -225,9 +218,7 @@ export default function Search({ role }: Role) {
             if (!title.includes(f.title.trim().toLowerCase())) return false;
           }
           if (tagsArray.length) {
-            const cats = (doc.categories || []).map((c) =>
-              (c || "").toLowerCase()
-            );
+            const cats = (doc.categories || []).map((c) => (c || "").toLowerCase());
             for (const tag of tagsArray) {
               if (!cats.includes(tag)) return false;
             }
@@ -276,33 +267,41 @@ export default function Search({ role }: Role) {
 
   const resultsToRender = useMemo(() => {
     const arr = [...searchResults];
-    arr.sort((a, b) => {
-      switch (sortBy) {
-        case "date_asc": {
-          const da = a.date_issued ? new Date(a.date_issued).getTime() : 0;
-          const db = b.date_issued ? new Date(b.date_issued).getTime() : 0;
-          return da - db;
+    
+    // Only apply custom sorting if user explicitly selected a sort option
+    // Default "relevance" keeps the original API order (sorted by num_relevant_chunks)
+    if (sortBy !== "relevance") {
+      arr.sort((a, b) => {
+        switch (sortBy) {
+          case "date_asc": {
+            const da = a.date_issued ? new Date(a.date_issued).getTime() : 0;
+            const db = b.date_issued ? new Date(b.date_issued).getTime() : 0;
+            return da - db;
+          }
+          case "date_desc": {
+            const da = a.date_issued ? new Date(a.date_issued).getTime() : 0;
+            const db = b.date_issued ? new Date(b.date_issued).getTime() : 0;
+            return db - da;
+          }
+          case "title_asc":
+            return (a.title || "").localeCompare(b.title || "");
+          case "title_desc":
+            return (b.title || "").localeCompare(a.title || "");
+          default:
+            return 0;
         }
-        case "title_asc":
-          return (a.title || "").localeCompare(b.title || "");
-        case "title_desc":
-          return (b.title || "").localeCompare(a.title || "");
-        case "date_desc":
-        default: {
-          const da = a.date_issued ? new Date(a.date_issued).getTime() : 0;
-          const db = b.date_issued ? new Date(b.date_issued).getTime() : 0;
-          return db - da;
-        }
-      }
-    });
+      });
+    }
+    // else: keep original order (relevance)
+    
     return arr;
   }, [searchResults, sortBy]);
 
   return (
-    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
+    <div className="p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
       <div className="mb-6">
-        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Document Search
         </h1>
         <p className="text-sm text-gray-600">
@@ -312,8 +311,8 @@ export default function Search({ role }: Role) {
 
       {/* Search Bar */}
       <div className="flex flex-col gap-3 mb-6">
-        <div className="flex flex-col lg:flex-row items-center gap-3">
-          <div className="relative flex-1 w-full">
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1">
             <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
@@ -378,11 +377,11 @@ export default function Search({ role }: Role) {
           onOpenChange={setIsFilterOpen}
           values={searchFilters}
           onValuesChange={setSearchFilters}
-          onApply={() => {
-            // Set RAG mode based on dialog selection
-            setUseRAG(searchFilters.searchMode === "rag");
+          onApply={(newValues) => {
+            // FIX: Use newValues directly instead of stale searchFilters state
+            setSearchFilters(newValues);
+            setUseRAG(newValues.searchMode === "rag");
             setIsFilterOpen(false);
-            // Removed immediate handleSearch() call
           }}
           onReset={() => {
             setSearchFilters({
@@ -448,6 +447,8 @@ export default function Search({ role }: Role) {
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
+                  {/* Only show Relevance option when using RAG/Semantic Search */}
+                  {useRAG && <SelectItem value="relevance">Relevance</SelectItem>}
                   <SelectItem value="date_desc">Date (Newest)</SelectItem>
                   <SelectItem value="date_asc">Date (Oldest)</SelectItem>
                   <SelectItem value="title_asc">Title (A–Z)</SelectItem>
@@ -483,24 +484,17 @@ export default function Search({ role }: Role) {
                     <p className="text-sm text-gray-600/60 mb-2">
                       {doc.date_issued && (
                         <>
-                          Issued:{" "}
-                          <span className="font-medium">
-                            {new Date(doc.date_issued).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "long",
-                                day: "numeric",
-                                year: "numeric",
-                              }
-                            )}
-                          </span>
+                          Issued: <span className="font-medium">{new Date(doc.date_issued).toLocaleDateString('en-US', { 
+                            month: 'long', 
+                            day: 'numeric',
+                            year: 'numeric' 
+                          })}</span>
                         </>
                       )}
                       {doc.date_issued && doc.issuer && " | "}
                       {doc.issuer && (
                         <>
-                          Issuer:{" "}
-                          <span className="font-medium">{doc.issuer}</span>
+                          Issuer: <span className="font-medium">{doc.issuer}</span>
                         </>
                       )}
                     </p>
