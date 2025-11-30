@@ -84,7 +84,7 @@ export default function DocumentActionButtons({
           className="bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors"
           title="View document"
         >
-          <Eye className="h-4 w-4" />
+          <Eye className="h-5 w-5" />
         </Link>
 
         {/* Bookmark Toggle */}
@@ -97,7 +97,7 @@ export default function DocumentActionButtons({
           title={isBookmarked ? "Remove bookmark" : "Bookmark"}
         >
           <Bookmark
-            className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
+            className={`h-5 w-5 ${isBookmarked ? "fill-current" : ""}`}
           />
         </button>
 
@@ -108,7 +108,7 @@ export default function DocumentActionButtons({
           className="bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors cursor-pointer"
           title="Share"
         >
-          <Share2 className="h-4 w-4" />
+          <Share2 className="h-5 w-5" />
         </button>
       </div>
 

@@ -31,8 +31,8 @@ export default async function ViewDocument({ documentId }: Props) {
         <BackButton />
       </div>
 
-      <div className="grid grid-cols-12 gap-8">
-        <div className="col-span-12 lg:col-span-3">
+      <div className="grid grid-cols-13 gap-8">
+        <div className="col-span-13 lg:col-span-3">
           <DocumentInfoSidebar doc={doc} />
           <DocumentActions
             sourcePath={doc.sourcePath}
@@ -41,11 +41,11 @@ export default async function ViewDocument({ documentId }: Props) {
           />
         </div>
 
-        <div className="col-span-12 lg:col-span-6 space-y-6">
+        <div className="col-span-13 lg:col-span-6 space-y-6">
           <DocumentAnalysis summary={doc.summary} documentId={doc.id} />
         </div>
 
-        <div className="col-span-12 lg:col-span-3 space-y-6">
+        <div className="col-span-13 lg:col-span-4 space-y-6">
           <DocumentPDFViewer sourcePath={doc.sourcePath} title={doc.title} />
           <SimilarDocuments similar={similar} />
 
