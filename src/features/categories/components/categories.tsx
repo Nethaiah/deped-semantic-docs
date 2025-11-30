@@ -1,19 +1,32 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import {
+  FileText,
+  BookOpen,
+  Users,
+  DollarSign,
+  Building2,
+  Scale,
+  Briefcase,
+  GraduationCap,
+  Scroll,
+  FolderOpen,
+  ClipboardList,
+  Award,
+} from "lucide-react";
 import type { CategoryWithCount } from "../server/actions";
 
-// Map category names to icon paths
-function getCategoryIcon(categoryName: string): string {
-  const iconMap: Record<string, string> = {
-    Policy: "/policy.svg",
-    "Curriculum Implementation": "/curriclum.svg",
-    "Personnel/Human Resources": "/human-resource.svg",
-    "Finance/Budget": "/finance.svg",
-    "School Governance and Operations": "/school-operation.svg",
-    "Legal/School Titling": "/policy.svg", // Default icon
-    Others: "/policy.svg", // Default icon
+// Map category names to Lucide icons with unique icons for each
+function getCategoryIcon(categoryName: string) {
+  const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+    Policy: Scroll,
+    "Curriculum Implementation": GraduationCap,
+    "Personnel/Human Resources": Users,
+    "Finance/Budget": DollarSign,
+    "School Governance and Operations": Building2,
+    "Legal/School Titling": Scale,
+    Others: FolderOpen,
   };
 
   // Try exact match first
@@ -21,18 +34,53 @@ function getCategoryIcon(categoryName: string): string {
     return iconMap[categoryName];
   }
 
-  // Try partial matches
+  // Try partial matches with unique icons
   const lowerName = categoryName.toLowerCase();
-  if (lowerName.includes("curriculum")) return "/curriclum.svg";
+  if (lowerName.includes("curriculum")) return GraduationCap;
   if (lowerName.includes("personnel") || lowerName.includes("human resource"))
-    return "/human-resource.svg";
+    return Users;
   if (lowerName.includes("finance") || lowerName.includes("budget"))
-    return "/finance.svg";
+    return DollarSign;
   if (lowerName.includes("school") || lowerName.includes("operation"))
-    return "/school-operation.svg";
+    return Building2;
+  if (lowerName.includes("legal")) return Scale;
+  if (lowerName.includes("policy")) return Scroll;
 
   // Default icon
-  return "/policy.svg";
+  return FileText;
+}
+
+// Get color scheme for each category
+function getCategoryColor(categoryName: string): string {
+  const colorMap: Record<string, string> = {
+    Policy: "bg-indigo-100 text-indigo-600",
+    "Curriculum Implementation": "bg-green-100 text-green-600",
+    "Personnel/Human Resources": "bg-purple-100 text-purple-600",
+    "Finance/Budget": "bg-emerald-100 text-emerald-600",
+    "School Governance and Operations": "bg-orange-100 text-orange-600",
+    "Legal/School Titling": "bg-red-100 text-red-600",
+    Others: "bg-gray-100 text-gray-600",
+  };
+
+  // Try exact match first
+  if (colorMap[categoryName]) {
+    return colorMap[categoryName];
+  }
+
+  // Try partial matches
+  const lowerName = categoryName.toLowerCase();
+  if (lowerName.includes("curriculum")) return "bg-green-100 text-green-600";
+  if (lowerName.includes("personnel") || lowerName.includes("human resource"))
+    return "bg-purple-100 text-purple-600";
+  if (lowerName.includes("finance") || lowerName.includes("budget"))
+    return "bg-emerald-100 text-emerald-600";
+  if (lowerName.includes("school") || lowerName.includes("operation"))
+    return "bg-orange-100 text-orange-600";
+  if (lowerName.includes("legal")) return "bg-red-100 text-red-600";
+  if (lowerName.includes("policy")) return "bg-indigo-100 text-indigo-600";
+
+  // Default color
+  return "bg-blue-100 text-blue-600";
 }
 
 // Helper function to create URL-safe category name
@@ -66,31 +114,32 @@ export default function Categories({
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {categories.map((category) => (
-            <Link
-              key={category.name}
-              href={`/categories/${encodeCategoryName(category.name)}`}
-              className="flex items-center gap-4 p-6 shadow-sm bg-white rounded-2xl border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
-            >
-              <div className="flex-shrink-0">
-                <Image
-                  src={getCategoryIcon(category.name)}
-                  alt={category.name}
-                  width={65}
-                  height={75}
-                  className="w-16 h-auto"
-                />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900">
-                  {category.name}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {category.count} Document{category.count !== 1 ? "s" : ""}
-                </p>
-              </div>
-            </Link>
-          ))}
+          {categories.map((category) => {
+            const Icon = getCategoryIcon(category.name);
+            const colorClass = getCategoryColor(category.name);
+
+            return (
+              <Link
+                key={category.name}
+                href={`/categories/${encodeCategoryName(category.name)}`}
+                className="flex items-center gap-4 p-6 shadow-sm bg-white rounded-2xl border border-gray-100 hover:shadow-md transition-shadow cursor-pointer group"
+              >
+                <div
+                  className={`flex-shrink-0 p-4 rounded-xl ${colorClass} group-hover:scale-110 transition-transform`}
+                >
+                  <Icon className="w-8 h-8" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {category.name}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {category.count} Document{category.count !== 1 ? "s" : ""}
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>

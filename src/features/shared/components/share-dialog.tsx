@@ -27,9 +27,12 @@ type Props = {
 export default function ShareDialog({ isOpen, onClose, docId }: Props) {
   const [copied, setCopied] = useState(false);
 
-  const shareUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/view/${docId}`;
+  const shareUrl = `${
+    typeof window !== "undefined" ? window.location.origin : ""
+  }/view/${docId}`;
   const shareTitle = "Check out this document";
-  const shareDescription = "I found this document and thought you might find it interesting.";
+  const shareDescription =
+    "I found this document and thought you might find it interesting.";
 
   const handleCopyLink = async () => {
     try {
@@ -56,22 +59,24 @@ export default function ShareDialog({ isOpen, onClose, docId }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal Content */}
-      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto pb-5">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center gap-2">
             <Share2 className="h-5 w-5 text-slate-700" />
-            <h2 className="text-xl font-semibold text-slate-900">Share Document</h2>
+            <h2 className="text-xl font-semibold text-slate-900">
+              Share Document
+            </h2>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors rounded-full hover:bg-gray-100 p-1"
+            className="text-gray-700 hover:text-gray-900 transition-colors rounded-full hover:bg-gray-100 p-1 cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -91,15 +96,25 @@ export default function ShareDialog({ isOpen, onClose, docId }: Props) {
               <button
                 onClick={handleCopyLink}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm transition-all duration-200 ${
-                  copied 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-slate-700 hover:bg-slate-800 text-white'
+                  copied
+                    ? "bg-green-500 text-white"
+                    : "bg-slate-700 hover:bg-slate-800 text-white"
                 }`}
               >
                 {copied ? (
                   <>
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                     Copied
                   </>
@@ -126,9 +141,14 @@ export default function ShareDialog({ isOpen, onClose, docId }: Props) {
                   separator=" - "
                   className="hover:opacity-80 transition-opacity"
                 >
-                  <WhatsappIcon size={iconSize} borderRadius={iconBorderRadius} />
+                  <WhatsappIcon
+                    size={iconSize}
+                    borderRadius={iconBorderRadius}
+                  />
                 </WhatsappShareButton>
-                <span className="text-xs font-medium text-slate-600">WhatsApp</span>
+                <span className="text-xs font-medium text-slate-600">
+                  WhatsApp
+                </span>
               </div>
 
               <div className="flex flex-col items-center gap-2">
@@ -137,9 +157,14 @@ export default function ShareDialog({ isOpen, onClose, docId }: Props) {
                   title={shareTitle}
                   className="hover:opacity-80 transition-opacity"
                 >
-                  <FacebookIcon size={iconSize} borderRadius={iconBorderRadius} />
+                  <FacebookIcon
+                    size={iconSize}
+                    borderRadius={iconBorderRadius}
+                  />
                 </FacebookShareButton>
-                <span className="text-xs font-medium text-slate-600">Facebook</span>
+                <span className="text-xs font-medium text-slate-600">
+                  Facebook
+                </span>
               </div>
 
               <div className="flex flex-col items-center gap-2">
@@ -148,9 +173,14 @@ export default function ShareDialog({ isOpen, onClose, docId }: Props) {
                   title={shareTitle}
                   className="hover:opacity-80 transition-opacity"
                 >
-                  <TwitterIcon size={iconSize} borderRadius={iconBorderRadius} />
+                  <TwitterIcon
+                    size={iconSize}
+                    borderRadius={iconBorderRadius}
+                  />
                 </TwitterShareButton>
-                <span className="text-xs font-medium text-slate-600">Twitter</span>
+                <span className="text-xs font-medium text-slate-600">
+                  Twitter
+                </span>
               </div>
 
               <div className="flex flex-col items-center gap-2">
@@ -160,9 +190,14 @@ export default function ShareDialog({ isOpen, onClose, docId }: Props) {
                   summary={shareDescription}
                   className="hover:opacity-80 transition-opacity"
                 >
-                  <LinkedinIcon size={iconSize} borderRadius={iconBorderRadius} />
+                  <LinkedinIcon
+                    size={iconSize}
+                    borderRadius={iconBorderRadius}
+                  />
                 </LinkedinShareButton>
-                <span className="text-xs font-medium text-slate-600">LinkedIn</span>
+                <span className="text-xs font-medium text-slate-600">
+                  LinkedIn
+                </span>
               </div>
 
               <div className="flex flex-col items-center gap-2">
@@ -174,7 +209,9 @@ export default function ShareDialog({ isOpen, onClose, docId }: Props) {
                 >
                   <EmailIcon size={iconSize} borderRadius={iconBorderRadius} />
                 </EmailShareButton>
-                <span className="text-xs font-medium text-slate-600">Email</span>
+                <span className="text-xs font-medium text-slate-600">
+                  Email
+                </span>
               </div>
 
               <div className="flex flex-col items-center gap-2">
@@ -183,23 +220,28 @@ export default function ShareDialog({ isOpen, onClose, docId }: Props) {
                   title={shareTitle}
                   className="hover:opacity-80 transition-opacity"
                 >
-                  <TelegramIcon size={iconSize} borderRadius={iconBorderRadius} />
+                  <TelegramIcon
+                    size={iconSize}
+                    borderRadius={iconBorderRadius}
+                  />
                 </TelegramShareButton>
-                <span className="text-xs font-medium text-slate-600">Telegram</span>
+                <span className="text-xs font-medium text-slate-600">
+                  Telegram
+                </span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end p-6 border-t border-gray-200">
+        {/* <div className="flex justify-end p-6 border-t border-gray-200">
           <button
             onClick={onClose}
             className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-md transition-colors"
           >
             Close
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
