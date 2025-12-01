@@ -93,15 +93,16 @@ export default function ForgotPasswordForm() {
               className="text-white/90 font-bold text-2xl xl:text-4xl 2xl:text-5xl leading-tight"
               style={{ textShadow: "2px 2px 8px rgba(0,0,0,0.6)" }}
             >
-              Reset Your Password.{" "}
-              <span className="text-[#66b2b6]">Regain Access.</span>
+              Process Smarter. Extract Faster.{" "}
+              <span className="text-[#66b2b6]">Understand More.</span>
             </p>
             <p
               className="mt-4 text-gray-200 text-sm xl:text-base 2xl:text-lg"
               style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.5)" }}
             >
-              Don't worry, we'll help you get back into your account. Enter your
-              email and we'll send you a reset link.
+              Doculens simplifies your workflow by transforming scanned
+              documents into organized, searchable, and actionable
+              information—instantly.
             </p>
             <div
               className="mt-4 text-white/60 text-xs xl:text-sm"
@@ -193,7 +194,7 @@ export default function ForgotPasswordForm() {
                   href="/login"
                   className="font-semibold text-[#278fb6] hover:text-[#278fb6]/80"
                 >
-                  Log in
+                  Log in here
                 </Link>
               </p>
             </div>

@@ -360,7 +360,7 @@ export default function RegisterForm() {
                       <button
                         type="button"
                         onClick={() => setShowTermsModal(true)}
-                        className="text-[#278fb6] hover:text-[#278fb6]/80 font-medium underline cursor-pointer"
+                        className="text-[#278fb6] hover:text-[#278fb6]/80 font-medium underline"
                       >
                         Terms of Service
                       </button>{" "}
@@ -368,7 +368,7 @@ export default function RegisterForm() {
                       <button
                         type="button"
                         onClick={() => setShowPrivacyModal(true)}
-                        className="text-[#278fb6] hover:text-[#278fb6]/80 font-medium underline cursor-pointer"
+                        className="text-[#278fb6] hover:text-[#278fb6]/80 font-medium underline"
                       >
                         Privacy Policy
                       </button>
@@ -478,7 +478,7 @@ export default function RegisterForm() {
               </h3>
               <button
                 onClick={() => setShowTermsModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
+                className="text-gray-400 hover:text-gray-600 transition"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -494,63 +494,115 @@ export default function RegisterForm() {
                     1. Acceptance of Terms
                   </h4>
                   <p>
-                    By accessing and using Doculens, you accept and agree to be
-                    bound by the terms and provision of this agreement.
-                  </p>
-                </section>
-
-                <section>
-                  <h4 className="font-semibold text-lg mb-2">2. Use License</h4>
-                  <p>
-                    Permission is granted to temporarily use Doculens for
-                    personal, non-commercial transitory viewing only. This is
-                    the grant of a license, not a transfer of title.
+                    By accessing and using Doculens ("the Service"), you agree
+                    to be bound by these Terms of Service. If you do not agree
+                    to these terms, please do not use our Service. We reserve
+                    the right to update these terms at any time, and continued
+                    use of the Service constitutes acceptance of any changes.
                   </p>
                 </section>
 
                 <section>
                   <h4 className="font-semibold text-lg mb-2">
-                    3. User Accounts
+                    2. Description of Service
+                  </h4>
+                  <p>
+                    Doculens provides document processing, extraction, and
+                    management services. We reserve the right to modify,
+                    suspend, or discontinue any aspect of the Service at any
+                    time without prior notice. We are not liable for any
+                    modification, suspension, or discontinuation of the Service.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    3. User Accounts and Security
                   </h4>
                   <p>
                     You are responsible for maintaining the confidentiality of
-                    your account and password. You agree to accept
-                    responsibility for all activities that occur under your
-                    account.
+                    your account credentials and for all activities that occur
+                    under your account. You must immediately notify us of any
+                    unauthorized use of your account. We are not liable for any
+                    loss or damage arising from your failure to protect your
+                    account information.
                   </p>
                 </section>
 
                 <section>
                   <h4 className="font-semibold text-lg mb-2">
-                    4. Prohibited Uses
+                    4. User Conduct and Prohibited Activities
                   </h4>
                   <p>
-                    You may not use Doculens for any illegal or unauthorized
-                    purpose. You must not violate any laws in your jurisdiction
-                    while using our service.
+                    You agree not to: (a) use the Service for any illegal
+                    purpose or in violation of any laws; (b) attempt to gain
+                    unauthorized access to our systems; (c) interfere with or
+                    disrupt the Service; (d) upload malicious code or viruses;
+                    (e) infringe upon intellectual property rights; or (f)
+                    harass, abuse, or harm others through the Service.
                   </p>
                 </section>
 
                 <section>
                   <h4 className="font-semibold text-lg mb-2">
-                    5. Service Modifications
+                    5. Intellectual Property Rights
                   </h4>
                   <p>
-                    We reserve the right to modify or discontinue the service at
-                    any time without notice. We shall not be liable to you or
-                    any third party for any modification, suspension, or
-                    discontinuance of the service.
+                    All content, features, and functionality of the Service are
+                    owned by Doculens and are protected by international
+                    copyright, trademark, and other intellectual property laws.
+                    You retain ownership of documents you upload, but grant us a
+                    license to process and store them to provide the Service.
                   </p>
                 </section>
 
                 <section>
                   <h4 className="font-semibold text-lg mb-2">
-                    6. Limitation of Liability
+                    6. Disclaimer of Warranties
                   </h4>
                   <p>
-                    Doculens shall not be liable for any indirect, incidental,
-                    special, consequential, or punitive damages resulting from
-                    your use of or inability to use the service.
+                    The Service is provided "as is" and "as available" without
+                    warranties of any kind, either express or implied, including
+                    but not limited to warranties of merchantability, fitness
+                    for a particular purpose, or non-infringement. We do not
+                    guarantee that the Service will be uninterrupted, secure, or
+                    error-free.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    7. Limitation of Liability
+                  </h4>
+                  <p>
+                    To the maximum extent permitted by law, Doculens shall not
+                    be liable for any indirect, incidental, special,
+                    consequential, or punitive damages, including but not
+                    limited to loss of profits, data, or other intangible losses
+                    resulting from your use or inability to use the Service.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">8. Termination</h4>
+                  <p>
+                    We reserve the right to terminate or suspend your account
+                    and access to the Service immediately, without prior notice,
+                    for any reason, including breach of these Terms. Upon
+                    termination, your right to use the Service will immediately
+                    cease.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    9. Governing Law
+                  </h4>
+                  <p>
+                    These Terms shall be governed by and construed in accordance
+                    with applicable laws, without regard to conflict of law
+                    provisions. Any disputes arising from these Terms or the
+                    Service shall be resolved in the appropriate courts.
                   </p>
                 </section>
               </div>
@@ -558,7 +610,7 @@ export default function RegisterForm() {
             <div className="p-6 border-t border-gray-200 bg-gray-50">
               <button
                 onClick={() => setShowTermsModal(false)}
-                className="w-full rounded-lg bg-[#278fb6] px-4 py-3 text-base font-semibold text-white shadow-lg hover:bg-[#278fb6]/90 transition cursor-pointer"
+                className="w-full rounded-lg bg-[#278fb6] px-4 py-3 text-base font-semibold text-white shadow-lg hover:bg-[#278fb6]/90 transition"
               >
                 Close
               </button>
@@ -577,7 +629,7 @@ export default function RegisterForm() {
               </h3>
               <button
                 onClick={() => setShowPrivacyModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
+                className="text-gray-400 hover:text-gray-600 transition"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -593,9 +645,13 @@ export default function RegisterForm() {
                     1. Information We Collect
                   </h4>
                   <p>
-                    We collect information you provide directly to us, such as
-                    your name, email address, and any documents you upload to
-                    our service.
+                    We collect several types of information: (a) Personal
+                    Information you provide directly, such as name, email
+                    address, and account credentials; (b) Document Content you
+                    upload to the Service; (c) Usage Data including IP address,
+                    browser type, device information, and how you interact with
+                    our Service; and (d) Cookies and similar tracking
+                    technologies to enhance your experience.
                   </p>
                 </section>
 
@@ -604,58 +660,125 @@ export default function RegisterForm() {
                     2. How We Use Your Information
                   </h4>
                   <p>
-                    We use the information we collect to provide, maintain, and
-                    improve our services, to process your documents, and to
-                    communicate with you about our services.
+                    We use collected information to: (a) provide, maintain, and
+                    improve our services; (b) process and analyze your
+                    documents; (c) communicate with you about updates, security
+                    alerts, and support; (d) detect, prevent, and address
+                    technical issues and fraudulent activity; (e) comply with
+                    legal obligations; and (f) personalize your experience with
+                    our Service.
                   </p>
                 </section>
 
                 <section>
                   <h4 className="font-semibold text-lg mb-2">
-                    3. Information Sharing
+                    3. Information Sharing and Disclosure
                   </h4>
                   <p>
-                    We do not share your personal information with third parties
-                    except as described in this privacy policy or with your
-                    consent.
+                    We do not sell your personal information. We may share
+                    information with: (a) Service providers who assist in
+                    operating our Service; (b) Law enforcement when required by
+                    law or to protect our rights; (c) Business partners with
+                    your consent; and (d) In connection with a merger, sale, or
+                    acquisition of our company. All third parties are obligated
+                    to protect your information and use it only for specified
+                    purposes.
                   </p>
                 </section>
 
                 <section>
                   <h4 className="font-semibold text-lg mb-2">
-                    4. Data Security
+                    4. Data Security and Storage
                   </h4>
                   <p>
-                    We implement appropriate technical and organizational
-                    measures to protect your personal information against
-                    unauthorized access, alteration, disclosure, or destruction.
+                    We implement industry-standard security measures including
+                    encryption, secure servers, and access controls to protect
+                    your personal information. However, no method of
+                    transmission over the internet is 100% secure. Your data is
+                    stored on secure servers and retained only as long as
+                    necessary to provide our services and comply with legal
+                    requirements.
                   </p>
                 </section>
 
                 <section>
                   <h4 className="font-semibold text-lg mb-2">
-                    5. Data Retention
+                    5. Your Rights and Choices
                   </h4>
                   <p>
-                    We retain your personal information for as long as necessary
-                    to provide our services and as required by applicable laws.
+                    You have the right to: (a) access and receive a copy of your
+                    personal information; (b) correct or update inaccurate
+                    information; (c) request deletion of your information,
+                    subject to legal requirements; (d) object to or restrict
+                    certain processing of your data; (e) data portability to
+                    transfer your information; and (f) withdraw consent at any
+                    time. Contact us to exercise these rights.
                   </p>
                 </section>
 
                 <section>
-                  <h4 className="font-semibold text-lg mb-2">6. Your Rights</h4>
+                  <h4 className="font-semibold text-lg mb-2">
+                    6. Cookies and Tracking Technologies
+                  </h4>
                   <p>
-                    You have the right to access, correct, or delete your
-                    personal information. You may also object to or restrict
-                    certain processing of your data.
+                    We use cookies, web beacons, and similar technologies to
+                    collect usage data and enhance functionality. You can
+                    control cookie preferences through your browser settings,
+                    though disabling cookies may limit certain features of our
+                    Service. We use both session cookies (temporary) and
+                    persistent cookies (stored on your device).
                   </p>
                 </section>
 
                 <section>
-                  <h4 className="font-semibold text-lg mb-2">7. Contact Us</h4>
+                  <h4 className="font-semibold text-lg mb-2">
+                    7. Third-Party Links and Services
+                  </h4>
                   <p>
-                    If you have any questions about this Privacy Policy, please
-                    contact us at privacy@doculens.com
+                    Our Service may contain links to third-party websites or
+                    integrate with third-party services. We are not responsible
+                    for the privacy practices of these external sites. We
+                    encourage you to review the privacy policies of any
+                    third-party services you access through our platform.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    8. Children's Privacy
+                  </h4>
+                  <p>
+                    Our Service is not intended for children under 13 years of
+                    age. We do not knowingly collect personal information from
+                    children. If we become aware that a child has provided us
+                    with personal information, we will take steps to delete such
+                    information promptly.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    9. Changes to Privacy Policy
+                  </h4>
+                  <p>
+                    We may update this Privacy Policy periodically to reflect
+                    changes in our practices or legal requirements. We will
+                    notify you of any material changes by posting the new policy
+                    on this page and updating the "Last Updated" date. Your
+                    continued use of the Service constitutes acceptance of the
+                    updated policy.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    10. Contact Information
+                  </h4>
+                  <p>
+                    If you have questions, concerns, or requests regarding this
+                    Privacy Policy or our data practices, please contact us at:
+                    privacy@doculens.com. We will respond to your inquiry within
+                    a reasonable timeframe.
                   </p>
                 </section>
               </div>
@@ -663,7 +786,7 @@ export default function RegisterForm() {
             <div className="p-6 border-t border-gray-200 bg-gray-50">
               <button
                 onClick={() => setShowPrivacyModal(false)}
-                className="w-full rounded-lg bg-[#278fb6] px-4 py-3 text-base font-semibold text-white shadow-lg hover:bg-[#278fb6]/90 transition cursor-pointer"
+                className="w-full rounded-lg bg-[#278fb6] px-4 py-3 text-base font-semibold text-white shadow-lg hover:bg-[#278fb6]/90 transition"
               >
                 Close
               </button>
