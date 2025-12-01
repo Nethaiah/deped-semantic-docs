@@ -50,8 +50,6 @@ export default function Search({ role }: Role) {
     toDate: "",
     issuer: "",
     issuerLevel: "",
-    code: "",
-    title: "",
     tags: "",
     docType: "",
     searchMode: "rag", 
@@ -209,14 +207,6 @@ export default function Search({ role }: Role) {
             const dtype = (doc.doc_type || "").toLowerCase();
             if (!dtype.includes(f.docType.toLowerCase())) return false;
           }
-          if (f.code && f.code.trim()) {
-            const code = (doc.doc_number || "").toLowerCase();
-            if (!code.includes(f.code.trim().toLowerCase())) return false;
-          }
-          if (f.title && f.title.trim()) {
-            const title = (doc.title || "").toLowerCase();
-            if (!title.includes(f.title.trim().toLowerCase())) return false;
-          }
           if (tagsArray.length) {
             const cats = (doc.categories || []).map((c) => (c || "").toLowerCase());
             for (const tag of tagsArray) {
@@ -259,8 +249,6 @@ export default function Search({ role }: Role) {
     searchFilters.fromDate,
     searchFilters.toDate,
     searchFilters.issuerLevel,
-    searchFilters.code,
-    searchFilters.title,
     searchFilters.docType,
     searchFilters.tags ? "tags" : undefined,
   ].filter(Boolean).length;
@@ -389,8 +377,6 @@ export default function Search({ role }: Role) {
               toDate: "",
               issuer: "",
               issuerLevel: "",
-              code: "",
-              title: "",
               tags: "",
               docType: "",
               searchMode: "rag", // Reset to RAG default

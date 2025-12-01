@@ -90,9 +90,9 @@ export default function DocumentActions({ sourcePath, docId, initialBookmarked =
           </Link>
         )}
         
-        <button className="w-full text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2 px-3 rounded-md flex items-center gap-3 transition-colors">
+        {/* <button className="w-full text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2 px-3 rounded-md flex items-center gap-3 transition-colors">
           <Flag className="h-4 w-4" /> Report Issue
-        </button>
+        </button> */}
       </div>
 
       {/* Unbookmark Confirmation Dialog */}

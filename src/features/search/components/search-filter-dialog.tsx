@@ -25,8 +25,6 @@ export type SearchFilterValues = {
   toDate: string;
   issuer: string;
   issuerLevel: string;
-  code: string;
-  title: string;
   tags: string;
   docType: string;
   searchMode: SearchMode;
@@ -216,48 +214,6 @@ export default function SearchFilterDialog({
                   </SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            {/* Document Number */}
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="doc-number"
-                className="text-xs font-semibold text-slate-700"
-              >
-                Document Number
-              </label>
-              <input
-                id="doc-number"
-                type="text"
-                placeholder="e.g. RM 123, DM 2024-001"
-                value={localValues.code}
-                onChange={(e) =>
-                  setLocalValues({ ...localValues, code: e.target.value })
-                }
-                disabled={filtersDisabled}
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors placeholder:text-slate-400"
-              />
-            </div>
-
-            {/* Title */}
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="title"
-                className="text-xs font-semibold text-slate-700"
-              >
-                Title
-              </label>
-              <input
-                id="title"
-                type="text"
-                placeholder="Search in title"
-                value={localValues.title}
-                onChange={(e) =>
-                  setLocalValues({ ...localValues, title: e.target.value })
-                }
-                disabled={filtersDisabled}
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors placeholder:text-slate-400"
-              />
             </div>
 
             {/* Tags */}
