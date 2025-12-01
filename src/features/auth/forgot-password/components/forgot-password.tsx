@@ -107,7 +107,7 @@ export default function ForgotPasswordForm() {
               className="mt-4 text-white/60 text-xs xl:text-sm"
               style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.5)" }}
             >
-              © 2025 Documents. All rights reserved.
+              © 2025 Doculens. All rights reserved.
             </div>
           </div>
         </div>

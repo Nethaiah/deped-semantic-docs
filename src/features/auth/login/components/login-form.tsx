@@ -151,7 +151,7 @@ export default function LoginForm() {
               className="mt-4 text-white/60 text-xs xl:text-sm"
               style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.5)" }}
             >
-              © 2025 Documents. All rights reserved.
+              © 2025 Doculens. All rights reserved.
             </div>
           </div>
         </div>
@@ -245,9 +245,9 @@ export default function LoginForm() {
                       className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition"
                     >
                       {showPassword ? (
-                        <Eye className="h-5 w-5" />
+                        <Eye className="h-5 w-5 cursor-pointer" />
                       ) : (
-                        <EyeOff className="h-5 w-5" />
+                        <EyeOff className="h-5 w-5 cursor-pointer" />
                       )}
                     </button>
                   </div>
@@ -349,7 +349,7 @@ export default function LoginForm() {
           <span className="text-[#66b2b6]">Understand More.</span>
         </p>
         <p className="mt-2 text-gray-300 text-xs">
-          © 2025 Documents. All rights reserved.
+          © 2025 Doculens. All rights reserved.
         </p>
       </div>
     </div>

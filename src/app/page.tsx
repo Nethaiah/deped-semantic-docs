@@ -14,17 +14,19 @@ import { redirect } from "next/navigation";
 
 export default async function Home() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (user) {
     redirect("/dashboard");
   }
-  
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section - Asymmetric Layout */}
       <section className="mx-auto max-w-7xl px-6 pt-32 pb-20">
         <div className="grid gap-12 lg:grid-cols-12 items-center">
-          <div className="lg:col-span-7 py-20">
+          <div className="lg:col-span-7 py-10 lg:py-20">
             <div className="inline-flex items-center rounded-full text-sm text-blue-500">
               AI-Powered Document Intelligence
             </div>
@@ -37,17 +39,17 @@ export default async function Home() {
               summarize, and organize your official orders and memoranda so you
               can find what matters in seconds, not hours.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex justify-center lg:justify-start gap-2 lg:gap-4">
               <Link
                 href="/register"
-                className="group flex items-center gap-2 rounded-full bg-[#278fb6] px-7 py-3.5 text-base font-semibold text-white hover:bg-[#278fb6]/80 transition"
+                className="group flex items-center gap-2 rounded-full bg-[#278fb6] px-4 lg:px-7 py-2 lg:py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#278fb6]/80 transition"
               >
                 Get started
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 href="#demo"
-                className="flex items-center gap-2 rounded-full border-2 border-gray-300 px-7 py-3.5 text-base font-semibold text-gray-700 hover:border-gray-400 transition"
+                className="flex items-center gap-2 rounded-full border-2 border-gray-300 px-4 lg:px-7 py-2 lg:py-3.5 text-base font-semibold text-gray-700 hover:border-gray-400 transition"
               >
                 Watch demo
               </Link>

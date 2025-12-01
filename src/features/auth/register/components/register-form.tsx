@@ -11,13 +11,15 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Spinner } from "@/components/ui/spinner";
 import { register } from "@/features/auth/register/server/actions";
-import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, X } from "lucide-react";
 
 export default function RegisterForm() {
   const router = useRouter();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const supabase = createClient();
 
   const form = useForm<RegisterSchema>({
@@ -185,7 +187,7 @@ export default function RegisterForm() {
               className="mt-4 text-white/60 text-xs xl:text-sm"
               style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.5)" }}
             >
-              © 2025 Documents. All rights reserved.
+              © 2025 Doculens. All rights reserved.
             </div>
           </div>
         </div>
@@ -320,9 +322,9 @@ export default function RegisterForm() {
                       className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition"
                     >
                       {showPassword ? (
-                        <Eye className="h-5 w-5" />
+                        <Eye className="h-5 w-5 cursor-pointer" />
                       ) : (
-                        <EyeOff className="h-5 w-5" />
+                        <EyeOff className="h-5 w-5 cursor-pointer" />
                       )}
                     </button>
                   </div>
@@ -344,7 +346,7 @@ export default function RegisterForm() {
                       type="checkbox"
                       {...form.register("terms")}
                       aria-invalid={!!form.formState.errors.terms || undefined}
-                      className={`h-4 w-4 mt-0.5 rounded border ${
+                      className={`cursor-pointer h-4 w-4 mt-0.5 rounded border ${
                         form.formState.errors.terms
                           ? "border-red-500"
                           : "border-gray-300"
@@ -355,19 +357,21 @@ export default function RegisterForm() {
                       className="ml-2 text-sm text-gray-700"
                     >
                       I agree to the{" "}
-                      <Link
-                        href="#"
-                        className="text-[#278fb6] hover:text-[#278fb6]/80 font-medium"
+                      <button
+                        type="button"
+                        onClick={() => setShowTermsModal(true)}
+                        className="text-[#278fb6] hover:text-[#278fb6]/80 font-medium underline cursor-pointer"
                       >
                         Terms of Service
-                      </Link>{" "}
+                      </button>{" "}
                       and{" "}
-                      <Link
-                        href="#"
-                        className="text-[#278fb6] hover:text-[#278fb6]/80 font-medium"
+                      <button
+                        type="button"
+                        onClick={() => setShowPrivacyModal(true)}
+                        className="text-[#278fb6] hover:text-[#278fb6]/80 font-medium underline cursor-pointer"
                       >
                         Privacy Policy
-                      </Link>
+                      </button>
                     </label>
                   </div>
                   {form.formState.errors.terms && (
@@ -460,9 +464,213 @@ export default function RegisterForm() {
           <span className="text-[#66b2b6]">Understand More.</span>
         </p>
         <p className="mt-2 text-gray-300 text-xs">
-          © 2025 Documents. All rights reserved.
+          © 2025 Doculens. All rights reserved.
         </p>
       </div>
+
+      {/* Terms of Service Modal */}
+      {showTermsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-2xl font-bold text-gray-900">
+                Terms of Service
+              </h3>
+              <button
+                onClick={() => setShowTermsModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="space-y-4 text-gray-700">
+                <p className="text-sm text-gray-500">
+                  Last updated: December 01, 2025
+                </p>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    1. Acceptance of Terms
+                  </h4>
+                  <p>
+                    By accessing and using Doculens, you accept and agree to be
+                    bound by the terms and provision of this agreement.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">2. Use License</h4>
+                  <p>
+                    Permission is granted to temporarily use Doculens for
+                    personal, non-commercial transitory viewing only. This is
+                    the grant of a license, not a transfer of title.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    3. User Accounts
+                  </h4>
+                  <p>
+                    You are responsible for maintaining the confidentiality of
+                    your account and password. You agree to accept
+                    responsibility for all activities that occur under your
+                    account.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    4. Prohibited Uses
+                  </h4>
+                  <p>
+                    You may not use Doculens for any illegal or unauthorized
+                    purpose. You must not violate any laws in your jurisdiction
+                    while using our service.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    5. Service Modifications
+                  </h4>
+                  <p>
+                    We reserve the right to modify or discontinue the service at
+                    any time without notice. We shall not be liable to you or
+                    any third party for any modification, suspension, or
+                    discontinuance of the service.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    6. Limitation of Liability
+                  </h4>
+                  <p>
+                    Doculens shall not be liable for any indirect, incidental,
+                    special, consequential, or punitive damages resulting from
+                    your use of or inability to use the service.
+                  </p>
+                </section>
+              </div>
+            </div>
+            <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <button
+                onClick={() => setShowTermsModal(false)}
+                className="w-full rounded-lg bg-[#278fb6] px-4 py-3 text-base font-semibold text-white shadow-lg hover:bg-[#278fb6]/90 transition cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Privacy Policy Modal */}
+      {showPrivacyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-2xl font-bold text-gray-900">
+                Privacy Policy
+              </h3>
+              <button
+                onClick={() => setShowPrivacyModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="space-y-4 text-gray-700">
+                <p className="text-sm text-gray-500">
+                  Last updated: December 01, 2025
+                </p>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    1. Information We Collect
+                  </h4>
+                  <p>
+                    We collect information you provide directly to us, such as
+                    your name, email address, and any documents you upload to
+                    our service.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    2. How We Use Your Information
+                  </h4>
+                  <p>
+                    We use the information we collect to provide, maintain, and
+                    improve our services, to process your documents, and to
+                    communicate with you about our services.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    3. Information Sharing
+                  </h4>
+                  <p>
+                    We do not share your personal information with third parties
+                    except as described in this privacy policy or with your
+                    consent.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    4. Data Security
+                  </h4>
+                  <p>
+                    We implement appropriate technical and organizational
+                    measures to protect your personal information against
+                    unauthorized access, alteration, disclosure, or destruction.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">
+                    5. Data Retention
+                  </h4>
+                  <p>
+                    We retain your personal information for as long as necessary
+                    to provide our services and as required by applicable laws.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">6. Your Rights</h4>
+                  <p>
+                    You have the right to access, correct, or delete your
+                    personal information. You may also object to or restrict
+                    certain processing of your data.
+                  </p>
+                </section>
+
+                <section>
+                  <h4 className="font-semibold text-lg mb-2">7. Contact Us</h4>
+                  <p>
+                    If you have any questions about this Privacy Policy, please
+                    contact us at privacy@doculens.com
+                  </p>
+                </section>
+              </div>
+            </div>
+            <div className="p-6 border-t border-gray-200 bg-gray-50">
+              <button
+                onClick={() => setShowPrivacyModal(false)}
+                className="w-full rounded-lg bg-[#278fb6] px-4 py-3 text-base font-semibold text-white shadow-lg hover:bg-[#278fb6]/90 transition cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
