@@ -36,7 +36,7 @@ const getSimilarityColor = (score?: number) => {
               <span className="text-blue-600">{s.code}</span>
               {(s as any).similarityScore && (
                 <span className={`text-xs font-medium ${getSimilarityColor((s as any).similarityScore)}`}>
-                  {formatSimilarity((s as any).similarityScore)}
+                  {/* {formatSimilarity((s as any).similarityScore)} */}
                 </span>
               )}
             </div>
