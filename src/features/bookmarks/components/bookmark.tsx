@@ -354,7 +354,7 @@ export default function Bookmarks({
               When you find documents you want to save for later, click the
               bookmark icon.
             </p>
-            <Link href="/search">
+            <Link href="/categories">
               <span className="px-4 py-2 rounded-md text-sm text-white bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer">
                 Browse Documents
               </span>
