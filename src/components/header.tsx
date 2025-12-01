@@ -14,7 +14,7 @@ export default async function Header() {
   // Get role on the server to avoid client flash
   const { data: userData } = await supabase
     .from("users")
-    .select("role")
+    .select("role, full_name")
     .eq("id", user?.id)
     .single();
 
@@ -54,7 +54,7 @@ export default async function Header() {
               <NotificationDropdown />
 
               <UserMenu
-                name={user.user_metadata.full_name}
+                name={userData?.full_name}
                 email={user.user_metadata.email}
                 image={user.user_metadata.avatar_url}
               />
