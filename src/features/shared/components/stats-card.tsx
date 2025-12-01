@@ -74,7 +74,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             )}
           </div>
           <h3 className="text-slate-600 text-sm font-semibold mb-1">
-            Total Memorandums
+            Total Memoranda
           </h3>
           <p className="text-3xl font-bold text-slate-800">
             {stats.totalMemorandums}
