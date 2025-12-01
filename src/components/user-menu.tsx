@@ -76,7 +76,7 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="w-70 py-2 px-4"
+          className="w-70 py-2 px-4 z-[1500]"
           align="end"
           sideOffset={8}
         >

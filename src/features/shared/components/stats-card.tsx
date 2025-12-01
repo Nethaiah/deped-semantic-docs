@@ -25,14 +25,16 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             <div className="p-3 bg-[#278fb6]/15 rounded-xl">
               <FileText className="w-6 h-6 text-slate-700" />
             </div>
-            <span
-              className={`text-sm font-semibold ${
-                isOrdersPositive ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {isOrdersPositive ? "+" : ""}
-              {stats.ordersDailyChange}
-            </span>
+            {stats.ordersDailyChange !== 0 && (
+              <span
+                className={`text-sm font-semibold ${
+                  isOrdersPositive ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {isOrdersPositive ? "+" : ""}
+                {stats.ordersDailyChange}
+              </span>
+            )}
           </div>
           <h3 className="text-slate-600 text-sm font-semibold mb-1">
             Total Orders
@@ -60,17 +62,19 @@ export default function StatsCards({ stats }: StatsCardsProps) {
             <div className="p-3 bg-emerald-100 rounded-xl">
               <Eye className="w-6 h-6 text-slate-700" />
             </div>
-            <span
-              className={`text-sm font-semibold ${
-                isMemosPositive ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {isMemosPositive ? "+" : ""}
-              {stats.memorandumsDailyChange}
-            </span>
+            {stats.memorandumsDailyChange !== 0 && (
+              <span
+                className={`text-sm font-semibold ${
+                  isMemosPositive ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {isMemosPositive ? "+" : ""}
+                {stats.memorandumsDailyChange}
+              </span>
+            )}
           </div>
           <h3 className="text-slate-600 text-sm font-semibold mb-1">
-            Total Memorandums
+            Total Memoranda
           </h3>
           <p className="text-3xl font-bold text-slate-800">
             {stats.totalMemorandums}

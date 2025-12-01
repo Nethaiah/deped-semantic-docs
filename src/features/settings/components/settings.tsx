@@ -1,3 +1,5 @@
+// --- START OF FILE settings.tsx ---
+
 "use client";
 
 import { Settings2, User, Lock, Loader2 } from "lucide-react";
@@ -19,7 +21,7 @@ import {
   type ProfileSchema,
   type PasswordSchema,
 } from "@/lib/zodSchema";
-import { updateProfile, updatePassword } from "../actions";
+import { updateProfile, updatePassword } from "../server/actions";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -71,6 +73,7 @@ const SettingItem = ({
 
 function ProfileForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter(); // Import router to refresh data
   const form = useForm<ProfileSchema>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -86,7 +89,6 @@ function ProfileForm({ setOpen }: { setOpen: (open: boolean) => void }) {
       } = await supabase.auth.getUser();
 
       if (user) {
-        // Fetch from public.users to get the most up-to-date full_name
         const { data: profile } = await supabase
           .from("users")
           .select("full_name")
@@ -98,7 +100,6 @@ function ProfileForm({ setOpen }: { setOpen: (open: boolean) => void }) {
             fullName: profile.full_name,
           });
         } else {
-          // Fallback to metadata if public.users record missing (shouldn't happen ideally)
           form.reset({
             fullName: user.user_metadata.full_name || "",
           });
@@ -115,7 +116,13 @@ function ProfileForm({ setOpen }: { setOpen: (open: boolean) => void }) {
       toast.error(result.error);
     } else {
       toast.success("Profile updated successfully");
+      
+      // Update the client-side session to reflect changes immediately
+      const supabase = createClient();
+      await supabase.auth.refreshSession(); 
+      
       setOpen(false);
+      router.refresh(); // Refreshes server components to show new name
     }
   }
 
@@ -266,6 +273,29 @@ function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
 export default function Settings() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
+  const [provider, setProvider] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+
+  // Check the logged-in provider on mount
+  useEffect(() => {
+    async function checkProvider() {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        // app_metadata.provider contains 'email', 'google', 'github', etc.
+        setProvider(user.app_metadata.provider || "email");
+      }
+      setLoading(false);
+    }
+    checkProvider();
+  }, []);
+
+  if (loading) {
+    return <div className="p-6">Loading settings...</div>;
+  }
 
   return (
     <div className="space-y-8 p-5 lg:p-6">
@@ -307,29 +337,33 @@ export default function Settings() {
             </Dialog>
           }
         />
-        <SettingItem
-          icon={Lock}
-          title="Password"
-          description="Change your password"
-          action={
-            <Dialog open={passwordOpen} onOpenChange={setPasswordOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  Change
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Change Password</DialogTitle>
-                  <DialogDescription>
-                    Enter your current password and a new password.
-                  </DialogDescription>
-                </DialogHeader>
-                <PasswordForm setOpen={setPasswordOpen} />
-              </DialogContent>
-            </Dialog>
-          }
-        />
+        
+        {/* Only show Password Change if the provider is email */}
+        {provider === "email" && (
+          <SettingItem
+            icon={Lock}
+            title="Password"
+            description="Change your password"
+            action={
+              <Dialog open={passwordOpen} onOpenChange={setPasswordOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    Change
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Change Password</DialogTitle>
+                    <DialogDescription>
+                      Enter your current password and a new password.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <PasswordForm setOpen={setPasswordOpen} />
+                </DialogContent>
+              </Dialog>
+            }
+          />
+        )}
       </SettingsSection>
     </div>
   );
