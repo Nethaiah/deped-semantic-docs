@@ -441,7 +441,7 @@ export default async function Home() {
               <span className="font-semibold text-[#333]">Doculens</span>
             </div>
             <p className="text-sm text-[#333]">
-              © 2025 Doculens. GNN-powered document intelligence.
+              © 2025 Doculens. AI-powered document intelligence.
             </p>
           </div>
         </div>
