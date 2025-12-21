@@ -76,9 +76,12 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
 
       {/* Document Summary */}
       {hasSummary && (
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-4">
-          <h4 className="font-bold text-slate-800 mb-2">Summary</h4>
-          <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-5 mb-4">
+          <h4 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
+            <span className="w-1 h-5 bg-blue-500 rounded-full"></span>
+            Summary
+          </h4>
+          <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap text-justify hyphens-auto">
             {summary}
           </p>
         </div>
@@ -111,8 +114,8 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
                   </p>
                 </div>
                 {/* AI Answer */}
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
-                  <div className="flex items-center gap-2 mb-2">
+                <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-3">
                     <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
                       <span className="text-green-700 font-semibold text-xs">
                         AI
@@ -122,7 +125,7 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
                       Answer:
                     </span>
                   </div>
-                  <div className="prose prose-sm max-w-none text-slate-700">
+                  <div className="prose prose-sm max-w-none text-slate-700 prose-p:text-justify prose-p:leading-relaxed prose-li:text-justify">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {item.answer}
                     </ReactMarkdown>
@@ -135,7 +138,7 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
 
         {/* Current Answer (Latest) */}
         {answer && conversationHistory.length === 0 && (
-          <div className="mb-4 bg-slate-50 border border-slate-200 rounded-lg p-4">
+          <div className="mb-4 bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-5">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
                 <span className="text-green-700 font-semibold text-xs">AI</span>
@@ -144,7 +147,7 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
                 Answer:
               </span>
             </div>
-            <div className="prose prose-sm max-w-none text-slate-700">
+            <div className="prose prose-sm max-w-none text-slate-700 prose-p:text-justify prose-p:leading-relaxed prose-li:text-justify">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {answer}
               </ReactMarkdown>
