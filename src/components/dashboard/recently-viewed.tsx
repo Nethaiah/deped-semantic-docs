@@ -20,9 +20,10 @@ type RecentlyViewedDoc = {
 
 type Props = {
   documents: RecentlyViewedDoc[];
+  accentColor?: string;
 };
 
-export default function RecentlyViewed({ documents }: Props) {
+export default function RecentlyViewed({ documents, accentColor = "#278fb6" }: Props) {
   const router = useRouter();
 
   if (documents.length === 0) {
@@ -65,7 +66,7 @@ export default function RecentlyViewed({ documents }: Props) {
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <p className="font-bold text-[#278fb6] text-sm">
+                    <p className="font-bold text-sm" style={{ color: accentColor }}>
                       {item.code}
                     </p>
                     {firstTag && variant && (
@@ -87,7 +88,10 @@ export default function RecentlyViewed({ documents }: Props) {
                     <span>{formatTimeAgo(item.viewedAt)}</span>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-[#278fb6] group-hover:translate-x-1 transition-transform flex-shrink-0 mt-1" />
+                <ArrowRight 
+                  className="w-5 h-5 group-hover:translate-x-1 transition-transform flex-shrink-0 mt-1" 
+                  style={{ color: accentColor }}
+                />
               </div>
             </div>
           );

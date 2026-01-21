@@ -3,9 +3,10 @@ import { Stats } from "@/server/stats/get-stats";
 
 interface StatsCardsProps {
   stats: Stats;
+  accentColor?: string;
 }
 
-export default function StatsCards({ stats }: StatsCardsProps) {
+export default function StatsCards({ stats, accentColor = "#278fb6" }: StatsCardsProps) {
   const isOrdersPositive = stats.ordersDailyChange >= 0;
   const isMemosPositive = stats.memorandumsDailyChange >= 0;
 
@@ -14,15 +15,27 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       {/* Total Orders Card */}
       <div className="group relative bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-all duration-300 overflow-hidden">
         {/* Gradient overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#278fb6]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div 
+          className="absolute inset-0 bg-gradient-to-br via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{ background: `linear-gradient(to bottom right, ${accentColor}1A, transparent, transparent)` }}
+        ></div>
 
-        <div className="absolute top-0 right-0 w-20 lg:w-40 h-15 lg:h-30 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
-        <div className="absolute top-0 right-0 w-40 lg:w-60 h-40 lg:h-50 bg-gradient-to-br from-[#278fb6]/15 to-transparent rounded-bl-full"></div>
+        <div 
+          className="absolute top-0 right-0 w-20 lg:w-40 h-15 lg:h-30 rounded-bl-full"
+          style={{ background: `linear-gradient(to bottom right, ${accentColor}26, transparent)` }}
+        ></div>
+        <div 
+          className="absolute top-0 right-0 w-40 lg:w-60 h-40 lg:h-50 rounded-bl-full"
+          style={{ background: `linear-gradient(to bottom right, ${accentColor}26, transparent)` }}
+        ></div>
 
         {/* Content with relative positioning */}
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-[#278fb6]/15 rounded-xl">
+            <div 
+              className="p-3 rounded-xl"
+              style={{ backgroundColor: `${accentColor}26` }}
+            >
               <FileText className="w-6 h-6 text-slate-700" />
             </div>
             {stats.ordersDailyChange !== 0 && (
@@ -45,7 +58,10 @@ export default function StatsCards({ stats }: StatsCardsProps) {
         </div>
 
         {/* Bottom accent line */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#278fb6] to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+          style={{ background: `linear-gradient(to right, ${accentColor}, transparent)` }}
+        ></div>
       </div>
 
       {/* Total Memorandums Card */}

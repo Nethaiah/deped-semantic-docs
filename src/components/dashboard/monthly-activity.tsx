@@ -1,13 +1,14 @@
 "use client";
 
-import { HighlightedBarChart } from "@/components/dashboard/user/highlighted-bar-chart";
+import { HighlightedBarChart } from "@/components/dashboard/highlighted-bar-chart";
 import { MonthlyActivityData } from "@/server/stats/get-monthly-activity";
 
 interface MonthlyActivityProps {
   data: MonthlyActivityData[];
+  accentColor?: string;
 }
 
-export default function MonthlyActivity({ data }: MonthlyActivityProps) {
+export default function MonthlyActivity({ data, accentColor = "#278fb6" }: MonthlyActivityProps) {
   const currentData = data.map((d) => ({
     month: d.month,
     desktop: d.uploads,
@@ -20,8 +21,9 @@ export default function MonthlyActivity({ data }: MonthlyActivityProps) {
         data={currentData}
         title="Monthly Activity"
         description="New uploads and edits over the last 6 months."
-        color="#278fb6"
+        color={accentColor}
       />
     </div>
   );
 }
+

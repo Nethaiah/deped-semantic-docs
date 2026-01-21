@@ -1,5 +1,4 @@
-import AdminDocuments from "@/components/dashboard/admin/admin-page";
-import UserDocuments from "@/components/dashboard/user/user-page";
+import DashboardPage from "@/components/dashboard/dashboard-page";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -21,13 +20,5 @@ export default async function DocumentsPage() {
 
   const displayName = userData?.full_name || user.user_metadata.full_name;
 
-  return (
-    <>
-      {role === 'admin' ? (
-        <AdminDocuments name={displayName} />
-      ) : (
-        <UserDocuments name={displayName} />
-      )}
-    </>
-  );
+  return <DashboardPage name={displayName} role={role} />;
 }

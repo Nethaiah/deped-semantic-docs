@@ -1,7 +1,7 @@
 import { type EmailOtpType } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { syncGoogleUser } from '@/app/api/auth/google/route'
+import { syncSocialUser } from "@/server/auth/social-login"
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       
       // Handle OAuth (Google, etc.) - no type or other types
       if (data.user) {
-        await syncGoogleUser(data.user)
+        await syncSocialUser(data.user)
       }
       
       const redirectPath = next ?? '/dashboard'

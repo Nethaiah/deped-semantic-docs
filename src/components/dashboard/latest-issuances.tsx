@@ -11,7 +11,7 @@ import {
 import { getLatestIssuances } from "@/server/documents/get-latest-issuances";
 import { Funnel } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import IssuancesFilterDialog from "@/components/shared/issuances-filter-dialog";
+import IssuancesFilterDialog from "@/components/dashboard/issuances-filter-dialog";
 import NumberedPagination from "@/components/shared/numbered-pagination";
 
 type Issuance = {
@@ -38,9 +38,11 @@ function formatDate(dateString: string): string {
 export default function LatestIssuances({
   initialData,
   initialTotalPages = 1,
+  accentColor = "#278fb6",
 }: {
   initialData: Issuance[];
   initialTotalPages?: number;
+  accentColor?: string;
 }) {
   const router = useRouter();
   const [data, setData] = useState(initialData);
@@ -206,7 +208,7 @@ export default function LatestIssuances({
                         className="truncate"
                         title={`${issuance.code} ${issuance.title}`}
                       >
-                        <span className="font-bold text-[#278fb6] mr-2">
+                        <span className="font-bold mr-2" style={{ color: accentColor }}>
                           {issuance.code}
                         </span>
                         <br />

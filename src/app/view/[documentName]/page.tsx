@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import ViewDocument from "@/components/document/view-document";
 import { createClient } from "@/lib/supabase/server";
-import TrackDocumentView from "@/components/dashboard/user/track-document-view";
+import TrackDocumentView from "@/components/dashboard/track-document-view";
 
 type Props = {
   params: Promise<{ documentName: string }>;
