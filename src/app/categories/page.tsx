@@ -1,7 +1,7 @@
-import Categories from "@/features/categories/components/categories";
+import Categories from "@/components/categories/categories";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { getAllCategories } from "@/features/categories/server/actions";
+import { getAllCategories } from "@/server/categories/actions";
 
 export default async function CategoriesPage() {
   const supabase = await createClient();

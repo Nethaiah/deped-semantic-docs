@@ -1,7 +1,7 @@
-import Bookmarks from "@/features/bookmarks/components/bookmark";
+import Bookmarks from "@/components/bookmarks/bookmark";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { getBookmarkedDocumentsPaginated } from "@/features/bookmarks/server/get-bookmark";
+import { getBookmarkedDocumentsPaginated } from "@/server/bookmarks/get-bookmark";
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

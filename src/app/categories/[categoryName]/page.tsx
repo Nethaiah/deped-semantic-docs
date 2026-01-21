@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import Category from "../../../features/categories/categories-name/components/category";
+import Category from "@/components/categories/category";
 import { redirect } from "next/navigation";
-import { getDocumentsByCategoryPaginated, type CategoryFilters } from "@/features/categories/server/actions";
-import { getBookmarkStatusesForDocuments } from "@/features/categories/categories-name/server/actions";
+import { getDocumentsByCategoryPaginated, type CategoryFilters } from "@/server/categories/actions";
+import { getBookmarkStatusesForDocuments } from "@/server/categories/category-name-actions";
 
 type Props = {
   params: Promise<{ categoryName: string }>;

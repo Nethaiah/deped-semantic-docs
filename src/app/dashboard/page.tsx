@@ -1,5 +1,5 @@
-import AdminDocuments from "@/features/dashboard/admin/components/admin-page";
-import UserDocuments from "@/features/dashboard/user/components/user-page";
+import AdminDocuments from "@/components/dashboard/admin/admin-page";
+import UserDocuments from "@/components/dashboard/user/user-page";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
