@@ -95,27 +95,19 @@ export default function RegisterForm() {
   async function handleGoogleSignUp() {
     setIsGoogleLoading(true);
     try {
-      const response = await fetch("/api/auth/google", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
-        body: JSON.stringify({}),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Google sign-up failed");
+      if (error) {
+        throw new Error(error.message);
       }
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error("No OAuth URL received");
-      }
+      // Browser will redirect automatically, no need to handle URL
     } catch (err: any) {
-      const message = err?.error || err?.message || "Google sign-up failed";
+      const message = err?.message || "Google sign-up failed";
       toast.error(message, { duration: 5000, position: "bottom-right" });
       setIsGoogleLoading(false);
     }

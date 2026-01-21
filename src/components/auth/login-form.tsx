@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { login } from "@/server/auth/login";
+import { createClient } from "@/lib/supabase/client";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 export default function LoginForm() {
@@ -59,25 +60,18 @@ export default function LoginForm() {
   async function handleGoogleSignIn() {
     setIsGoogleLoading(true);
     try {
-      const response = await fetch("/api/auth/google", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
-        body: JSON.stringify({}),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Google sign-in failed");
+      if (error) {
+        throw new Error(error.message);
       }
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error("No OAuth URL received");
-      }
+      // Browser will redirect automatically, no need to handle URL
     } catch (err: any) {
       const message = err?.message || "Google sign-in failed";
       toast.error(message, { duration: 5000, position: "bottom-right" });
