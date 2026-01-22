@@ -36,7 +36,8 @@ export default function TrackDocumentView({ documentId }: Props) {
     return () => {
       isActive = false;
     };
-  }, [documentId, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [documentId]); // router is intentionally omitted - it's stable and including it causes infinite refresh loop
 
   // This component doesn't render anything
   return null;
