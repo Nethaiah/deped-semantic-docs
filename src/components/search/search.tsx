@@ -389,19 +389,19 @@ export default function Search({ role }: Role) {
 
       {/* AI Answer Section */}
       {answer && (
-        <div className="mb-6 p-6 bg-white rounded-lg shadow-md border border-gray-200">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-              <span className="text-blue-600 font-semibold text-sm">AI</span>
+        <div className="mb-6 p-6 bg-gradient-to-br from-white to-blue-50/30 rounded-xl shadow-md border border-gray-200">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shadow-sm">
+              <span className="text-blue-600 font-bold text-sm">AI</span>
             </div>
             <h2 className="text-xl font-bold text-gray-900">Answer</h2>
             {searchType && (
-              <span className="ml-auto text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+              <span className="ml-auto text-xs text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full font-medium">
                 {searchType.replace("_", " ").toUpperCase()}
               </span>
             )}
           </div>
-          <div className="prose max-w-none text-gray-700">
+          <div className="prose prose-sm md:prose-base max-w-none text-gray-700 text-justify leading-7 [&>*]:text-justify [&_p]:text-justify [&_li]:text-justify [&_p]:leading-7 [&_li]:leading-7 [&_p]:mb-3 [&_ul]:my-2 [&_ol]:my-2">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{answer}</ReactMarkdown>
           </div>
         </div>
