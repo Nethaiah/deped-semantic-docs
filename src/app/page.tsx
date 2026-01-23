@@ -1,38 +1,19 @@
-import Link from "next/link";
-import {
-  FileText,
-  Search,
-  Sparkles,
-  ArrowRight,
-  BookOpen,
-  Layers,
-  Network,
-} from "lucide-react";
-import Header from "@/components/header";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import React from "react";
+import { FileText, Search, ArrowRight, BookOpen, Layers } from "lucide-react";
 
-export default async function Home() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (user) {
-    redirect("/dashboard");
-  }
-
+export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section - Asymmetric Layout */}
       <section className="mx-auto max-w-7xl px-6 pt-32 pb-20">
         <div className="grid gap-12 lg:grid-cols-12 items-center">
           <div className="lg:col-span-7 py-10 lg:py-20">
-            <div className="inline-flex items-center rounded-full text-sm text-blue-500">
+            <div className="inline-flex items-center rounded-full text-sm text-[#087830]">
               AI-Powered Document Intelligence
             </div>
             <h1 className="text-[2.5em] font-bold leading-tight text-[#333] mb-6">
               Stop drowning in paperwork.
-              <span className="text-[#278fb6]"> Start understanding it.</span>
+              <span className="text-[#087830]"> Start understanding it.</span>
             </h1>
             <p className="text-lg text-gray-600 leading-relaxed mb-8">
               Doculens uses Transformer-based Models to automatically read,
@@ -40,29 +21,23 @@ export default async function Home() {
               can find what matters in seconds, not hours.
             </p>
             <div className="flex justify-center lg:justify-start gap-2 lg:gap-4">
-              <Link
-                href="/register"
-                className="group flex items-center gap-2 rounded-full bg-[#278fb6] px-4 lg:px-7 py-2 lg:py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#278fb6]/80 transition"
-              >
+              <button className="group flex items-center gap-2 rounded-full bg-[#087830] px-4 lg:px-7 py-2 lg:py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#065a24] transition">
                 Get started
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                href="#demo"
-                className="flex items-center gap-2 rounded-full border-2 border-gray-300 px-4 lg:px-7 py-2 lg:py-3.5 text-base font-semibold text-gray-700 hover:border-gray-400 transition"
-              >
+              </button>
+              <button className="flex items-center gap-2 rounded-full border-2 border-gray-300 px-4 lg:px-7 py-2 lg:py-3.5 text-base font-semibold text-gray-700 hover:border-gray-400 transition">
                 Watch demo
-              </Link>
+              </button>
             </div>
           </div>
 
           <div className="lg:col-span-5">
             <div className="relative">
-              <div className="absolute -inset-4 rounded-3xl bg-gradient-to-tr from-indigo-100 via-purple-50 to-pink-50 opacity-75 blur-2xl"></div>
+              <div className="absolute -inset-4 rounded-3xl bg-gradient-to-tr from-emerald-100 via-green-50 to-teal-50 opacity-75 blur-2xl"></div>
               <div className="relative space-y-4">
-                <div className=" relative rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+                <div className="relative rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                   <div className="mb-3 flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-indigo-600" />
+                    <FileText className="h-5 w-5 text-[#087830]" />
                     <span className="text-sm font-semibold text-gray-900">
                       Memo #2024-156
                     </span>
@@ -72,19 +47,18 @@ export default async function Home() {
                     all departments effective March 1, 2025...
                   </p>
                   <div className="mt-3 flex gap-2">
-                    <span className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700">
+                    <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700">
                       HR Policy
                     </span>
-                    <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                    <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
                       High Priority
                     </span>
                   </div>
-                  {/* Decorative corner accent */}
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#278fb6]/20 to-transparent rounded-bl-full"></div>
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#087830]/20 to-transparent rounded-bl-full"></div>
                 </div>
                 <div className="relative rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                   <div className="mb-3 flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-purple-600" />
+                    <FileText className="h-5 w-5 text-teal-600" />
                     <span className="text-sm font-semibold text-gray-900">
                       Order #2024-089
                     </span>
@@ -94,11 +68,11 @@ export default async function Home() {
                     revised procurement procedures...
                   </p>
                   <div className="mt-3 flex gap-2">
-                    <span className="rounded-full bg-purple-100 px-2.5 py-1 text-xs font-medium text-purple-700">
+                    <span className="rounded-full bg-teal-100 px-2.5 py-1 text-xs font-medium text-teal-700">
                       Finance
                     </span>
                   </div>
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#278fb6]/20 to-transparent rounded-bl-full"></div>
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#087830]/20 to-transparent rounded-bl-full"></div>
                 </div>
               </div>
             </div>
@@ -112,7 +86,7 @@ export default async function Home() {
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Hundreds of documents. One system.
           </h2>
-          <div className="mx-auto w-30 h-1 bg-[#278fb6] rounded-full mb-6"></div>
+          <div className="mx-auto w-30 h-1 bg-[#087830] rounded-full mb-6"></div>
           <p className="text-lg text-gray-600 leading-relaxed">
             Government agencies and institutions deal with hundreds of official
             orders annually. Finding the right memo, understanding what it says,
@@ -136,7 +110,7 @@ export default async function Home() {
           {/* Feature 1 - Large */}
           <div className="grid gap-12 lg:grid-cols-2 items-center">
             <div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-lg bg-blue-100 px-3 py-1.5 text-sm font-semibold text-blue-700">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-lg bg-emerald-100 px-3 py-1.5 text-sm font-semibold text-emerald-700">
                 <BookOpen className="h-4 w-4" />
                 Instant Summaries
               </div>
@@ -151,20 +125,20 @@ export default async function Home() {
               </p>
               <ul className="space-y-3">
                 <li className="flex gap-3 text-gray-700">
-                  <span className="text-[#278fb6]">✓</span>
+                  <span className="text-[#087830]">✓</span>
                   <span>Captures key directives and action items</span>
                 </li>
                 <li className="flex gap-3 text-gray-700">
-                  <span className="text-[#278fb6]">✓</span>
+                  <span className="text-[#087830]">✓</span>
                   <span>Preserves important dates and deadlines</span>
                 </li>
                 <li className="flex gap-3 text-gray-700">
-                  <span className="text-[#278fb6]">✓</span>
+                  <span className="text-[#087830]">✓</span>
                   <span>References related policies automatically</span>
                 </li>
               </ul>
             </div>
-            <div className="rounded-2xl border border-gray-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-8">
+            <div className="rounded-2xl border border-gray-200 bg-gradient-to-br from-emerald-50 to-green-50 p-8">
               <div className="space-y-4">
                 <div className="rounded-xl bg-white p-4 shadow-sm">
                   <div className="text-xs font-semibold text-gray-500 mb-2">
@@ -176,10 +150,10 @@ export default async function Home() {
                   </div>
                 </div>
                 <div className="flex justify-center">
-                  <ArrowRight className="h-6 w-6 text-[#278fb6]" />
+                  <ArrowRight className="h-6 w-6 text-[#087830]" />
                 </div>
-                <div className="rounded-xl bg-white p-4 shadow-sm border-2 border-indigo-200">
-                  <div className="text-xs font-semibold text-[#278fb6] mb-2">
+                <div className="rounded-xl bg-white p-4 shadow-sm border-2 border-emerald-200">
+                  <div className="text-xs font-semibold text-[#087830] mb-2">
                     AI SUMMARY
                   </div>
                   <p className="text-sm text-gray-700 leading-relaxed">
@@ -197,32 +171,32 @@ export default async function Home() {
 
           {/* Feature 2 - Split */}
           <div className="grid gap-12 lg:grid-cols-2 items-center">
-            <div className="order-2 lg:order-1 rounded-2xl border border-gray-200 bg-gradient-to-br from-purple-50 to-pink-50 p-8">
+            <div className="order-2 lg:order-1 rounded-2xl border border-gray-200 bg-gradient-to-br from-teal-50 to-emerald-50 p-8">
               <div className="space-y-3">
                 <div className="flex items-center gap-3 rounded-xl bg-white p-4 shadow-sm">
-                  <Search className="h-5 w-5 text-purple-600" />
+                  <Search className="h-5 w-5 text-[#087830]" />
                   <span className="text-sm font-medium text-gray-700">
                     budget guidelines procurement
                   </span>
                 </div>
-                <div className="rounded-xl bg-white p-4 shadow-sm border-l-4 border-purple-600">
-                  <div className="text-xs font-semibold text-purple-600 mb-1">
+                <div className="rounded-xl bg-white p-4 shadow-sm border-l-4 border-[#087830]">
+                  <div className="text-xs font-semibold text-[#087830] mb-1">
                     HIGHLY RELEVANT
                   </div>
                   <div className="text-sm font-semibold text-gray-900">
                     Order #2024-089: Budget Allocation Guidelines
                   </div>
                 </div>
-                <div className="rounded-xl bg-white p-4 shadow-sm border-l-4 border-purple-300">
-                  <div className="text-xs font-semibold text-purple-400 mb-1">
+                <div className="rounded-xl bg-white p-4 shadow-sm border-l-4 border-emerald-400">
+                  <div className="text-xs font-semibold text-emerald-600 mb-1">
                     RELATED
                   </div>
                   <div className="text-sm font-semibold text-gray-900">
                     Memo #2023-234: Procurement Procedures Update
                   </div>
                 </div>
-                <div className="rounded-xl bg-white p-4 shadow-sm border-l-4 border-purple-200">
-                  <div className="text-xs font-semibold text-purple-300 mb-1">
+                <div className="rounded-xl bg-white p-4 shadow-sm border-l-4 border-teal-300">
+                  <div className="text-xs font-semibold text-teal-500 mb-1">
                     RELATED
                   </div>
                   <div className="text-sm font-semibold text-gray-900">
@@ -232,7 +206,7 @@ export default async function Home() {
               </div>
             </div>
             <div className="order-1 lg:order-2">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-lg bg-purple-100 px-3 py-1.5 text-sm font-semibold text-purple-700">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-lg bg-teal-100 px-3 py-1.5 text-sm font-semibold text-teal-700">
                 <Search className="h-4 w-4" />
                 Smart Search
               </div>
@@ -246,15 +220,15 @@ export default async function Home() {
               </p>
               <ul className="space-y-3">
                 <li className="flex gap-3 text-gray-700">
-                  <span className="text-[#278fb6]">✓</span>
+                  <span className="text-[#087830]">✓</span>
                   <span>Understands context and relationships</span>
                 </li>
                 <li className="flex gap-3 text-gray-700">
-                  <span className="text-[#278fb6]">✓</span>
+                  <span className="text-[#087830]">✓</span>
                   <span>Surfaces related orders and amendments</span>
                 </li>
                 <li className="flex gap-3 text-gray-700">
-                  <span className="text-[#278fb6]">✓</span>
+                  <span className="text-[#087830]">✓</span>
                   <span>Works with natural language queries</span>
                 </li>
               </ul>
@@ -264,7 +238,7 @@ export default async function Home() {
           {/* Feature 3 - Cards */}
           <div>
             <div className="mb-8 text-center">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-lg bg-emerald-100 px-3 py-1.5 text-sm font-semibold text-emerald-700">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-lg bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-700">
                 <Layers className="h-4 w-4" />
                 Auto-Organization
               </div>
@@ -280,15 +254,11 @@ export default async function Home() {
             <div className="grid gap-6 md:grid-cols-3">
               {/* Card 1 */}
               <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 hover:shadow-lg transition-all duration-300">
-                {/* Subtle gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-emerald-200/40 to-transparent rounded-bl-full"></div>
 
-                {/* Decorative corner accent */}
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-200/40 to-transparent rounded-bl-full"></div>
-
-                {/* Content */}
                 <div className="relative z-10">
-                  <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-lg bg-blue-100 text-blue-600">
+                  <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-lg bg-emerald-100 text-emerald-700">
                     <svg
                       className="w-6 h-6"
                       fill="none"
@@ -312,21 +282,16 @@ export default async function Home() {
                   </p>
                 </div>
 
-                {/* Bottom accent line */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#278fb6] to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#087830] to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </div>
 
               {/* Card 2 */}
               <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 hover:shadow-lg transition-all duration-300">
-                {/* Subtle gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-50/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-teal-200/40 to-transparent rounded-bl-full"></div>
 
-                {/* Decorative corner accent */}
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-emerald-200/40 to-transparent rounded-bl-full"></div>
-
-                {/* Content */}
                 <div className="relative z-10">
-                  <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-lg bg-emerald-100 text-emerald-600">
+                  <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-lg bg-teal-100 text-teal-700">
                     <svg
                       className="w-6 h-6"
                       fill="none"
@@ -350,21 +315,16 @@ export default async function Home() {
                   </p>
                 </div>
 
-                {/* Bottom accent line */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-600 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </div>
 
               {/* Card 3 */}
               <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 hover:shadow-lg transition-all duration-300">
-                {/* Subtle gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-50/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-green-200/40 to-transparent rounded-bl-full"></div>
 
-                {/* Decorative corner accent */}
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-amber-200/40 to-transparent rounded-bl-full"></div>
-
-                {/* Content */}
                 <div className="relative z-10">
-                  <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-lg bg-amber-100 text-amber-600">
+                  <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-lg bg-green-100 text-green-700">
                     <svg
                       className="w-6 h-6"
                       fill="none"
@@ -388,53 +348,15 @@ export default async function Home() {
                   </p>
                 </div>
 
-                {/* Bottom accent line */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-600 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof
-      <section className="border-y border-gray-200 bg-gray-50 py-16">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Built for the real world
-            </h2>
-            <p className="text-gray-600">
-              Designed specifically for Philippine government agencies and
-              institutions
-            </p>
-          </div>
-          <div className="grid gap-8 md:grid-cols-2">
-            <div className="rounded-2xl bg-white p-8 shadow-sm">
-              <div className="mb-4 text-4xl font-bold text-indigo-600">
-                DepEd Offices
-              </div>
-              <p className="text-gray-700 leading-relaxed">
-                Process division orders, school memoranda, and regional
-                directives. Perfect for superintendents, principals, and
-                administrative staff managing multiple schools.
-              </p>
-            </div>
-            <div className="rounded-2xl bg-white p-8 shadow-sm">
-              <div className="mb-4 text-4xl font-bold text-purple-600">
-                Universities
-              </div>
-              <p className="text-gray-700 leading-relaxed">
-                Organize institutional policies, academic orders, and
-                administrative circulars. Built for registrars, deans, and
-                university administrators handling complex documentation.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section> */}
-
       {/* Footer */}
-      <footer className="border-t border-gray-300 bg-[#278fb6]/10 py-12">
+      <footer className="border-t border-gray-300 bg-[#087830]/10 py-12">
         <div className="mx-auto max-w-6xl px-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="flex items-center gap-2">
