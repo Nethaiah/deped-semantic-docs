@@ -29,9 +29,9 @@ import {
 import { createClient } from "@/lib/supabase/client";
 
 type UserMenuProps = {
-  name: string;
-  email: string;
-  image: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
 };
 
 export default function UserMenu({ name, email, image }: UserMenuProps) {
@@ -63,9 +63,9 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
             className="h-auto p-0 hover:bg-transparent  cursor-pointer"
           >
             <Avatar className="size-10">
-              {image && <AvatarImage src={image} alt={name} />}
+              {image && <AvatarImage src={image} alt={name || ""} />}
               <AvatarFallback className="text-md bg-gray-100">
-                {name
+                {(name || email || "User")
                   .split(" ")
                   .map((n: string) => n[0])
                   .join("")
@@ -82,7 +82,7 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
         >
           <DropdownMenuLabel className="flex min-w-0 flex-col">
             <span className="text-foreground truncate text-sm font-medium">
-              {name}
+              {name || email || "User"}
             </span>
             <span className="text-muted-foreground truncate text-sm font-normal">
               {email}
