@@ -1,6 +1,6 @@
 import ClientTimeDisplay from "@/components/shared/time";
-import LatestIssuances from "@/components/dashboard/latest-issuances";
-import { getLatestIssuances } from "@/server/documents/get-latest-issuances";
+import ThesesTable from "@/components/dashboard/theses-table";
+import { getTheses } from "@/server/documents/get-theses";
 import { getStats } from "@/server/stats/get-stats";
 import { getRecentlyViewed } from "@/server/documents/get-recently-viewed";
 import StatsCards from "@/components/dashboard/stats-card";
@@ -15,7 +15,7 @@ interface DashboardPageProps {
 }
 
 export default async function DashboardPage({ name, role }: DashboardPageProps) {
-  const latestIssuances = await getLatestIssuances();
+  const theses = await getTheses();
   const stats = await getStats();
   const recentlyViewed = await getRecentlyViewed(3);
   const monthlyActivity = await getMonthlyActivity();
@@ -57,8 +57,7 @@ export default async function DashboardPage({ name, role }: DashboardPageProps) 
                 isAdmin ? "text-gray-600" : "text-slate-600"
               } text-sm lg:text-xl font-regular`}
             >
-              Stay informed with the latest orders and memoranda from your
-              organization.
+              Explore and discover theses from your institution.
             </p>
           </div>
           <ClientTimeDisplay />
@@ -71,9 +70,9 @@ export default async function DashboardPage({ name, role }: DashboardPageProps) 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Latest Issuances Table */}
-        <LatestIssuances
-          initialData={latestIssuances.data}
-          initialTotalPages={latestIssuances?.totalPages}
+        <ThesesTable
+          initialData={theses.data}
+          initialTotalPages={theses?.totalPages}
           accentColor={theme.primary}
         />
 

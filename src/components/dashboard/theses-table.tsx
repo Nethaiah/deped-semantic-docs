@@ -8,39 +8,18 @@ import {
   getBadgeVariant,
   getDynamicBadgeClasses,
 } from "@/lib/badge-variants";
-import { getLatestIssuances } from "@/server/documents/get-latest-issuances";
+import { getTheses, type Thesis } from "@/server/documents/get-theses";
 import { Funnel } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import IssuancesFilterDialog from "@/components/dashboard/issuances-filter-dialog";
+import ThesesFilterDialog from "@/components/dashboard/theses-filter-dialog";
 import NumberedPagination from "@/components/shared/numbered-pagination";
 
-type Issuance = {
-  id: string;
-  code: string;
-  title: string;
-  issuedDate: string;
-  tags: string[];
-  office: string;
-  slug: string;
-};
-
-// Format date to "Month Day, Year" format
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  const options: Intl.DateTimeFormatOptions = {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  };
-  return date.toLocaleDateString("en-US", options);
-}
-
-export default function LatestIssuances({
+export default function ThesesTable({
   initialData,
   initialTotalPages = 1,
   accentColor = "#278fb6",
 }: {
-  initialData: Issuance[];
+  initialData: Thesis[];
   initialTotalPages?: number;
   accentColor?: string;
 }) {
@@ -51,30 +30,33 @@ export default function LatestIssuances({
   const [isLoading, setIsLoading] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [formFilters, setFormFilters] = useState({
-    fromDate: "",
-    toDate: "",
-    issuer: "",
-    issuerLevel: "",
-    code: "",
+    yearFrom: "",
+    yearTo: "",
+    department: "",
+    college: "",
     title: "",
-    tags: "",
-    docType: "",
   });
   const [appliedFilters, setAppliedFilters] = useState<{
-    issuerLevel?: "Central" | "Division";
-    docType?: "Order" | "Memorandum";
+    yearFrom?: number;
+    yearTo?: number;
+    department?: string;
+    college?: string;
+    title?: string;
   }>({});
 
   const loadPage = async (
     page: number,
     overrideFilters?: {
-      issuerLevel?: "Central" | "Division";
-      docType?: "Order" | "Memorandum";
+      yearFrom?: number;
+      yearTo?: number;
+      department?: string;
+      college?: string;
+      title?: string;
     }
   ) => {
     setIsLoading(true);
     try {
-      const result = await getLatestIssuances(
+      const result = await getTheses(
         page,
         10,
         overrideFilters ?? appliedFilters
@@ -91,12 +73,17 @@ export default function LatestIssuances({
 
   const onApplyFilters = async () => {
     const nextApplied: {
-      issuerLevel?: "Central" | "Division";
-      docType?: "Order" | "Memorandum";
+      yearFrom?: number;
+      yearTo?: number;
+      department?: string;
+      college?: string;
+      title?: string;
     } = {
-      issuerLevel:
-        (formFilters.issuerLevel as "Central" | "Division") || undefined,
-      docType: (formFilters.docType as "Order" | "Memorandum") || undefined,
+      yearFrom: formFilters.yearFrom ? parseInt(formFilters.yearFrom) : undefined,
+      yearTo: formFilters.yearTo ? parseInt(formFilters.yearTo) : undefined,
+      department: formFilters.department || undefined,
+      college: formFilters.college || undefined,
+      title: formFilters.title || undefined,
     };
     setAppliedFilters(nextApplied);
     setIsFilterOpen(false);
@@ -105,14 +92,11 @@ export default function LatestIssuances({
 
   const onResetFilters = async () => {
     setFormFilters({
-      fromDate: "",
-      toDate: "",
-      issuer: "",
-      issuerLevel: "",
-      code: "",
+      yearFrom: "",
+      yearTo: "",
+      department: "",
+      college: "",
       title: "",
-      tags: "",
-      docType: "",
     });
     setAppliedFilters({});
     setIsFilterOpen(false);
@@ -120,8 +104,11 @@ export default function LatestIssuances({
   };
 
   const activeFilterCount = [
-    appliedFilters.issuerLevel,
-    appliedFilters.docType,
+    appliedFilters.yearFrom,
+    appliedFilters.yearTo,
+    appliedFilters.department,
+    appliedFilters.college,
+    appliedFilters.title,
   ].filter(Boolean).length;
 
   // For numbered pagination - we don't use actual URLs, just trigger loadPage
@@ -137,7 +124,7 @@ export default function LatestIssuances({
     <div className="col-span-2 bg-white rounded-lg shadow-md border border-slate-200 overflow-scroll">
       <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-50">
         <h2 className="text-xl lg:text-2xl font-bold text-slate-800 flex items-center gap-2">
-          Issuances
+          Theses
         </h2>
         <div className="flex items-center gap-2">
           {activeFilterCount > 0 && (
@@ -154,7 +141,7 @@ export default function LatestIssuances({
             <Funnel className="mr-2 h-4 w-4" />
             Filters
           </Button>
-          <IssuancesFilterDialog
+          <ThesesFilterDialog
             open={isFilterOpen}
             onOpenChange={setIsFilterOpen}
             values={formFilters}
@@ -170,89 +157,58 @@ export default function LatestIssuances({
           <thead className="bg-slate-100 border-b border-slate-200">
             <tr>
               <th className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide">
-                Created
+                Year
               </th>
               <th className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide">
                 Title
               </th>
               <th className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide">
-                Tags
+                Department
               </th>
               <th className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide">
-                Issuer
+                College
               </th>
             </tr>
           </thead>
 
           <tbody>
             {data.length > 0 ? (
-              data.map((issuance, index) => (
+              data.map((thesis, index) => (
                 <tr
-                  key={issuance.id}
-                  onClick={() => router.push(`/view/${issuance.id}`)}
+                  key={thesis.id}
+                  onClick={() => router.push(`/view/${thesis.id}`)}
                   className={`hover:bg-slate-50 transition-colors cursor-pointer ${
                     index !== data.length - 1 ? "border-b border-slate-200" : ""
                   }`}
                 >
-                  <td className="py-4 px-4 text-md text-slate-600">
-                    {formatDate(issuance.issuedDate)}
+                  <td className="py-4 px-4 text-md text-slate-600 font-semibold">
+                    <span style={{ color: accentColor }}>{thesis.year}</span>
                   </td>
 
-                  <td className="py-4 px-4 text-md text-slate-900 max-w-[250px]">
+                  <td className="py-4 px-4 text-md text-slate-900 max-w-[300px]">
                     <Link
-                      href={`/view/${issuance.id}`}
+                      href={`/view/${thesis.id}`}
                       className="block hover:opacity-80 transition-opacity"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div
                         className="truncate"
-                        title={`${issuance.code} ${issuance.title}`}
+                        title={thesis.title}
                       >
-                        <span className="font-bold mr-2" style={{ color: accentColor }}>
-                          {issuance.code}
-                        </span>
-                        <br />
-                        <span className="text-slate-900">{issuance.title}</span>
+                        <span className="text-slate-900">{thesis.title}</span>
                       </div>
                     </Link>
                   </td>
 
-                  <td className="py-4 px-4">
-                    <div className="flex flex-wrap gap-1.5 items-center">
-                      {issuance.tags.slice(0, 2).map((tag, tagIndex) => {
-                        const variant = getBadgeVariant(tag);
-                        if (variant === "dynamic") {
-                          return (
-                            <span
-                              key={tagIndex}
-                              className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${getDynamicBadgeClasses(
-                                tag
-                              )}`}
-                            >
-                              {tag}
-                            </span>
-                          );
-                        }
-                        return (
-                          <Badge key={tagIndex} variant={variant}>
-                            {tag}
-                          </Badge>
-                        );
-                      })}
-                      {issuance.tags.length > 2 && (
-                        <span
-                          className="text-xs text-slate-500 font-semibold cursor-default"
-                          title={issuance.tags.slice(2).join(", ")}
-                        >
-                          +{issuance.tags.length - 2}
-                        </span>
-                      )}
-                    </div>
+                  <td className="py-4 px-4 text-md text-slate-600">
+                    <span className="text-slate-600 text-sm">
+                      {thesis.department}
+                    </span>
                   </td>
 
                   <td className="py-4 px-4 text-md text-slate-600">
                     <span className="text-slate-500 text-sm">
-                      {issuance.office}
+                      {thesis.college}
                     </span>
                   </td>
                 </tr>
@@ -260,7 +216,7 @@ export default function LatestIssuances({
             ) : (
               <tr>
                 <td colSpan={4} className="py-8 text-center text-slate-500">
-                  No issuances found
+                  No theses found
                 </td>
               </tr>
             )}
