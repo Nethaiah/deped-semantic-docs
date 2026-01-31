@@ -1,5 +1,17 @@
 import React from "react";
-import { FileText, Search, ArrowRight, BookOpen, Layers } from "lucide-react";
+import {
+  FileText,
+  Search,
+  ArrowRight,
+  BookOpen,
+  Sparkles,
+  GitGraph,
+  Library,
+  GraduationCap,
+  Layers,
+  Link,
+  Zap,
+} from "lucide-react";
 
 export default function Home() {
   return (
@@ -8,17 +20,19 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-6 pt-32 pb-20">
         <div className="grid gap-12 lg:grid-cols-12 items-center">
           <div className="lg:col-span-7 py-10 lg:py-20">
-            <div className="inline-flex items-center rounded-full text-sm text-[#087830]">
-              AI-Powered Document Intelligence
+            <div className="group flex items-center gap-2 text-sm text-[#087830]/70">
+              <span className="h-1.5 w-3 rounded-full bg-[#087830]" />
+              <span>Laguna University Research Archives</span>
             </div>
-            <h1 className="text-[2.5em] font-bold leading-tight text-[#333] mb-6">
-              Stop drowning in paperwork.
-              <span className="text-[#087830]"> Start understanding it.</span>
+
+            <h1 className="text-5xl font-bold leading-tight text-[#333] mb-6">
+              AI-assisted research intelligence
             </h1>
-            <p className="text-lg text-gray-600 leading-relaxed mb-8">
-              Doculens uses Transformer-based Models to automatically read,
-              summarize, and organize your official orders and memoranda so you
-              can find what matters in seconds, not hours.
+            <p className="text-lg text-gray-600 leading-relaxed mb-8 w-[75%]">
+              Doculens uses advanced AI to automatically read, summarize, and
+              organize <span className="text-[#087830]">Laguna University</span>{" "}
+              research papers, theses, and capstone projects so you can find and
+              understand them faster.
             </p>
             <div className="flex justify-center lg:justify-start gap-2 lg:gap-4">
               <button className="group flex items-center gap-2 rounded-full bg-[#087830] px-4 lg:px-7 py-2 lg:py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#065a24] transition">
@@ -39,19 +53,19 @@ export default function Home() {
                   <div className="mb-3 flex items-center gap-2">
                     <FileText className="h-5 w-5 text-[#087830]" />
                     <span className="text-sm font-semibold text-gray-900">
-                      Memo #2024-156
+                      Thesis 2024-025
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    Implementation of new attendance monitoring system across
-                    all departments effective March 1, 2025...
+                    Solid Waste Management Practices and Awareness Among Laguna
+                    University Students...
                   </p>
                   <div className="mt-3 flex gap-2">
                     <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700">
-                      HR Policy
+                      Environmental Science
                     </span>
                     <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
-                      High Priority
+                      Undergraduate
                     </span>
                   </div>
                   <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#087830]/20 to-transparent rounded-bl-full"></div>
@@ -60,16 +74,16 @@ export default function Home() {
                   <div className="mb-3 flex items-center gap-2">
                     <FileText className="h-5 w-5 text-teal-600" />
                     <span className="text-sm font-semibold text-gray-900">
-                      Order #2024-089
+                      Capstone 2025-012
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    Budget allocation guidelines for fiscal year 2025-2026 with
-                    revised procurement procedures...
+                    Development of a Mobile-Based Attendance System for Laguna
+                    University Faculty...
                   </p>
                   <div className="mt-3 flex gap-2">
                     <span className="rounded-full bg-teal-100 px-2.5 py-1 text-xs font-medium text-teal-700">
-                      Finance
+                      Computer Science
                     </span>
                   </div>
                   <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#087830]/20 to-transparent rounded-bl-full"></div>
@@ -84,13 +98,14 @@ export default function Home() {
       <section className="border-y border-gray-200 bg-gray-100 py-16">
         <div className="mx-auto max-w-4xl px-6 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Hundreds of documents. One system.
+            Hundreds of research papers. One system.
           </h2>
           <div className="mx-auto w-30 h-1 bg-[#087830] rounded-full mb-6"></div>
           <p className="text-lg text-gray-600 leading-relaxed">
-            Government agencies and institutions deal with hundreds of official
-            orders annually. Finding the right memo, understanding what it says,
-            and tracking related directives shouldn't be a full-time job.
+            Students, faculty, and researchers at Laguna University deal with
+            hundreds of theses, capstones, and studies. Finding the right paper,
+            understanding its key findings, and seeing related works shouldn't
+            take hours of searching.
           </p>
         </div>
       </section>
@@ -118,23 +133,22 @@ export default function Home() {
                 Read 50 pages in 30 seconds
               </h3>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                Our Transformer model extracts the core message from any
-                official document and generates a clean, readable summary. No
-                more skimming through dense legal language trying to find what
-                matters.
+                Our AI quickly reads any research paper or thesis and creates a
+                clear, concise summary. No more scanning long documents to find
+                the main findings, methodology, or conclusions.
               </p>
               <ul className="space-y-3">
                 <li className="flex gap-3 text-gray-700">
                   <span className="text-[#087830]">✓</span>
-                  <span>Captures key directives and action items</span>
+                  <span>Captures objectives, results, and recommendations</span>
                 </li>
                 <li className="flex gap-3 text-gray-700">
                   <span className="text-[#087830]">✓</span>
-                  <span>Preserves important dates and deadlines</span>
+                  <span>Highlights key dates, variables, and sample size</span>
                 </li>
                 <li className="flex gap-3 text-gray-700">
                   <span className="text-[#087830]">✓</span>
-                  <span>References related policies automatically</span>
+                  <span>Notes related studies and references</span>
                 </li>
               </ul>
             </div>
@@ -142,11 +156,11 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="rounded-xl bg-white p-4 shadow-sm">
                   <div className="text-xs font-semibold text-gray-500 mb-2">
-                    ORIGINAL DOCUMENT
+                    ORIGINAL PAPER
                   </div>
                   <div className="h-24 rounded bg-gray-100"></div>
                   <div className="mt-2 text-xs text-gray-400">
-                    2,847 words • 8 pages
+                    4,200 words • 45 pages
                   </div>
                 </div>
                 <div className="flex justify-center">
@@ -157,12 +171,12 @@ export default function Home() {
                     AI SUMMARY
                   </div>
                   <p className="text-sm text-gray-700 leading-relaxed">
-                    All departments must implement new security protocols by
-                    March 15. Training sessions scheduled for dept. heads Feb
-                    28-29.
+                    Study surveyed 300 students on waste management awareness.
+                    Results show moderate knowledge but low practice. Recommends
+                    university-wide campaign and recycling facilities.
                   </p>
                   <div className="mt-2 text-xs text-gray-400">
-                    89 words • 30 sec read
+                    68 words • 25 sec read
                   </div>
                 </div>
               </div>
@@ -176,7 +190,7 @@ export default function Home() {
                 <div className="flex items-center gap-3 rounded-xl bg-white p-4 shadow-sm">
                   <Search className="h-5 w-5 text-[#087830]" />
                   <span className="text-sm font-medium text-gray-700">
-                    budget guidelines procurement
+                    student attendance mobile system
                   </span>
                 </div>
                 <div className="rounded-xl bg-white p-4 shadow-sm border-l-4 border-[#087830]">
@@ -184,7 +198,7 @@ export default function Home() {
                     HIGHLY RELEVANT
                   </div>
                   <div className="text-sm font-semibold text-gray-900">
-                    Order #2024-089: Budget Allocation Guidelines
+                    Capstone 2025-012: Mobile Attendance System
                   </div>
                 </div>
                 <div className="rounded-xl bg-white p-4 shadow-sm border-l-4 border-emerald-400">
@@ -192,7 +206,7 @@ export default function Home() {
                     RELATED
                   </div>
                   <div className="text-sm font-semibold text-gray-900">
-                    Memo #2023-234: Procurement Procedures Update
+                    Thesis 2023-089: RFID-Based Attendance Monitoring
                   </div>
                 </div>
                 <div className="rounded-xl bg-white p-4 shadow-sm border-l-4 border-teal-300">
@@ -200,7 +214,7 @@ export default function Home() {
                     RELATED
                   </div>
                   <div className="text-sm font-semibold text-gray-900">
-                    Order #2023-156: Financial Reporting Standards
+                    Feasibility Study 2024-045: Biometric Systems
                   </div>
                 </div>
               </div>
@@ -211,147 +225,120 @@ export default function Home() {
                 Smart Search
               </div>
               <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                Find documents by meaning, not keywords
+                Find papers by meaning, not just keywords
               </h3>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                Transformer-based semantic search understands what you're
-                actually looking for. Ask in plain language and get relevant
-                documents ranked by how related they are to your query.
+                Ask questions in plain language — the AI understands what you
+                mean and finds the most relevant theses, capstones, and studies,
+                ranked by how closely they match.
               </p>
               <ul className="space-y-3">
                 <li className="flex gap-3 text-gray-700">
                   <span className="text-[#087830]">✓</span>
-                  <span>Understands context and relationships</span>
+                  <span>Understands context and research topics</span>
                 </li>
                 <li className="flex gap-3 text-gray-700">
                   <span className="text-[#087830]">✓</span>
-                  <span>Surfaces related orders and amendments</span>
+                  <span>Shows related studies and follow-up works</span>
                 </li>
                 <li className="flex gap-3 text-gray-700">
                   <span className="text-[#087830]">✓</span>
-                  <span>Works with natural language queries</span>
+                  <span>Works with natural questions</span>
                 </li>
               </ul>
             </div>
           </div>
 
-          {/* Feature 3 - Cards */}
-          <div>
-            <div className="mb-8 text-center">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-lg bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-700">
-                <Layers className="h-4 w-4" />
-                Auto-Organization
-              </div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                Never manually tag a document again
-              </h3>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                The system automatically categorizes every document, maintains
-                relationships, and keeps everything organized without any manual
-                work.
-              </p>
-            </div>
-            <div className="grid gap-6 md:grid-cols-3">
-              {/* Card 1 */}
-              <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 hover:shadow-lg transition-all duration-300">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-emerald-200/40 to-transparent rounded-bl-full"></div>
+          {/* Platform Features Cards */}
+          <section className="py-24 overflow-hidden relative">
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-200/20 rounded-full blur-[128px] pointer-events-none"></div>
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-100/40 rounded-full blur-[128px] pointer-events-none"></div>
 
-                <div className="relative z-10">
-                  <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-lg bg-emerald-100 text-emerald-700">
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                      />
-                    </svg>
+            <div className="mx-auto max-w-7xl px-6 relative z-10">
+              <div className="mb-20 text-center lg:text-left">
+                <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                  Platform Features
+                </h2>
+                <p className="text-lg text-gray-600 max-w-2xl">
+                  Powerful tools designed to streamline your research workflow.
+                </p>
+              </div>
+
+              <div className="grid gap-8 lg:grid-cols-3">
+                {/* Card 1: Smart Categories */}
+                <div className="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#087830]/30 hover:shadow-xl hover:shadow-[#087830]/5 transition-all duration-500 overflow-hidden">
+                  <div className="h-48 mb-8 relative flex items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="relative w-32 h-32 transform group-hover:scale-110 transition-transform duration-500">
+                      <div className="absolute top-12 left-0 w-32 h-24 bg-gray-100 border border-gray-200 rounded-lg transform -skew-x-12 translate-x-4"></div>
+                      <div className="absolute top-6 left-2 w-32 h-24 bg-gray-50 border border-gray-200 rounded-lg transform -skew-x-12 translate-x-2 backdrop-blur-sm"></div>
+                      <div className="absolute top-0 left-4 w-32 h-24 bg-gradient-to-br from-[#087830] to-emerald-800 rounded-lg transform -skew-x-12 border border-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-900/10">
+                        <Layers className="text-white/90 w-8 h-8 transform skew-x-12" />
+                      </div>
+                    </div>
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
                     Smart Categories
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    Automatically assigns documents to HR, Finance, Operations,
-                    or custom categories
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Automatically sorts papers into Education, Business,
+                    Engineering, Environmental, or custom topics.
                   </p>
                 </div>
 
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#087830] to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-              </div>
-
-              {/* Card 2 */}
-              <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 hover:shadow-lg transition-all duration-300">
-                <div className="absolute inset-0 bg-gradient-to-br from-teal-50/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-teal-200/40 to-transparent rounded-bl-full"></div>
-
-                <div className="relative z-10">
-                  <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-lg bg-teal-100 text-teal-700">
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                      />
-                    </svg>
+                {/* Card 2: Link Detection */}
+                <div className="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#087830]/30 hover:shadow-xl hover:shadow-[#087830]/5 transition-all duration-500 overflow-hidden">
+                  <div className="h-48 mb-8 relative flex items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="relative w-32 h-32 transform rotate-12 scale-90 group-hover:scale-100 transition-transform duration-500">
+                      <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-gray-300 to-[#087830] -translate-y-1/2 transform -rotate-45"></div>
+                      <div className="absolute top-0 right-0 w-16 h-16 bg-white border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center transform rotate-12">
+                        <div className="w-8 h-2 bg-gray-200 rounded"></div>
+                      </div>
+                      <div className="absolute bottom-0 left-0 w-16 h-16 bg-[#087830] shadow-lg shadow-emerald-500/20 rounded-xl flex items-center justify-center transform -rotate-12 z-10">
+                        <Link className="text-white w-6 h-6" />
+                      </div>
+                    </div>
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
                     Link Detection
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    Identifies amendments, supersessions, and related directives
-                    across your database
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Finds related studies, follow-up research, and papers that
+                    cite or build on each other.
                   </p>
                 </div>
 
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-600 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-              </div>
-
-              {/* Card 3 */}
-              <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 hover:shadow-lg transition-all duration-300">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-green-200/40 to-transparent rounded-bl-full"></div>
-
-                <div className="relative z-10">
-                  <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-lg bg-green-100 text-green-700">
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
+                {/* Card 3: Instant Processing */}
+                <div className="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#087830]/30 hover:shadow-xl hover:shadow-[#087830]/5 transition-all duration-500 overflow-hidden">
+                  <div className="h-48 mb-8 relative flex items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="relative w-full h-24 flex items-center justify-center">
+                      <div className="absolute left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gray-200 to-transparent top-2"></div>
+                      <div className="absolute left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gray-200 to-transparent bottom-2"></div>
+                      <div className="flex gap-3 transform -skew-x-12 group-hover:translate-x-6 transition-transform duration-700 ease-out">
+                        <div className="w-1.5 h-12 bg-[#087830]/10 rounded-full mt-2"></div>
+                        <div className="w-1.5 h-12 bg-[#087830]/30 rounded-full mt-2"></div>
+                        <div className="w-24 h-16 bg-gradient-to-br from-[#087830] to-emerald-700 rounded-lg shadow-lg flex items-center justify-center">
+                          <Zap className="text-white w-6 h-6 fill-current" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">
+
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
                     Instant Processing
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    Get organized results from the latest memos in seconds, not
-                    days
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Get summaries and organized results from new theses and
+                    capstones in seconds, not days.
                   </p>
                 </div>
-
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-600 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </section>
 
@@ -363,7 +350,8 @@ export default function Home() {
               <span className="font-semibold text-[#333]">Doculens</span>
             </div>
             <p className="text-sm text-[#333]">
-              © 2025 Doculens. AI-powered document intelligence.
+              © 2025 Doculens. AI-powered research paper intelligence for Laguna
+              University.
             </p>
           </div>
         </div>
