@@ -1,6 +1,6 @@
 "use client";
 
-import { Search as SearchIcon, Loader2, X, Funnel } from "lucide-react";
+import { Search as SearchIcon, Loader2, X, Funnel, Users, Calendar, Building, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
@@ -15,7 +15,7 @@ import {
 } from "@/lib/badge-variants";
 import DocumentActionButtons from "@/components/shared/thesis-action-buttons";
 import { checkBookmark } from "@/server/bookmarks/check-bookmark";
-import SearchFilterDialog, { type SearchFilterValues } from "@/components/search/search-filter-dialog";
+import SearchFilterDialog, { type SearchFilterValues, type SearchMode } from "@/components/search/search-filter-dialog";
 import {
   Select,
   SelectContent,
@@ -23,87 +23,76 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useQueryStates } from "nuqs";
+import { searchPageParams, type SearchSortOption } from "@/lib/search-params";
 
 type Role = {
   role: string;
 };
 
-const SEARCH_STATE_KEY = "deped-search-state";
-
 export default function Search({ role }: Role) {
-  // State management
-  const [searchQuery, setSearchQuery] = useState("");
+  // URL-synced state using nuqs
+  const [urlState, setUrlState] = useQueryStates(searchPageParams, {
+    history: "push",
+    shallow: false,
+  });
+
+  // Derived state from URL params
+  const searchQuery = urlState.q;
+  const sortBy = urlState.sort;
+  const useRAG = urlState.mode === "rag";
+
+  // Local state for API results (not URL-synced)
   const [answer, setAnswer] = useState("");
   const [searchResults, setSearchResults] = useState<DocumentSource[]>([]);
   const [bookmarks, setBookmarks] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  
-  // Changed default to true (Semantic Search default)
-  const [useRAG, setUseRAG] = useState(true); 
   const [searchType, setSearchType] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   
-  // Changed default searchMode to "rag"
-  const [searchFilters, setSearchFilters] = useState<SearchFilterValues>({
-    fromDate: "",
-    toDate: "",
-    issuer: "",
-    issuerLevel: "",
-    tags: "",
-    docType: "",
-    searchMode: "rag", 
-  });
-  
-  // Changed to "relevance" as default - null means use relevance sorting
-  const [sortBy, setSortBy] = useState<
-    "relevance" | "date_desc" | "date_asc" | "title_asc" | "title_desc"
-  >("relevance");
+  // Filter values (derived from URL state)
+  const searchFilters: SearchFilterValues = {
+    yearFrom: urlState.yearFrom,
+    yearTo: urlState.yearTo,
+    college: urlState.college,
+    department: urlState.department,
+    keywords: urlState.keywords,
+    searchMode: urlState.mode as SearchMode,
+  };
 
-  // Restore search state from sessionStorage on mount
-  useEffect(() => {
-    try {
-      const savedState = sessionStorage.getItem(SEARCH_STATE_KEY);
-      if (savedState) {
-        const parsed = JSON.parse(savedState);
-        setSearchQuery(parsed.searchQuery || "");
-        setAnswer(parsed.answer || "");
-        setSearchResults(parsed.searchResults || []);
-        setBookmarks(parsed.bookmarks || {});
-        setHasSearched(parsed.hasSearched || false);
-        // Default to true if undefined in storage
-        setUseRAG(parsed.useRAG !== undefined ? parsed.useRAG : true);
-        setSearchType(parsed.searchType || "");
-        if (parsed.searchFilters) {
-          setSearchFilters(parsed.searchFilters);
-        }
-        // Restore sortBy, default to relevance
-        setSortBy(parsed.sortBy || "relevance");
-      }
-    } catch (err) {
-      console.error("Error restoring search state:", err);
-    }
-  }, []);
+  // Helper to update filters via URL
+  const setSearchFilters = (newFilters: SearchFilterValues) => {
+    setUrlState({
+      mode: newFilters.searchMode,
+      yearFrom: newFilters.yearFrom,
+      yearTo: newFilters.yearTo,
+      college: newFilters.college,
+      department: newFilters.department,
+      keywords: newFilters.keywords,
+    });
+  };
 
+  // Clear search helper
   const clearSearch = () => {
-    setSearchQuery("");
+    setUrlState({
+      q: "",
+      sort: "relevance",
+      mode: "rag",
+      yearFrom: "",
+      yearTo: "",
+      college: "",
+      department: "",
+      keywords: "",
+    });
     setAnswer("");
     setSearchResults([]);
     setBookmarks({});
     setHasSearched(false);
     setSearchType("");
-    setSortBy("relevance"); // Reset to relevance
-    sessionStorage.removeItem(SEARCH_STATE_KEY);
   };
 
-  // Clear persisted search on full page refresh/close
-  useEffect(() => {
-    const handler = () => {
-      sessionStorage.removeItem(SEARCH_STATE_KEY);
-    };
-    window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
-  }, []);
+
 
   // Re-sync bookmark states for restored results (e.g., when navigating back)
   useEffect(() => {
@@ -113,8 +102,8 @@ export default function Search({ role }: Role) {
       const statuses: Record<string, boolean> = {};
       await Promise.all(
         searchResults.map(async (doc) => {
-          const { bookmarked } = await checkBookmark(doc.doc_id);
-          statuses[doc.doc_id] = bookmarked;
+          const { bookmarked } = await checkBookmark(doc.thesis_id);
+          statuses[doc.thesis_id] = bookmarked;
         })
       );
       if (!cancelled) setBookmarks(statuses);
@@ -124,27 +113,7 @@ export default function Search({ role }: Role) {
     };
   }, [hasSearched, searchResults]);
 
-  // Save search state to sessionStorage whenever it changes
-  useEffect(() => {
-    if (hasSearched) {
-      try {
-        const stateToSave = {
-          searchQuery,
-          answer,
-          searchResults,
-          bookmarks,
-          hasSearched,
-          useRAG,
-          searchType,
-          searchFilters,
-          sortBy, // Save sortBy state
-        };
-        sessionStorage.setItem(SEARCH_STATE_KEY, JSON.stringify(stateToSave));
-      } catch (err) {
-        console.error("Error saving search state:", err);
-      }
-    }
-  }, [searchQuery, answer, searchResults, bookmarks, hasSearched, useRAG, searchType, searchFilters, sortBy]);
+  // Note: Filters are now synced via nuqs URL params, no need for sessionStorage
 
   const activeColor =
     String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
@@ -163,7 +132,7 @@ export default function Search({ role }: Role) {
     setHasSearched(true);
     
     // Reset sort based on search mode: relevance for RAG, date_desc for keyword
-    setSortBy(useRAG ? "relevance" : "date_desc");
+    setUrlState({ sort: useRAG ? "relevance" : "date_desc" });
 
     try {
       const result = await RAGApiService.search({
@@ -183,34 +152,33 @@ export default function Search({ role }: Role) {
       let filteredResults = sortedResults;
       if (!useRAG) {
         const f = searchFilters;
-        const tagsArray = f.tags
+        const keywordsArray = f.keywords
           .split(",")
           .map((t: string) => t.trim().toLowerCase())
           .filter(Boolean);
-        const fromDate = f.fromDate ? new Date(f.fromDate) : null;
-        const toDateNext = f.toDate
-          ? (() => { const d = new Date(f.toDate); d.setDate(d.getDate() + 1); return d; })()
-          : null;
+        const yearFromNum = f.yearFrom ? parseInt(f.yearFrom) : null;
+        const yearToNum = f.yearTo ? parseInt(f.yearTo) : null;
 
         filteredResults = sortedResults.filter((doc) => {
-          if (fromDate || toDateNext) {
-            if (!doc.date_issued) return false;
-            const d = new Date(doc.date_issued);
-            if (fromDate && d < fromDate) return false;
-            if (toDateNext && d >= toDateNext) return false;
+          // Filter by year range
+          if (yearFromNum || yearToNum) {
+            const docYear = doc.year || 0;
+            if (yearFromNum && docYear < yearFromNum) return false;
+            if (yearToNum && docYear > yearToNum) return false;
           }
-          if (f.issuerLevel) {
-            const src = (doc.issuer || "").toLowerCase();
-            if (!src.includes(f.issuerLevel.toLowerCase())) return false;
+          // Filter by college
+          if (f.college) {
+            if ((doc.college || "").toLowerCase() !== f.college.toLowerCase()) return false;
           }
-          if (f.docType) {
-            const dtype = (doc.doc_type || "").toLowerCase();
-            if (!dtype.includes(f.docType.toLowerCase())) return false;
+          // Filter by department
+          if (f.department) {
+            if ((doc.department || "").toLowerCase() !== f.department.toLowerCase()) return false;
           }
-          if (tagsArray.length) {
-            const cats = (doc.categories || []).map((c) => (c || "").toLowerCase());
-            for (const tag of tagsArray) {
-              if (!cats.includes(tag)) return false;
+          // Filter by keywords
+          if (keywordsArray.length) {
+            const docKeywords = (doc.keywords || []).map((k) => (k || "").toLowerCase());
+            for (const keyword of keywordsArray) {
+              if (!docKeywords.some(dk => dk.includes(keyword))) return false;
             }
           }
           return true;
@@ -220,8 +188,8 @@ export default function Search({ role }: Role) {
       const bookmarkStatuses: Record<string, boolean> = {};
       await Promise.all(
         filteredResults.map(async (doc) => {
-          const { bookmarked } = await checkBookmark(doc.doc_id);
-          bookmarkStatuses[doc.doc_id] = bookmarked;
+          const { bookmarked } = await checkBookmark(doc.thesis_id);
+          bookmarkStatuses[doc.thesis_id] = bookmarked;
         })
       );
 
@@ -246,11 +214,11 @@ export default function Search({ role }: Role) {
   };
 
   const activeFilterCount = [
-    searchFilters.fromDate,
-    searchFilters.toDate,
-    searchFilters.issuerLevel,
-    searchFilters.docType,
-    searchFilters.tags ? "tags" : undefined,
+    searchFilters.yearFrom,
+    searchFilters.yearTo,
+    searchFilters.college,
+    searchFilters.department,
+    searchFilters.keywords ? "keywords" : undefined,
   ].filter(Boolean).length;
 
   const resultsToRender = useMemo(() => {
@@ -306,7 +274,7 @@ export default function Search({ role }: Role) {
               type="text"
               placeholder="Ask a question or search for 'learning recovery plan' or 'DO 22 s. 2023'..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => setUrlState({ q: e.target.value })}
               onKeyDown={(e) =>
                 e.key === "Enter" && !isLoading && handleSearch()
               }
@@ -366,22 +334,19 @@ export default function Search({ role }: Role) {
           values={searchFilters}
           onValuesChange={setSearchFilters}
           onApply={(newValues) => {
-            // FIX: Use newValues directly instead of stale searchFilters state
             setSearchFilters(newValues);
-            setUseRAG(newValues.searchMode === "rag");
+            setUrlState({ mode: newValues.searchMode });
             setIsFilterOpen(false);
           }}
           onReset={() => {
             setSearchFilters({
-              fromDate: "",
-              toDate: "",
-              issuer: "",
-              issuerLevel: "",
-              tags: "",
-              docType: "",
-              searchMode: "rag", // Reset to RAG default
+              yearFrom: "",
+              yearTo: "",
+              college: "",
+              department: "",
+              keywords: "",
+              searchMode: "rag",
             });
-            setUseRAG(true); // Reset to RAG default
             setIsFilterOpen(false);
           }}
         />
@@ -428,7 +393,7 @@ export default function Search({ role }: Role) {
           {searchResults.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Sort by:</span>
-              <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+              <Select value={sortBy} onValueChange={(v) => setUrlState({ sort: v as SearchSortOption })}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -451,67 +416,79 @@ export default function Search({ role }: Role) {
         <div className="space-y-4">
           {resultsToRender.map((doc) => (
             <div
-              key={doc.doc_id}
+              key={doc.thesis_id}
               className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
             >
-              <div className="flex justify-between gap-6">
+              <div className="flex flex-col lg:flex-row justify-between gap-6">
                 {/* LEFT SECTION */}
                 <div className="flex-1">
-                  <Link href={`/view/${doc.doc_id}`} className="block group">
+                  <Link href={`/view/${doc.thesis_id}`} className="block group">
                     <h3
-                      className="text-xl font-semibold mb-1 group-hover:underline"
+                      className="text-md lg:text-xl font-semibold mb-2 group-hover:underline line-clamp-2"
                       style={{ color: activeColor }}
                     >
-                      {doc.doc_number} - {doc.title}
+                      {doc.title}
                     </h3>
                   </Link>
 
-                  {(doc.date_issued || doc.issuer) && (
-                    <p className="text-sm text-gray-600/60 mb-2">
-                      {doc.date_issued && (
-                        <>
-                          Issued: <span className="font-medium">{new Date(doc.date_issued).toLocaleDateString('en-US', { 
-                            month: 'long', 
-                            day: 'numeric',
-                            year: 'numeric' 
-                          })}</span>
-                        </>
-                      )}
-                      {doc.date_issued && doc.issuer && " | "}
-                      {doc.issuer && (
-                        <>
-                          Issuer: <span className="font-medium">{doc.issuer}</span>
-                        </>
-                      )}
-                    </p>
+                  {/* Authors */}
+                  {doc.authors && doc.authors.length > 0 && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                      <Users className="h-4 w-4" />
+                      <span className="line-clamp-1">
+                        {doc.authors.join(", ")}
+                      </span>
+                    </div>
                   )}
 
+                  {/* Metadata Row */}
+                  <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-3">
+                    {doc.year && (
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>{doc.year}</span>
+                      </div>
+                    )}
+                    {doc.department && (
+                      <div className="flex items-center gap-1">
+                        <Building className="h-4 w-4" />
+                        <span>{doc.department}</span>
+                      </div>
+                    )}
+                    {doc.college && (
+                      <div className="flex items-center gap-1">
+                        <GraduationCap className="h-4 w-4" />
+                        <span>{doc.college}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Summary */}
                   {doc.summary && (
-                    <p className="text-sm text-gray-700 mb-3 line-clamp-2">
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                       {doc.summary}
                     </p>
                   )}
 
-                  {/* Document Info */}
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 mb-3">
-                    {doc.doc_type && (
-                      <span>
-                        Type:{" "}
-                        <span className="font-medium">{doc.doc_type}</span>
-                      </span>
+                  {/* Keywords/Categories */}
+                  <div className="flex flex-wrap gap-1.5">
+                    {doc.keywords && doc.keywords.slice(0, 5).map((keyword: string) => (
+                      <Badge
+                        key={keyword}
+                        size="md"
+                        className={getDynamicBadgeClasses(keyword)}
+                      >
+                        {keyword}
+                      </Badge>
+                    ))}
+                    {doc.keywords && doc.keywords.length > 5 && (
+                      <Badge variant="outline" size="md">
+                        +{doc.keywords.length - 5} more
+                      </Badge>
                     )}
-                    {doc.num_relevant_chunks && (
-                      <span className="text-blue-600">
-                        {doc.num_relevant_chunks} relevant section
-                        {doc.num_relevant_chunks !== 1 ? "s" : ""}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {/* Categories */}
-                    {doc.categories &&
-                      doc.categories.map((category: string) => {
+                    {/* Fallback to categories if no keywords */}
+                    {(!doc.keywords || doc.keywords.length === 0) && doc.categories &&
+                      doc.categories.slice(0, 5).map((category: string) => {
                         const variant = getBadgeVariant(category);
                         return (
                           <Badge
@@ -525,13 +502,18 @@ export default function Search({ role }: Role) {
                           </Badge>
                         );
                       })}
+                    {(!doc.keywords || doc.keywords.length === 0) && doc.categories && doc.categories.length > 5 && (
+                      <Badge variant="outline" size="md">
+                        +{doc.categories.length - 5} more
+                      </Badge>
+                    )}
                   </div>
                 </div>
 
-                {/* RIGHT SECTION - Action buttons with dynamic bookmark status */}
+                {/* ACTION BUTTONS */}
                 <DocumentActionButtons
-                  thesisId={doc.doc_id}
-                  initialBookmarked={!!bookmarks[doc.doc_id]}
+                  thesisId={doc.thesis_id}
+                  initialBookmarked={!!bookmarks[doc.thesis_id]}
                   onBookmarkChange={(id, state) =>
                     setBookmarks((prev) => ({ ...prev, [id]: state }))
                   }

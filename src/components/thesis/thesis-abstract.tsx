@@ -4,7 +4,8 @@ import { useState } from "react";
 import { RAGApiService } from "@/lib/api/rag-api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Loader2, AlertCircle, MessageSquare, FileText } from "lucide-react";
+import { Loader2, AlertCircle, MessageSquare, FileText, Sparkles } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Props = {
   abstract?: string;
@@ -23,6 +24,7 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
 
   const hasAbstract = abstract && abstract.trim().length > 0;
   const hasSummary = summary && summary.trim().length > 0;
+  const hasContent = hasAbstract || hasSummary;
 
   const handleAskQuestion = async () => {
     if (!question.trim()) {
@@ -66,36 +68,51 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
     <div className="bg-white p-6 rounded-xl shadow-md border border-slate-200">
       <h3 className="text-2xl font-bold text-slate-800">Thesis Overview</h3>
       <p className="text-sm text-slate-500 mb-4">
-        {hasAbstract || hasSummary
+        {hasContent
           ? "Abstract and summary of the research."
           : "Ask questions to learn more about this thesis."}
       </p>
 
-      {/* Abstract Section */}
-      {hasAbstract && (
-        <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-5 mb-4">
-          <h4 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
-            <span className="w-1 h-5 bg-blue-500 rounded-full"></span>
-            <FileText className="h-4 w-4" />
-            Abstract
-          </h4>
-          <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap text-justify hyphens-auto">
-            {abstract}
-          </p>
-        </div>
-      )}
+      {/* Tabs for Abstract and AI Summary */}
+      {hasContent && (
+        <Tabs defaultValue={hasAbstract ? "abstract" : "summary"} className="mb-4">
+          <TabsList className="w-full">
+            {hasAbstract && (
+              <TabsTrigger value="abstract" className="flex-1 gap-2">
+                <FileText className="h-4 w-4" />
+                Abstract
+              </TabsTrigger>
+            )}
+            {hasSummary && (
+              <TabsTrigger value="summary" className="flex-1 gap-2">
+                <Sparkles className="h-4 w-4" />
+                AI Summary
+              </TabsTrigger>
+            )}
+          </TabsList>
 
-      {/* Summary Section */}
-      {hasSummary && (
-        <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-5 mb-4">
-          <h4 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
-            <span className="w-1 h-5 bg-amber-500 rounded-full"></span>
-            AI Summary
-          </h4>
-          <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap text-justify hyphens-auto">
-            {summary}
-          </p>
-        </div>
+          {/* Abstract Tab Content */}
+          {hasAbstract && (
+            <TabsContent value="abstract" className="mt-4">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-5">
+                <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap text-justify hyphens-auto">
+                  {abstract}
+                </p>
+              </div>
+            </TabsContent>
+          )}
+
+          {/* AI Summary Tab Content */}
+          {hasSummary && (
+            <TabsContent value="summary" className="mt-4">
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-5">
+                <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap text-justify hyphens-auto">
+                  {summary}
+                </p>
+              </div>
+            </TabsContent>
+          )}
+        </Tabs>
       )}
 
       {/* Q&A Section */}

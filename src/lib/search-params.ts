@@ -37,3 +37,30 @@ export const thesesFilterParams = {
 
 export const thesesFilterParamsCache = createSearchParamsCache(thesesFilterParams);
 
+// Search page params
+export const searchSortOptions = [
+  "relevance",
+  "date_desc",
+  "date_asc",
+  "title_asc",
+  "title_desc",
+] as const;
+
+export type SearchSortOption = (typeof searchSortOptions)[number];
+
+export const searchModeOptions = ["rag", "keyword"] as const;
+export type SearchModeOption = (typeof searchModeOptions)[number];
+
+export const searchPageParams = {
+  q: parseAsString.withDefault(""),
+  sort: parseAsStringLiteral(searchSortOptions).withDefault("relevance"),
+  mode: parseAsStringLiteral(searchModeOptions).withDefault("rag"),
+  // Thesis filter params
+  yearFrom: parseAsString.withDefault(""),
+  yearTo: parseAsString.withDefault(""),
+  college: parseAsString.withDefault(""),
+  department: parseAsString.withDefault(""),
+  keywords: parseAsString.withDefault(""),
+};
+
+export const searchPageParamsCache = createSearchParamsCache(searchPageParams);

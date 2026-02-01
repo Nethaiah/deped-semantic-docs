@@ -17,6 +17,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+// College to Department mapping
+const COLLEGE_DEPARTMENTS: Record<string, string[]> = {
+  CAS: ["Communication", "Psychology"],
+  CCS: ["Computer Science", "Information Technology"],
+  CBAA: [
+    "Accountancy",
+    "Accounting Information Systems",
+    "Entrepreneurship",
+    "Tourism Management",
+  ],
+  COED: [
+    "Secondary Education Major in Science",
+    "Secondary Education Major in Mathematics",
+    "Secondary Education Major in English",
+    "Secondary Education Major in PE",
+    "Elementary Education",
+  ],
+  COEng: ["Mechanical Engineering"],
+};
+
 export type ThesesFilterFormValues = {
   yearFrom: string;
   yearTo: string;
@@ -43,9 +63,25 @@ export default function ThesesFilterDialog({
   onValuesChange,
   onApply,
   onReset,
-  departments = [],
   colleges = [],
 }: ThesesFilterDialogProps) {
+  // Get departments based on selected college
+  const availableDepartments = values.college
+    ? COLLEGE_DEPARTMENTS[values.college] || []
+    : [];
+
+  const isDepartmentDisabled = !values.college;
+
+  // Handle college change - reset department when college changes
+  const handleCollegeChange = (val: string) => {
+    const newCollege = val === "_all" ? "" : val;
+    onValuesChange({
+      ...values,
+      college: newCollege,
+      department: "", // Reset department when college changes
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
@@ -97,6 +133,31 @@ export default function ThesesFilterDialog({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label
+                htmlFor="college"
+                className="text-xs font-semibold text-slate-700"
+              >
+                College
+              </label>
+              <Select
+                value={values.college || "_all"}
+                onValueChange={handleCollegeChange}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="All Colleges" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_all">All Colleges</SelectItem>
+                  {Object.keys(COLLEGE_DEPARTMENTS).map((col) => (
+                    <SelectItem key={col} value={col}>
+                      {col}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label
                 htmlFor="department"
                 className="text-xs font-semibold text-slate-700"
               >
@@ -107,42 +168,16 @@ export default function ThesesFilterDialog({
                 onValueChange={(val) =>
                   onValuesChange({ ...values, department: val === "_all" ? "" : val })
                 }
+                disabled={isDepartmentDisabled}
               >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="All Departments" />
+                <SelectTrigger className={`w-full ${isDepartmentDisabled ? "opacity-50 cursor-not-allowed" : ""}`}>
+                  <SelectValue placeholder={isDepartmentDisabled ? "Select a college first" : "All Departments"} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="_all">All Departments</SelectItem>
-                  {departments.map((dept) => (
+                  {availableDepartments.map((dept) => (
                     <SelectItem key={dept} value={dept}>
                       {dept}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="college"
-                className="text-xs font-semibold text-slate-700"
-              >
-                College
-              </label>
-              <Select
-                value={values.college || "_all"}
-                onValueChange={(val) =>
-                  onValuesChange({ ...values, college: val === "_all" ? "" : val })
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="All Colleges" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="_all">All Colleges</SelectItem>
-                  {colleges.map((col) => (
-                    <SelectItem key={col} value={col}>
-                      {col}
                     </SelectItem>
                   ))}
                 </SelectContent>

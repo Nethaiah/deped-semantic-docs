@@ -18,7 +18,7 @@ export interface SearchRequest {
 }
 
 export interface DocumentSource {
-  doc_id: string;
+  thesis_id: string;        // Primary identifier from the API
   doc_number: string;
   title: string;
   doc_type?: string;
@@ -28,6 +28,12 @@ export interface DocumentSource {
   summary?: string;
   source_path?: string;
   num_relevant_chunks?: number;
+  // Thesis-related fields
+  authors?: string[];
+  year?: number;
+  department?: string;
+  college?: string;
+  keywords?: string[];
 }
 
 export interface SearchResponse {

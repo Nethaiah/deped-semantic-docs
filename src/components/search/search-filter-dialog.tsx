@@ -20,13 +20,32 @@ import { useState, useEffect } from "react";
 
 export type SearchMode = "rag" | "keyword";
 
+// College to Department mapping
+const COLLEGE_DEPARTMENTS: Record<string, string[]> = {
+  CAS: ["Communication", "Psychology"],
+  CCS: ["Computer Science", "Information Technology"],
+  CBAA: [
+    "Accountancy",
+    "Accounting Information Systems",
+    "Entrepreneurship",
+    "Tourism Management",
+  ],
+  COED: [
+    "Secondary Education Major in Science",
+    "Secondary Education Major in Mathematics",
+    "Secondary Education Major in English",
+    "Secondary Education Major in PE",
+    "Elementary Education",
+  ],
+  COEng: ["Mechanical Engineering"],
+};
+
 export type SearchFilterValues = {
-  fromDate: string;
-  toDate: string;
-  issuer: string;
-  issuerLevel: string;
-  tags: string;
-  docType: string;
+  yearFrom: string;
+  yearTo: string;
+  college: string;
+  department: string;
+  keywords: string;
   searchMode: SearchMode;
 };
 
@@ -59,10 +78,25 @@ export default function SearchFilterDialog({
 
   const filtersDisabled = localValues.searchMode === "rag";
 
+  // Get departments based on selected college
+  const availableDepartments = localValues.college
+    ? COLLEGE_DEPARTMENTS[localValues.college] || []
+    : [];
+
+  const isDepartmentDisabled = !localValues.college || filtersDisabled;
+
+  // Handle college change - reset department when college changes
+  const handleCollegeChange = (val: string) => {
+    const newCollege = val === "_all" ? "" : val;
+    setLocalValues({
+      ...localValues,
+      college: newCollege,
+      department: "", // Reset department when college changes
+    });
+  };
+
   // Handler for applying filters - commits local changes to parent
   const handleApply = () => {
-    // Pass the localValues directly to the onApply callback
-    // This ensures the parent gets the fresh data immediately
     onValuesChange(localValues);
     onApply(localValues);
   };
@@ -70,7 +104,6 @@ export default function SearchFilterDialog({
   // Handler for resetting filters
   const handleReset = () => {
     onReset();
-    // Reset will be handled by parent, which will update values prop
   };
 
   return (
@@ -111,20 +144,21 @@ export default function SearchFilterDialog({
 
           {/* Filter Fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Date Range */}
+            {/* Year Range */}
             <div className="flex flex-col gap-1.5">
               <label
-                htmlFor="from-date"
+                htmlFor="year-from"
                 className="text-xs font-semibold text-slate-700"
               >
-                From Date
+                Year From
               </label>
               <input
-                id="from-date"
-                type="date"
-                value={localValues.fromDate}
+                id="year-from"
+                type="number"
+                placeholder="e.g., 2020"
+                value={localValues.yearFrom}
                 onChange={(e) =>
-                  setLocalValues({ ...localValues, fromDate: e.target.value })
+                  setLocalValues({ ...localValues, yearFrom: e.target.value })
                 }
                 disabled={filtersDisabled}
                 className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors cursor-text"
@@ -133,104 +167,107 @@ export default function SearchFilterDialog({
 
             <div className="flex flex-col gap-1.5">
               <label
-                htmlFor="to-date"
+                htmlFor="year-to"
                 className="text-xs font-semibold text-slate-700"
               >
-                To Date
+                Year To
               </label>
               <input
-                id="to-date"
-                type="date"
-                value={localValues.toDate}
+                id="year-to"
+                type="number"
+                placeholder="e.g., 2025"
+                value={localValues.yearTo}
                 onChange={(e) =>
-                  setLocalValues({ ...localValues, toDate: e.target.value })
+                  setLocalValues({ ...localValues, yearTo: e.target.value })
                 }
                 disabled={filtersDisabled}
                 className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors cursor-text"
               />
             </div>
 
-            {/* Issuer Level */}
+            {/* College */}
             <div className="flex flex-col gap-1.5">
               <label
-                htmlFor="issuer-level"
+                htmlFor="college"
                 className="text-xs font-semibold text-slate-700"
               >
-                Issuer Level
+                College
               </label>
               <Select
-                value={localValues.issuerLevel}
-                onValueChange={(val) =>
-                  setLocalValues({ ...localValues, issuerLevel: val })
-                }
+                value={localValues.college || "_all"}
+                onValueChange={handleCollegeChange}
                 disabled={filtersDisabled}
               >
                 <SelectTrigger
-                  id="issuer-level"
+                  id="college"
                   className="w-full disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed cursor-pointer"
                   disabled={filtersDisabled}
                 >
-                  <SelectValue placeholder="All levels" />
+                  <SelectValue placeholder="All Colleges" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Central" className="cursor-pointer">
-                    Central
+                  <SelectItem value="_all" className="cursor-pointer">
+                    All Colleges
                   </SelectItem>
-                  <SelectItem value="Division" className="cursor-pointer">
-                    Division
-                  </SelectItem>
+                  {Object.keys(COLLEGE_DEPARTMENTS).map((col) => (
+                    <SelectItem key={col} value={col} className="cursor-pointer">
+                      {col}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Document Type */}
+            {/* Department */}
             <div className="flex flex-col gap-1.5">
               <label
-                htmlFor="doc-type"
+                htmlFor="department"
                 className="text-xs font-semibold text-slate-700"
               >
-                Document Type
+                Department
               </label>
               <Select
-                value={localValues.docType}
+                value={localValues.department || "_all"}
                 onValueChange={(val) =>
-                  setLocalValues({ ...localValues, docType: val })
+                  setLocalValues({ ...localValues, department: val === "_all" ? "" : val })
                 }
-                disabled={filtersDisabled}
+                disabled={isDepartmentDisabled}
               >
                 <SelectTrigger
-                  id="doc-type"
-                  className="w-full disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed cursor-pointer"
-                  disabled={filtersDisabled}
+                  id="department"
+                  className={`w-full ${isDepartmentDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                  disabled={isDepartmentDisabled}
                 >
-                  <SelectValue placeholder="All types" />
+                  <SelectValue placeholder={!localValues.college && !filtersDisabled ? "Select a college first" : "All Departments"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Order" className="cursor-pointer">
-                    Order
+                  <SelectItem value="_all" className="cursor-pointer">
+                    All Departments
                   </SelectItem>
-                  <SelectItem value="Memorandum" className="cursor-pointer">
-                    Memorandum
-                  </SelectItem>
+                  {availableDepartments.map((dept) => (
+                    <SelectItem key={dept} value={dept} className="cursor-pointer">
+                      {dept}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Tags */}
+            {/* Keywords */}
             <div className="flex flex-col gap-1.5 sm:col-span-2">
               <label
-                htmlFor="tags"
+                htmlFor="keywords"
                 className="text-xs font-semibold text-slate-700"
               >
-                Tags
+                Keywords
               </label>
               <input
-                id="tags"
+                id="keywords"
                 type="text"
-                placeholder="e.g. policy, finance, HR (comma separated)"
-                value={localValues.tags}
+                placeholder="e.g., machine learning, AI (comma separated)"
+                value={localValues.keywords}
                 onChange={(e) =>
-                  setLocalValues({ ...localValues, tags: e.target.value })
+                  setLocalValues({ ...localValues, keywords: e.target.value })
                 }
                 disabled={filtersDisabled}
                 className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors placeholder:text-slate-400"
