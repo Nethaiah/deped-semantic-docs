@@ -1,13 +1,13 @@
 import Bookmarks from "@/components/bookmarks/bookmark";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { getBookmarkedDocumentsPaginated } from "@/server/bookmarks/get-bookmark";
+import { getBookmarkedThesesPaginated } from "@/server/bookmarks/get-bookmark";
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function DocumentsPage({ searchParams }: Props) {
+export default async function BookmarksPage({ searchParams }: Props) {
   const supabase = await createClient();
 
   // Get authenticated user
@@ -33,15 +33,15 @@ export default async function DocumentsPage({ searchParams }: Props) {
 
   // Extract Sort Parameter
   const sortParam = Array.isArray(sp.sort) ? sp.sort[0] : sp.sort;
-  const validSorts = ["date_desc", "date_asc", "title_asc", "title_desc"];
-  const sort = (validSorts.includes(sortParam || "") ? sortParam : "date_desc") as "date_desc" | "date_asc" | "title_asc" | "title_desc";
+  const validSorts = ["date_desc", "date_asc", "title_asc", "title_desc", "year_desc", "year_asc"];
+  const sort = (validSorts.includes(sortParam || "") ? sortParam : "date_desc") as "date_desc" | "date_asc" | "title_asc" | "title_desc" | "year_desc" | "year_asc";
 
-  const { data: docs, total } = await getBookmarkedDocumentsPaginated(page, pageSize, qParam || undefined, sort);
+  const { data: theses, total } = await getBookmarkedThesesPaginated(page, pageSize, qParam || undefined, sort);
 
   return (
     <Bookmarks
       role={role}
-      docs={docs}
+      theses={theses}
       total={total || 0}
       page={page}
       pageSize={pageSize}

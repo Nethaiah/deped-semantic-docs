@@ -2,7 +2,7 @@
 
 import { verifySession } from "@/lib/dal";
 
-export async function checkBookmark(docId: string) {
+export async function checkBookmark(thesisId: string) {
   try {
     const { isAuth, user, supabase } = await verifySession();
 
@@ -12,7 +12,7 @@ export async function checkBookmark(docId: string) {
       .from("bookmarks")
       .select("id")
       .eq("user_id", user.id)
-      .eq("doc_id", docId)
+      .eq("thesis_id", thesisId)
       .maybeSingle();
 
     if (error) return { bookmarked: false };

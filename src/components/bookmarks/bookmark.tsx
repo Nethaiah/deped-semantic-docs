@@ -2,15 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { SearchIcon } from "lucide-react";
+import { SearchIcon, Users, Calendar, Building, GraduationCap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  getBadgeVariant,
-  getDynamicBadgeClasses,
-} from "@/lib/badge-variants";
-import DocumentActionButtons from "@/components/shared/document-action-buttons";
+import { getBadgeVariant, getDynamicBadgeClasses } from "@/lib/badge-variants";
+import ThesisActionButtons from "../shared/thesis-action-buttons";
 import {
   Select,
   SelectContent,
@@ -21,30 +18,36 @@ import {
 import { Loader2 } from "lucide-react";
 import NumberedPagination from "@/components/shared/numbered-pagination";
 
-type BookmarkedDoc = {
+type BookmarkedThesis = {
   id: string;
-  docNumber?: string | null;
-  title?: string | null;
-  dateIssued?: string | null;
-  issuer?: string | null;
-  summary?: string | null;
-  docType?: string | null;
-  categories?: string[] | null;
+  thesisId: string;
+  title: string;
+  year: number;
+  department: string;
+  college: string;
+  advisor?: string;
+  keywords: string[];
+  abstract?: string;
+  summary?: string;
+  sourcePath: string;
+  totalPages: number;
+  authors: string[];
+  bookmarkedAt: string;
 };
 
 type Props = {
   role: string;
-  docs: BookmarkedDoc[];
+  theses: BookmarkedThesis[];
   total?: number;
   page?: number;
   pageSize?: number;
   initialQuery?: string;
-  initialSort?: "date_desc" | "date_asc" | "title_asc" | "title_desc";
+  initialSort?: "date_desc" | "date_asc" | "title_asc" | "title_desc" | "year_desc" | "year_asc";
 };
 
 export default function Bookmarks({
   role,
-  docs,
+  theses,
   total = 0,
   page = 1,
   pageSize = 10,
@@ -61,7 +64,7 @@ export default function Bookmarks({
   // Reset loading state when new data arrives
   useEffect(() => {
     setIsLoading(false);
-  }, [docs, page, total]);
+  }, [theses, page, total]);
 
   const activeColor =
     String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
@@ -113,10 +116,10 @@ export default function Bookmarks({
       {/* Header Section */}
       <div className="mb-6">
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-          Bookmarked Documents
+          Bookmarked Theses
         </h1>
         <p className="text-sm text-gray-600">
-          Quickly review the memoranda and orders you saved.
+          Quickly access the research works you saved for later.
         </p>
       </div>
 
@@ -126,7 +129,7 @@ export default function Bookmarks({
             <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by keyword, title, code, or issuer..."
+              placeholder="Search by title, author, department, or keyword..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -182,7 +185,7 @@ export default function Bookmarks({
           {hasAny && (
             <div className="text-sm text-gray-600">
               Showing <span className="font-semibold">{total}</span> bookmarked
-              document{total !== 1 ? "s" : ""}
+              {total !== 1 ? " theses" : " thesis"}
             </div>
           )}
           {!hasAny && <div />}
@@ -197,8 +200,10 @@ export default function Bookmarks({
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="date_desc">Date (Newest)</SelectItem>
-                <SelectItem value="date_asc">Date (Oldest)</SelectItem>
+                <SelectItem value="date_desc">Date Added (Newest)</SelectItem>
+                <SelectItem value="date_asc">Date Added (Oldest)</SelectItem>
+                <SelectItem value="year_desc">Year (Newest)</SelectItem>
+                <SelectItem value="year_asc">Year (Oldest)</SelectItem>
                 <SelectItem value="title_asc">Title (A–Z)</SelectItem>
                 <SelectItem value="title_desc">Title (Z–A)</SelectItem>
               </SelectContent>
@@ -214,90 +219,85 @@ export default function Bookmarks({
         }`}
       >
         {hasAny || query || initialQuery ? (
-          docs.length > 0 ? (
+          theses.length > 0 ? (
             <div className="space-y-4">
-              {docs.map((doc) => (
+              {theses.map((thesis) => (
                 <div
-                  key={doc.id}
+                  key={thesis.id}
                   className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
                 >
                   <div className="flex flex-col lg:flex-row justify-between gap-6">
                     {/* LEFT SECTION */}
                     <div className="flex-1">
-                      <Link href={`/view/${doc.id}`} className="block group">
+                      <Link href={`/view/${thesis.thesisId}`} className="block group">
                         <h3
-                          className="text-md lg:text-xl font-semibold mb-1 group-hover:underline"
+                          className="text-md lg:text-xl font-semibold mb-2 group-hover:underline line-clamp-2"
                           style={{ color: activeColor }}
                         >
-                          {doc.docNumber ? `${doc.docNumber} - ` : ""}{" "}
-                          {doc.title}
+                          {thesis.title}
                         </h3>
                       </Link>
 
-                      {(doc.dateIssued || doc.issuer) && (
-                        <p className="text-sm text-gray-600/60 mb-2">
-                          {doc.dateIssued && (
-                            <>
-                              Issued:{" "}
-                              <span className="font-medium">
-                                {new Date(doc.dateIssued).toLocaleDateString(
-                                  "en-US",
-                                  {
-                                    month: "long",
-                                    day: "numeric",
-                                    year: "numeric",
-                                  }
-                                )}
-                              </span>
-                            </>
-                          )}
-                          {doc.dateIssued && doc.issuer && " | "}
-                          {doc.issuer && (
-                            <>
-                              Issuer:{" "}
-                              <span className="font-medium">{doc.issuer}</span>
-                            </>
-                          )}
-                        </p>
-                      )}
-
-                      {doc.summary && (
-                        <p className="text-sm text-gray-700 mb-3 line-clamp-2">
-                          {doc.summary}
-                        </p>
-                      )}
-
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 mb-3">
-                        {doc.docType && (
-                          <span>
-                            Type:{" "}
-                            <span className="font-medium">{doc.docType}</span>
+                      {/* Authors */}
+                      {thesis.authors.length > 0 && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                          <Users className="h-4 w-4 flex-shrink-0" />
+                          <span className="line-clamp-1">
+                            {thesis.authors.join(", ")}
                           </span>
-                        )}
+                        </div>
+                      )}
+
+                      {/* Metadata Row */}
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600 mb-3">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          <span className="font-medium">{thesis.year}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Building className="h-4 w-4" />
+                          <span>{thesis.department}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <GraduationCap className="h-4 w-4" />
+                          <span>{thesis.college}</span>
+                        </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-1.5 mb-4">
-                        {doc.categories?.map((category) => {
-                          const variant = getBadgeVariant(category);
+                      {/* Summary */}
+                      {thesis.summary && (
+                        <p className="text-sm text-gray-700 mb-3 line-clamp-2">
+                          {thesis.summary}
+                        </p>
+                      )}
+
+                      {/* Keywords */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {thesis.keywords.slice(0, 5).map((keyword) => {
+                          const variant = getBadgeVariant(keyword);
                           return (
                             <Badge
-                              key={category}
+                              key={keyword}
+                              size="md"
                               {...(variant === "dynamic"
-                                ? {
-                                    className: getDynamicBadgeClasses(category),
-                                  }
+                                ? { className: getDynamicBadgeClasses(keyword) }
                                 : { variant })}
                             >
-                              {category}
+                              {keyword}
                             </Badge>
                           );
                         })}
+                        {thesis.keywords.length > 5 && (
+                          <Badge variant="outline" size="md">
+                            +{thesis.keywords.length - 5} more
+                          </Badge>
+                        )}
                       </div>
                     </div>
 
                     {/* ACTION BUTTONS */}
-                    <DocumentActionButtons
-                      docId={doc.id}
+                    <ThesisActionButtons
+                      thesisId={thesis.thesisId}
                       initialBookmarked={true}
                     />
                   </div>
@@ -321,13 +321,13 @@ export default function Bookmarks({
               </svg>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {query || initialQuery
-                  ? "No documents found"
+                  ? "No theses found"
                   : "No bookmarks yet"}
               </h3>
               <p className="text-sm text-gray-600">
                 {query || initialQuery
                   ? "Try adjusting your search query or using different keywords"
-                  : "When you find documents you want to save for later, click the bookmark icon."}
+                  : "When you find research works you want to save for later, click the bookmark icon."}
               </p>
             </div>
           )
@@ -351,12 +351,12 @@ export default function Bookmarks({
               No bookmarks yet
             </h3>
             <p className="text-gray-600 max-w-md mb-4">
-              When you find documents you want to save for later, click the
+              When you find research works you want to save for later, click the
               bookmark icon.
             </p>
-            <Link href="/categories">
+            <Link href="/">
               <span className="px-4 py-2 rounded-md text-sm text-white bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer">
-                Browse Documents
+                Browse Theses
               </span>
             </Link>
           </div>

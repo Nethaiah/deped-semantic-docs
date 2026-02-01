@@ -1,18 +1,5 @@
-// /constants/badgeVariants.ts
-import type { VariantProps } from "class-variance-authority";
-import { badgeVariants } from "@/components/ui/badge";
-
-export type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>["variant"]>;
-
-// Convert string to snake_case for variant matching
-function toSnakeCase(str: string): string {
-  return str
-    .toLowerCase()
-    .replace(/[\/\s]+/g, '_')
-    .replace(/[^a-z0-9_]/g, '')
-    .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '');
-}
+// /lib/badge-variants.ts
+// Dynamic badge color system for thesis keywords
 
 // Hash function to generate consistent color from string
 function hashString(str: string): number {
@@ -23,46 +10,6 @@ function hashString(str: string): number {
   }
   return Math.abs(hash);
 }
-
-// Generate variant name from tag
-function generateVariantName(tag: string): string {
-  return toSnakeCase(tag);
-}
-
-// Predefined mappings for known categories and offices
-export const badgeVariantMap: Record<string, BadgeVariant> = {
-  // Categories
-  "policy": "policy",
-  "memo": "memo",
-  "learning": "learning",
-  "curriculum": "curriculum",
-  "school calendar": "school_calendar",
-  "curriculum implementation": "curriculum",
-  "personnel/human resources": "personnel_hr",
-  "personnel / human resources": "personnel_hr",
-  "school governance and operations": "school_governance_and_operations_division",
-  "finance/budget": "finance",
-  "finance / budget": "finance",
-  "legal/school titling": "legal_school_titling",
-  "legal / school titling": "legal_school_titling",
-  "others": "outline",
-  
-  // Offices
-  "curriculum implementation division": "curriculum_implementation_division",
-  "school governance and operations division": "school_governance_and_operations_division",
-  "personnel / hr": "personnel_hr",
-  "personnel hr": "personnel_hr",
-  "records management": "records_management",
-  "asset management": "asset_management",
-  "cash management": "cash_management",
-  "ict": "ict",
-  "legal school titling": "legal_school_titling",
-  "finance": "finance",
-  "general services unit": "general_services_unit",
-  "prime - hr": "prime_hr",
-  "prime hr": "prime_hr",
-  "quality management system": "quality_management_system",
-};
 
 // Color palette for dynamic badges (softer, professional colors)
 const dynamicColors = [
@@ -76,31 +23,27 @@ const dynamicColors = [
   { bg: "bg-rose-100", text: "text-rose-800" },
   { bg: "bg-violet-100", text: "text-violet-800" },
   { bg: "bg-lime-100", text: "text-lime-800" },
+  { bg: "bg-teal-100", text: "text-teal-800" },
+  { bg: "bg-orange-100", text: "text-orange-800" },
+  { bg: "bg-sky-100", text: "text-sky-800" },
+  { bg: "bg-fuchsia-100", text: "text-fuchsia-800" },
 ];
 
-// Get dynamic color classes for unknown tags
+/**
+ * Get consistent badge classes for any keyword/tag
+ * Uses a hash function to ensure the same keyword always gets the same color
+ */
 export function getDynamicBadgeClasses(tag: string): string {
-  const hash = hashString(tag);
+  const hash = hashString(tag.toLowerCase());
   const colorIndex = hash % dynamicColors.length;
   const color = dynamicColors[colorIndex];
   return `${color.bg} ${color.text}`;
 }
 
-// Main helper function with fallback to dynamic colors
-export const getBadgeVariant = (label: string): BadgeVariant | "dynamic" => {
-  const normalized = label.trim().toLowerCase();
-  
-  // Try direct lookup
-  if (badgeVariantMap[normalized]) {
-    return badgeVariantMap[normalized];
-  }
-  
-  // Try snake_case conversion
-  const snakeCase = toSnakeCase(normalized);
-  if (badgeVariantMap[snakeCase]) {
-    return badgeVariantMap[snakeCase];
-  }
-  
-  // Return "dynamic" to signal custom styling should be used
+/**
+ * Returns "dynamic" for all keywords since we use hash-based colors
+ * Kept for backward compatibility with existing code
+ */
+export const getBadgeVariant = (label: string): "dynamic" => {
   return "dynamic";
 };

@@ -18,13 +18,13 @@ import {
 import ShareDialog from "./share-dialog";
 
 type Props = {
-  docId: string;
+  thesisId: string;
   initialBookmarked?: boolean;
-  onBookmarkChange?: (docId: string, bookmarked: boolean) => void;
+  onBookmarkChange?: (thesisId: string, bookmarked: boolean) => void;
 };
 
-export default function DocumentActionButtons({
-  docId,
+export default function ThesisActionButtons({
+  thesisId,
   initialBookmarked = false,
   onBookmarkChange,
 }: Props) {
@@ -47,19 +47,19 @@ export default function DocumentActionButtons({
 
   const performBookmarkToggle = () => {
     startTransition(async () => {
-      const result = await toggleBookmark(docId);
+      const result = await toggleBookmark(thesisId);
 
       if (result.error) {
         toast.error(result.error, { duration: 5000, position: "bottom-right" });
       } else {
         setIsBookmarked(result.bookmarked || false);
         if (onBookmarkChange) {
-          onBookmarkChange(docId, result.bookmarked || false);
+          onBookmarkChange(thesisId, result.bookmarked || false);
         }
         toast.success(
           result.bookmarked
-            ? "Document added to your bookmarks"
-            : "Document removed from your bookmarks",
+            ? "Thesis added to your bookmarks"
+            : "Thesis removed from your bookmarks",
           { duration: 5000, position: "bottom-right" }
         );
       }
@@ -78,11 +78,11 @@ export default function DocumentActionButtons({
   return (
     <div className="flex flex-col items-end justify-between">
       <div className="flex items-center gap-2">
-        {/* View Document */}
+        {/* View Thesis */}
         <Link
-          href={`/view/${docId}`}
+          href={`/view/${thesisId}`}
           className="bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors"
-          title="View document"
+          title="View thesis"
         >
           <Eye className="h-5 w-5" />
         </Link>
@@ -121,7 +121,7 @@ export default function DocumentActionButtons({
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Bookmark</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove this document from your bookmarks?
+              Are you sure you want to remove this thesis from your bookmarks?
               You can always bookmark it again later.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -144,7 +144,7 @@ export default function DocumentActionButtons({
       <ShareDialog
         isOpen={showShareDialog}
         onClose={() => setShowShareDialog(false)}
-        docId={docId}
+        docId={thesisId}
       />
     </div>
   );

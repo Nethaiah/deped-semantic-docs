@@ -13,7 +13,7 @@ import {
   getBadgeVariant,
   getDynamicBadgeClasses,
 } from "@/lib/badge-variants";
-import DocumentActionButtons from "@/components/shared/document-action-buttons";
+import DocumentActionButtons from "@/components/shared/thesis-action-buttons";
 import { checkBookmark } from "@/server/bookmarks/check-bookmark";
 import SearchFilterDialog, { type SearchFilterValues } from "@/components/search/search-filter-dialog";
 import {
@@ -530,7 +530,7 @@ export default function Search({ role }: Role) {
 
                 {/* RIGHT SECTION - Action buttons with dynamic bookmark status */}
                 <DocumentActionButtons
-                  docId={doc.doc_id}
+                  thesisId={doc.doc_id}
                   initialBookmarked={!!bookmarks[doc.doc_id]}
                   onBookmarkChange={(id, state) =>
                     setBookmarks((prev) => ({ ...prev, [id]: state }))
