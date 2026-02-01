@@ -40,10 +40,10 @@ export async function getTheses(
     countQuery = countQuery.lte("year", filters.yearTo);
   }
   if (filters.department && filters.department.trim()) {
-    countQuery = countQuery.ilike("department", `%${filters.department.trim()}%`);
+    countQuery = countQuery.eq("department", filters.department.trim());
   }
   if (filters.college && filters.college.trim()) {
-    countQuery = countQuery.ilike("college", `%${filters.college.trim()}%`);
+    countQuery = countQuery.eq("college", filters.college.trim());
   }
   if (filters.title && filters.title.trim()) {
     countQuery = countQuery.ilike("title", `%${filters.title.trim()}%`);
@@ -63,10 +63,10 @@ export async function getTheses(
     dataQuery = dataQuery.lte("year", filters.yearTo);
   }
   if (filters.department && filters.department.trim()) {
-    dataQuery = dataQuery.ilike("department", `%${filters.department.trim()}%`);
+    dataQuery = dataQuery.eq("department", filters.department.trim());
   }
   if (filters.college && filters.college.trim()) {
-    dataQuery = dataQuery.ilike("college", `%${filters.college.trim()}%`);
+    dataQuery = dataQuery.eq("college", filters.college.trim());
   }
   if (filters.title && filters.title.trim()) {
     dataQuery = dataQuery.ilike("title", `%${filters.title.trim()}%`);

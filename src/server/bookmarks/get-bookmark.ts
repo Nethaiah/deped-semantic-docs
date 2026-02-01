@@ -1,7 +1,6 @@
 "use server";
 
 import { verifySession } from "@/lib/dal";
-import { createClient } from "@/lib/supabase/server";
 
 export type BookmarkedThesis = {
   id: string;
@@ -101,6 +100,12 @@ export async function getBookmarkedTheses() {
 
 /**
  * Get paginated bookmarked theses with search and sort options
+ * 
+ * Approach:
+ * 1. Get all bookmark records for user with thesis_id and created_at
+ * 2. Query theses table with search/sort/pagination applied
+ * 3. Filter to only include bookmarked thesis_ids
+ * 4. For date sorting, do post-processing sort by bookmark created_at
  */
 export async function getBookmarkedThesesPaginated(
   page: number,
@@ -115,102 +120,7 @@ export async function getBookmarkedThesesPaginated(
       return { data: [], total: 0, error: error || "Unauthorized" };
     }
 
-    const from = Math.max(0, (page - 1) * pageSize);
-    const to = from + pageSize - 1;
-
-    // For date sorting (by bookmark creation date), we need a different approach
-    const isDateSort = sort === "date_desc" || sort === "date_asc";
-
-    if (isDateSort) {
-      // Query bookmarks first, sorted by created_at, with thesis data joined
-      let bookmarkQuery = supabase
-        .from("bookmarks")
-        .select(`
-          id,
-          thesis_id,
-          created_at,
-          theses!inner (
-            thesis_id,
-            title,
-            year,
-            department,
-            college,
-            advisor,
-            keywords,
-            abstract,
-            summary,
-            source_path,
-            total_pages
-          )
-        `, { count: "exact" })
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: sort === "date_asc" });
-
-      // Apply search filter if provided
-      if (query && query.trim()) {
-        const q = query.trim();
-        const pattern = `%${q}%`;
-        bookmarkQuery = bookmarkQuery.or(
-          [
-            `theses.title.ilike.${pattern}`,
-            `theses.department.ilike.${pattern}`,
-            `theses.college.ilike.${pattern}`,
-            `theses.advisor.ilike.${pattern}`,
-            `theses.summary.ilike.${pattern}`,
-          ].join(",")
-        );
-      }
-
-      const { data: bookmarkResults, error: bmError, count } = await bookmarkQuery.range(from, to);
-
-      if (bmError) {
-        return { data: [], total: 0, error: bmError.message };
-      }
-
-      // Get thesis IDs for author lookup
-      const thesisIds = (bookmarkResults || [])
-        .filter((b: any) => b.theses)
-        .map((b: any) => b.theses.thesis_id);
-
-      // Fetch authors
-      const { data: allAuthors } = await supabase
-        .from("thesis_authors")
-        .select("thesis_id, author_name, author_order")
-        .in("thesis_id", thesisIds)
-        .order("author_order", { ascending: true });
-
-      const authorsByThesis: Record<string, string[]> = {};
-      (allAuthors || []).forEach((author: any) => {
-        if (!authorsByThesis[author.thesis_id]) {
-          authorsByThesis[author.thesis_id] = [];
-        }
-        authorsByThesis[author.thesis_id].push(author.author_name);
-      });
-
-      const theses: BookmarkedThesis[] = (bookmarkResults || [])
-        .filter((b: any) => b.theses)
-        .map((b: any) => ({
-          id: b.id,
-          thesisId: b.theses.thesis_id,
-          title: b.theses.title,
-          year: b.theses.year,
-          department: b.theses.department,
-          college: b.theses.college,
-          advisor: b.theses.advisor || undefined,
-          keywords: b.theses.keywords || [],
-          abstract: b.theses.abstract || undefined,
-          summary: b.theses.summary || undefined,
-          sourcePath: b.theses.source_path,
-          totalPages: b.theses.total_pages || 0,
-          authors: authorsByThesis[b.theses.thesis_id] || [],
-          bookmarkedAt: b.created_at,
-        }));
-
-      return { data: theses, total: count || 0, error: null };
-    }
-
-    // For non-date sorting (title, year), query theses table directly
-    // First get all bookmarked thesis IDs
+    // Step 1: Get all bookmarked thesis IDs for this user
     const { data: bookmarkData, error: bmError } = await supabase
       .from("bookmarks")
       .select("thesis_id, created_at")
@@ -225,52 +135,115 @@ export async function getBookmarkedThesesPaginated(
       return { data: [], total: 0, error: null };
     }
 
-    // Create a map of thesis_id to bookmark created_at
+    // Create a map of thesis_id to bookmark created_at for date sorting
     const bookmarkDates: Record<string, string> = {};
     (bookmarkData || []).forEach((r: any) => {
       bookmarkDates[r.thesis_id] = r.created_at;
     });
 
-    let qb = supabase
+    // Step 2: Query theses table with search filter
+    let thesisQuery = supabase
       .from("theses")
       .select("*", { count: "exact" })
       .in("thesis_id", thesisIds);
 
-    // Apply Search Query
+    // Apply search filter
     if (query && query.trim()) {
       const q = query.trim();
       const pattern = `%${q}%`;
-      qb = qb.or(
+      thesisQuery = thesisQuery.or(
         [
           `title.ilike.${pattern}`,
           `department.ilike.${pattern}`,
           `college.ilike.${pattern}`,
           `advisor.ilike.${pattern}`,
           `summary.ilike.${pattern}`,
+          `abstract.ilike.${pattern}`,
         ].join(",")
       );
     }
 
-    // Apply Server-Side Sorting for non-date sorts
+    // Step 3: For date sorting, we need to fetch all matching theses first, then sort by bookmark date
+    const isDateSort = sort === "date_desc" || sort === "date_asc";
+
+    if (isDateSort) {
+      // Fetch all matching theses (without pagination yet)
+      const { data: allTheses, error: thesisError, count } = await thesisQuery;
+
+      if (thesisError) {
+        return { data: [], total: 0, error: thesisError.message };
+      }
+
+      // Sort by bookmark created_at
+      const sortedTheses = (allTheses || []).sort((a: any, b: any) => {
+        const dateA = new Date(bookmarkDates[a.thesis_id] || 0).getTime();
+        const dateB = new Date(bookmarkDates[b.thesis_id] || 0).getTime();
+        return sort === "date_asc" ? dateA - dateB : dateB - dateA;
+      });
+
+      // Apply pagination
+      const from = Math.max(0, (page - 1) * pageSize);
+      const paginatedTheses = sortedTheses.slice(from, from + pageSize);
+
+      // Fetch authors for these theses
+      const resultThesisIds = paginatedTheses.map((t: any) => t.thesis_id);
+      const { data: allAuthors } = await supabase
+        .from("thesis_authors")
+        .select("thesis_id, author_name, author_order")
+        .in("thesis_id", resultThesisIds)
+        .order("author_order", { ascending: true });
+
+      const authorsByThesis: Record<string, string[]> = {};
+      (allAuthors || []).forEach((author: any) => {
+        if (!authorsByThesis[author.thesis_id]) {
+          authorsByThesis[author.thesis_id] = [];
+        }
+        authorsByThesis[author.thesis_id].push(author.author_name);
+      });
+
+      const theses: BookmarkedThesis[] = paginatedTheses.map((d: any) => ({
+        id: d.thesis_id,
+        thesisId: d.thesis_id,
+        title: d.title,
+        year: d.year,
+        department: d.department,
+        college: d.college,
+        advisor: d.advisor || undefined,
+        keywords: d.keywords || [],
+        abstract: d.abstract || undefined,
+        summary: d.summary || undefined,
+        sourcePath: d.source_path,
+        totalPages: d.total_pages || 0,
+        authors: authorsByThesis[d.thesis_id] || [],
+        bookmarkedAt: bookmarkDates[d.thesis_id] || d.created_at,
+      }));
+
+      return { data: theses, total: count || sortedTheses.length, error: null };
+    }
+
+    // Step 4: For non-date sorting, apply sorting and pagination directly in the query
     switch (sort) {
       case "title_asc":
-        qb = qb.order("title", { ascending: true, nullsFirst: false });
+        thesisQuery = thesisQuery.order("title", { ascending: true, nullsFirst: false });
         break;
       case "title_desc":
-        qb = qb.order("title", { ascending: false, nullsFirst: false });
+        thesisQuery = thesisQuery.order("title", { ascending: false, nullsFirst: false });
         break;
       case "year_asc":
-        qb = qb.order("year", { ascending: true, nullsFirst: false });
+        thesisQuery = thesisQuery.order("year", { ascending: true, nullsFirst: false });
         break;
       case "year_desc":
-        qb = qb.order("year", { ascending: false, nullsFirst: false });
+        thesisQuery = thesisQuery.order("year", { ascending: false, nullsFirst: false });
         break;
       default:
-        qb = qb.order("title", { ascending: true, nullsFirst: false });
+        thesisQuery = thesisQuery.order("title", { ascending: true, nullsFirst: false });
         break;
     }
 
-    const { data, error: dbError, count } = await qb.range(from, to);
+    const from = Math.max(0, (page - 1) * pageSize);
+    const to = from + pageSize - 1;
+
+    const { data, error: dbError, count } = await thesisQuery.range(from, to);
 
     if (dbError) {
       return { data: [], total: 0, error: dbError.message };
@@ -284,7 +257,6 @@ export async function getBookmarkedThesesPaginated(
       .in("thesis_id", resultThesisIds)
       .order("author_order", { ascending: true });
 
-    // Group authors by thesis_id
     const authorsByThesis: Record<string, string[]> = {};
     (allAuthors || []).forEach((author: any) => {
       if (!authorsByThesis[author.thesis_id]) {

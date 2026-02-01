@@ -8,17 +8,35 @@ import RecentlyViewed from "@/components/dashboard/recently-viewed";
 import MonthlyActivity from "@/components/dashboard/monthly-activity";
 import { getMonthlyActivity } from "@/server/stats/get-monthly-activity";
 import { getThemeForRole } from "@/lib/theme-config";
+import { getThesesFilterOptions } from "@/server/theses/get-filter-options";
+import { thesesFilterParamsCache } from "@/lib/search-params";
+import type { SearchParams } from "nuqs/server";
 
 interface DashboardPageProps {
   name: string;
   role: string;
+  searchParams: Promise<SearchParams>;
 }
 
-export default async function DashboardPage({ name, role }: DashboardPageProps) {
-  const theses = await getTheses();
+export default async function DashboardPage({ name, role, searchParams }: DashboardPageProps) {
+  // Parse URL params with nuqs cache
+  const { page, yearFrom, yearTo, department, college, title } = await thesesFilterParamsCache.parse(searchParams);
+
+  // Build filters from URL params
+  const filters = {
+    yearFrom: yearFrom ? parseInt(yearFrom) : undefined,
+    yearTo: yearTo ? parseInt(yearTo) : undefined,
+    department: department || undefined,
+    college: college || undefined,
+    title: title || undefined,
+  };
+
+  // Fetch data with filters
+  const theses = await getTheses(page, 10, filters);
   const stats = await getStats();
   const recentlyViewed = await getRecentlyViewed(3);
   const monthlyActivity = await getMonthlyActivity();
+  const filterOptions = await getThesesFilterOptions();
 
   const theme = getThemeForRole(role);
   const isAdmin = role === "admin";
@@ -73,6 +91,15 @@ export default async function DashboardPage({ name, role }: DashboardPageProps) 
         <ThesesTable
           initialData={theses.data}
           initialTotalPages={theses?.totalPages}
+          initialPage={page}
+          initialFilters={{
+            yearFrom: yearFrom || "",
+            yearTo: yearTo || "",
+            department: department || "",
+            college: college || "",
+            title: title || "",
+          }}
+          filterOptions={filterOptions}
           accentColor={theme.primary}
         />
 

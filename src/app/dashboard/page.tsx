@@ -1,8 +1,13 @@
 import DashboardPage from "@/components/dashboard/dashboard-page";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import type { SearchParams } from "nuqs/server";
 
-export default async function DocumentsPage() {
+type Props = {
+  searchParams: Promise<SearchParams>;
+};
+
+export default async function DocumentsPage({ searchParams }: Props) {
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -20,5 +25,5 @@ export default async function DocumentsPage() {
 
   const displayName = userData?.full_name || user.user_metadata.full_name;
 
-  return <DashboardPage name={displayName} role={role} />;
+  return <DashboardPage name={displayName} role={role} searchParams={searchParams} />;
 }

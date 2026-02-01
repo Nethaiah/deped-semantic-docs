@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import { createClient } from "@/lib/supabase/server";
 import ConditionalLayout from "./conditional-layout";
 import ConditionalHeader from "./conditional-header";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 // ✅ Load only Poppins
 const poppins = Poppins({
@@ -37,13 +38,16 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} font-sans antialiased`}>
-        <ConditionalHeader>
-          <Header />
-        </ConditionalHeader>
-        <ConditionalLayout user={user} role={role}>
-          {children}
-        </ConditionalLayout>
+        <NuqsAdapter>
+          <ConditionalHeader>
+            <Header />
+          </ConditionalHeader>
+          <ConditionalLayout user={user} role={role}>
+            {children}
+          </ConditionalLayout>
+        </NuqsAdapter>
       </body>
     </html>
   );
 }
+

@@ -9,6 +9,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export type ThesesFilterFormValues = {
   yearFrom: string;
@@ -25,6 +32,8 @@ type ThesesFilterDialogProps = {
   onValuesChange: (next: ThesesFilterFormValues) => void;
   onApply: () => void;
   onReset: () => void;
+  departments?: string[];
+  colleges?: string[];
 };
 
 export default function ThesesFilterDialog({
@@ -34,6 +43,8 @@ export default function ThesesFilterDialog({
   onValuesChange,
   onApply,
   onReset,
+  departments = [],
+  colleges = [],
 }: ThesesFilterDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -91,16 +102,24 @@ export default function ThesesFilterDialog({
               >
                 Department
               </label>
-              <input
-                id="department"
-                type="text"
-                placeholder="Search department..."
-                className="flex h-9 w-full rounded-md border border-slate-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
-                value={values.department}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  onValuesChange({ ...values, department: e.target.value })
+              <Select
+                value={values.department || "_all"}
+                onValueChange={(val) =>
+                  onValuesChange({ ...values, department: val === "_all" ? "" : val })
                 }
-              />
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="All Departments" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_all">All Departments</SelectItem>
+                  {departments.map((dept) => (
+                    <SelectItem key={dept} value={dept}>
+                      {dept}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -110,16 +129,24 @@ export default function ThesesFilterDialog({
               >
                 College
               </label>
-              <input
-                id="college"
-                type="text"
-                placeholder="Search college..."
-                className="flex h-9 w-full rounded-md border border-slate-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
-                value={values.college}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  onValuesChange({ ...values, college: e.target.value })
+              <Select
+                value={values.college || "_all"}
+                onValueChange={(val) =>
+                  onValuesChange({ ...values, college: val === "_all" ? "" : val })
                 }
-              />
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="All Colleges" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_all">All Colleges</SelectItem>
+                  {colleges.map((col) => (
+                    <SelectItem key={col} value={col}>
+                      {col}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

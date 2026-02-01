@@ -2,9 +2,11 @@ import Bookmarks from "@/components/bookmarks/bookmark";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getBookmarkedThesesPaginated } from "@/server/bookmarks/get-bookmark";
+import { bookmarkSearchParamsCache, type BookmarkSortOption } from "@/lib/search-params";
+import type { SearchParams } from "nuqs/server";
 
 type Props = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  searchParams: Promise<SearchParams>;
 };
 
 export default async function BookmarksPage({ searchParams }: Props) {
@@ -25,18 +27,16 @@ export default async function BookmarksPage({ searchParams }: Props) {
 
   const role = userData?.role || "user";
 
-  const sp = await searchParams;
-  const pageParam = Array.isArray(sp.page) ? sp.page[0] : sp.page;
-  const page = Math.max(1, parseInt(pageParam || '1', 10) || 1);
+  // Parse search params with nuqs cache
+  const { page, q, sort } = await bookmarkSearchParamsCache.parse(searchParams);
   const pageSize = 10;
-  const qParam = Array.isArray(sp.q) ? sp.q[0] : sp.q;
 
-  // Extract Sort Parameter
-  const sortParam = Array.isArray(sp.sort) ? sp.sort[0] : sp.sort;
-  const validSorts = ["date_desc", "date_asc", "title_asc", "title_desc", "year_desc", "year_asc"];
-  const sort = (validSorts.includes(sortParam || "") ? sortParam : "date_desc") as "date_desc" | "date_asc" | "title_asc" | "title_desc" | "year_desc" | "year_asc";
-
-  const { data: theses, total } = await getBookmarkedThesesPaginated(page, pageSize, qParam || undefined, sort);
+  const { data: theses, total } = await getBookmarkedThesesPaginated(
+    page,
+    pageSize,
+    q || undefined,
+    sort as BookmarkSortOption
+  );
 
   return (
     <Bookmarks
@@ -45,8 +45,8 @@ export default async function BookmarksPage({ searchParams }: Props) {
       total={total || 0}
       page={page}
       pageSize={pageSize}
-      initialQuery={qParam || ""}
-      initialSort={sort}
+      initialQuery={q || ""}
+      initialSort={sort as BookmarkSortOption}
     />
   );
 }

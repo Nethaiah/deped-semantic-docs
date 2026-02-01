@@ -1,123 +1,118 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
-import {
-  getBadgeVariant,
-  getDynamicBadgeClasses,
-} from "@/lib/badge-variants";
-import { getTheses, type Thesis } from "@/server/theses/get-theses";
+import { useQueryState } from "nuqs";
 import { Funnel } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThesesFilterDialog from "@/components/dashboard/theses-filter-dialog";
 import NumberedPagination from "@/components/shared/numbered-pagination";
+import type { Thesis } from "@/server/theses/get-theses";
+import type { FilterOptions } from "@/server/theses/get-filter-options";
+
+type Props = {
+  initialData: Thesis[];
+  initialTotalPages?: number;
+  initialPage?: number;
+  initialFilters?: {
+    yearFrom: string;
+    yearTo: string;
+    department: string;
+    college: string;
+    title: string;
+  };
+  filterOptions?: FilterOptions;
+  accentColor?: string;
+};
 
 export default function ThesesTable({
   initialData,
   initialTotalPages = 1,
+  initialPage = 1,
+  initialFilters = { yearFrom: "", yearTo: "", department: "", college: "", title: "" },
+  filterOptions = { departments: [], colleges: [] },
   accentColor = "#278fb6",
-}: {
-  initialData: Thesis[];
-  initialTotalPages?: number;
-  accentColor?: string;
-}) {
+}: Props) {
   const router = useRouter();
-  const [data, setData] = useState(initialData);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(initialTotalPages);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  // URL state with nuqs
+  const [page, setPage] = useQueryState("page", { defaultValue: String(initialPage), shallow: false });
+  const [yearFrom, setYearFrom] = useQueryState("yearFrom", { defaultValue: initialFilters.yearFrom, shallow: false });
+  const [yearTo, setYearTo] = useQueryState("yearTo", { defaultValue: initialFilters.yearTo, shallow: false });
+  const [department, setDepartment] = useQueryState("department", { defaultValue: initialFilters.department, shallow: false });
+  const [college, setCollege] = useQueryState("college", { defaultValue: initialFilters.college, shallow: false });
+  const [title, setTitle] = useQueryState("title", { defaultValue: initialFilters.title, shallow: false });
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  // Temporary form values for dialog (before applying)
   const [formFilters, setFormFilters] = useState({
-    yearFrom: "",
-    yearTo: "",
-    department: "",
-    college: "",
-    title: "",
+    yearFrom: yearFrom || "",
+    yearTo: yearTo || "",
+    department: department || "",
+    college: college || "",
+    title: title || "",
   });
-  const [appliedFilters, setAppliedFilters] = useState<{
-    yearFrom?: number;
-    yearTo?: number;
-    department?: string;
-    college?: string;
-    title?: string;
-  }>({});
 
-  const loadPage = async (
-    page: number,
-    overrideFilters?: {
-      yearFrom?: number;
-      yearTo?: number;
-      department?: string;
-      college?: string;
-      title?: string;
-    }
-  ) => {
-    setIsLoading(true);
-    try {
-      const result = await getTheses(
-        page,
-        10,
-        overrideFilters ?? appliedFilters
-      );
-      setData(result.data);
-      setCurrentPage(result.currentPage);
-      setTotalPages(result.totalPages);
-    } catch (error) {
-      console.error("Error loading page:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const onApplyFilters = async () => {
-    const nextApplied: {
-      yearFrom?: number;
-      yearTo?: number;
-      department?: string;
-      college?: string;
-      title?: string;
-    } = {
-      yearFrom: formFilters.yearFrom ? parseInt(formFilters.yearFrom) : undefined,
-      yearTo: formFilters.yearTo ? parseInt(formFilters.yearTo) : undefined,
-      department: formFilters.department || undefined,
-      college: formFilters.college || undefined,
-      title: formFilters.title || undefined,
-    };
-    setAppliedFilters(nextApplied);
-    setIsFilterOpen(false);
-    await loadPage(1, nextApplied);
-  };
-
-  const onResetFilters = async () => {
-    setFormFilters({
-      yearFrom: "",
-      yearTo: "",
-      department: "",
-      college: "",
-      title: "",
+  const onApplyFilters = () => {
+    startTransition(() => {
+      const params = new URLSearchParams();
+      params.set("page", "1");
+      if (formFilters.yearFrom) params.set("yearFrom", formFilters.yearFrom);
+      if (formFilters.yearTo) params.set("yearTo", formFilters.yearTo);
+      if (formFilters.department) params.set("department", formFilters.department);
+      if (formFilters.college) params.set("college", formFilters.college);
+      if (formFilters.title) params.set("title", formFilters.title);
+      router.push(`/dashboard?${params.toString()}`);
+      setIsFilterOpen(false);
     });
-    setAppliedFilters({});
-    setIsFilterOpen(false);
-    await loadPage(1, {});
+  };
+
+  const onResetFilters = () => {
+    startTransition(() => {
+      setFormFilters({ yearFrom: "", yearTo: "", department: "", college: "", title: "" });
+      router.push("/dashboard");
+      setIsFilterOpen(false);
+    });
   };
 
   const activeFilterCount = [
-    appliedFilters.yearFrom,
-    appliedFilters.yearTo,
-    appliedFilters.department,
-    appliedFilters.college,
-    appliedFilters.title,
+    yearFrom,
+    yearTo,
+    department,
+    college,
+    title,
   ].filter(Boolean).length;
 
-  // For numbered pagination - we don't use actual URLs, just trigger loadPage
-  const buildHref = (page: number) => {
-    return "#"; // Dummy href since we handle navigation programmatically
+  // Sync form filters when URL changes
+  useEffect(() => {
+    setFormFilters({
+      yearFrom: yearFrom || "",
+      yearTo: yearTo || "",
+      department: department || "",
+      college: college || "",
+      title: title || "",
+    });
+  }, [yearFrom, yearTo, department, college, title]);
+
+  const currentPage = parseInt(page || "1");
+  const totalPages = initialTotalPages;
+
+  const buildHref = (targetPage: number) => {
+    const params = new URLSearchParams();
+    params.set("page", String(targetPage));
+    if (yearFrom) params.set("yearFrom", yearFrom);
+    if (yearTo) params.set("yearTo", yearTo);
+    if (department) params.set("department", department);
+    if (college) params.set("college", college);
+    if (title) params.set("title", title);
+    return `/dashboard?${params.toString()}`;
   };
 
-  const handlePageChange = (page: number) => {
-    loadPage(page);
+  const handlePageChange = () => {
+    startTransition(() => {});
   };
 
   return (
@@ -148,11 +143,13 @@ export default function ThesesTable({
             onValuesChange={setFormFilters}
             onApply={onApplyFilters}
             onReset={onResetFilters}
+            departments={filterOptions.departments}
+            colleges={filterOptions.colleges}
           />
         </div>
       </div>
 
-      <div className={isLoading ? "opacity-50 pointer-events-none" : ""}>
+      <div className={isPending ? "opacity-50 pointer-events-none" : ""}>
         <table className="w-full text-left">
           <thead className="bg-slate-100 border-b border-slate-200">
             <tr>
@@ -172,13 +169,13 @@ export default function ThesesTable({
           </thead>
 
           <tbody>
-            {data.length > 0 ? (
-              data.map((thesis, index) => (
+            {initialData.length > 0 ? (
+              initialData.map((thesis, index) => (
                 <tr
                   key={thesis.id}
                   onClick={() => router.push(`/view/${thesis.id}`)}
                   className={`hover:bg-slate-50 transition-colors cursor-pointer ${
-                    index !== data.length - 1 ? "border-b border-slate-200" : ""
+                    index !== initialData.length - 1 ? "border-b border-slate-200" : ""
                   }`}
                 >
                   <td className="py-4 px-4 text-md text-slate-600 font-semibold">
@@ -231,9 +228,10 @@ export default function ThesesTable({
           totalPages={totalPages}
           buildHref={buildHref}
           onPageChange={handlePageChange}
-          isLoading={isLoading}
+          isLoading={isPending}
         />
       </div>
     </div>
   );
 }
+
