@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, Share2, FileDown, Flag } from "lucide-react";
+import { Bookmark, Share2, FileDown } from "lucide-react";
 import Link from "next/link";
 import { toggleBookmark } from "@/server/bookmarks/toggle-bookmark";
 import { useState, useTransition } from "react";
@@ -19,11 +19,15 @@ import {
 
 type Props = {
   sourcePath?: string;
-  docId: string;
+  thesisId: string;
   initialBookmarked?: boolean;
 };
 
-export default function DocumentActions({ sourcePath, docId, initialBookmarked = false }: Props) {
+export default function ThesisActions({ 
+  sourcePath, 
+  thesisId, 
+  initialBookmarked = false 
+}: Props) {
   const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
   const [isPending, startTransition] = useTransition();
   const [showShareDialog, setShowShareDialog] = useState(false);
@@ -39,14 +43,19 @@ export default function DocumentActions({ sourcePath, docId, initialBookmarked =
 
   const performBookmarkToggle = () => {
     startTransition(async () => {
-      const result = await toggleBookmark(docId);
+      const result = await toggleBookmark(thesisId);
       
       if (result.error) {
-        toast.error( result.error, {duration: 5000, position: "bottom-right" })
+        toast.error(result.error, { duration: 5000, position: "bottom-right" });
       } else {
         setIsBookmarked(result.bookmarked || false);
 
-        toast.success( result.bookmarked ? "Document added to your bookmarks" : "Document removed from your bookmarks",  {duration: 5000, position: "bottom-right" })
+        toast.success(
+          result.bookmarked 
+            ? "Thesis added to your bookmarks" 
+            : "Thesis removed from your bookmarks",
+          { duration: 5000, position: "bottom-right" }
+        );
       }
     });
   };
@@ -89,10 +98,6 @@ export default function DocumentActions({ sourcePath, docId, initialBookmarked =
             <FileDown className="h-4 w-4" /> Download PDF
           </Link>
         )}
-        
-        {/* <button className="w-full text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2 px-3 rounded-md flex items-center gap-3 transition-colors">
-          <Flag className="h-4 w-4" /> Report Issue
-        </button> */}
       </div>
 
       {/* Unbookmark Confirmation Dialog */}
@@ -101,7 +106,7 @@ export default function DocumentActions({ sourcePath, docId, initialBookmarked =
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Bookmark</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove this document from your bookmarks? 
+              Are you sure you want to remove this thesis from your bookmarks? 
               You can always bookmark it again later.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -122,7 +127,7 @@ export default function DocumentActions({ sourcePath, docId, initialBookmarked =
       <ShareDialog 
         isOpen={showShareDialog} 
         onClose={() => setShowShareDialog(false)} 
-        docId={docId} 
+        docId={thesisId} 
       />
     </>
   );

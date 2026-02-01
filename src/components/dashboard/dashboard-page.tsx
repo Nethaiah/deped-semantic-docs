@@ -1,8 +1,8 @@
 import ClientTimeDisplay from "@/components/shared/time";
 import ThesesTable from "@/components/dashboard/theses-table";
-import { getTheses } from "@/server/documents/get-theses";
+import { getTheses } from "@/server/theses/get-theses";
 import { getStats } from "@/server/stats/get-stats";
-import { getRecentlyViewed } from "@/server/documents/get-recently-viewed";
+import { getRecentlyViewed } from "@/server/theses/get-recently-viewed";
 import StatsCards from "@/components/dashboard/stats-card";
 import RecentlyViewed from "@/components/dashboard/recently-viewed";
 import MonthlyActivity from "@/components/dashboard/monthly-activity";
@@ -82,7 +82,7 @@ export default async function DashboardPage({ name, role }: DashboardPageProps) 
           <MonthlyActivity data={monthlyActivity} accentColor={theme.primary} />
 
           {/* Recently Viewed */}
-          <RecentlyViewed documents={recentlyViewed} accentColor={theme.primary} />
+          <RecentlyViewed theses={recentlyViewed} accentColor={theme.primary} />
         </div>
       </div>
     </div>

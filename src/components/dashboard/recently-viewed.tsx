@@ -6,27 +6,26 @@ import {
   getBadgeVariant,
   getDynamicBadgeClasses,
 } from "@/lib/badge-variants";
-import { Clock, ArrowRight, History } from "lucide-react";
-
-type RecentlyViewedDoc = {
-  id: string;
-  code: string;
-  title: string;
-  tags: string[];
-  viewedAt: string;
-  dateIssued?: string | null;
-  issuer?: string | null;
-};
+import { Clock, ArrowRight, History, Users, Calendar } from "lucide-react";
+import type { RecentlyViewedThesis } from "@/server/theses/get-recently-viewed";
 
 type Props = {
-  documents: RecentlyViewedDoc[];
+  theses: RecentlyViewedThesis[];
   accentColor?: string;
 };
 
-export default function RecentlyViewed({ documents, accentColor = "#278fb6" }: Props) {
+export default function RecentlyViewed({ theses, accentColor = "#278fb6" }: Props) {
   const router = useRouter();
 
-  if (documents.length === 0) {
+  // Format authors for display
+  const formatAuthors = (authors: string[]) => {
+    if (!authors || authors.length === 0) return "Unknown";
+    if (authors.length === 1) return authors[0];
+    if (authors.length === 2) return authors.join(" & ");
+    return `${authors[0]} et al.`;
+  };
+
+  if (theses.length === 0) {
     return (
       <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-4">
         <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
@@ -36,10 +35,10 @@ export default function RecentlyViewed({ documents, accentColor = "#278fb6" }: P
         <div className="text-center py-8">
           <History className="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <p className="text-sm text-slate-500">
-            No recently viewed documents yet.
+            No recently viewed theses yet.
           </p>
           <p className="text-xs text-slate-400 mt-1">
-            Start exploring documents to see your history here.
+            Start exploring theses to see your history here.
           </p>
         </div>
       </div>
@@ -53,37 +52,48 @@ export default function RecentlyViewed({ documents, accentColor = "#278fb6" }: P
         Recently Viewed
       </h2>
       <div className="space-y-3">
-        {documents.map((item) => {
-          const firstTag = item.tags?.[0];
-          const variant = firstTag ? getBadgeVariant(firstTag) : null;
+        {theses.map((item) => {
+          const firstKeyword = item.keywords?.[0];
+          const variant = firstKeyword ? getBadgeVariant(firstKeyword) : null;
 
           return (
             <div
-              key={item.id}
-              onClick={() => router.push(`/view/${item.id}`)}
+              key={item.thesisId}
+              onClick={() => router.push(`/view/${item.thesisId}`)}
               className="group relative bg-gradient-to-r from-slate-50 to-blue-50 hover:from-blue-50 hover:to-indigo-50 rounded-xl p-4 cursor-pointer transition-all duration-300 border border-slate-200 hover:border-blue-300 hover:shadow-md"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
+                  {/* Title and Year */}
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <p className="font-bold text-sm" style={{ color: accentColor }}>
-                      {item.code}
+                      {item.year}
                     </p>
-                    {firstTag && variant && (
+                    {firstKeyword && variant && (
                       <Badge
                         size="sm"
                         {...(variant === "dynamic"
-                          ? { className: getDynamicBadgeClasses(firstTag) }
+                          ? { className: getDynamicBadgeClasses(firstKeyword) }
                           : { variant })}
                       >
-                        {firstTag}
+                        {firstKeyword}
                       </Badge>
                     )}
                   </div>
+                  
+                  {/* Thesis Title */}
                   <p className="text-sm text-slate-700 line-clamp-2 mb-2">
                     {item.title}
                   </p>
-                  <div className="flex items-center gap-1 text-xs text-slate-500">
+                  
+                  {/* Authors */}
+                  <div className="flex items-center gap-1 text-xs text-slate-500 mb-1">
+                    <Users className="w-3 h-3" />
+                    <span className="truncate">{formatAuthors(item.authors)}</span>
+                  </div>
+                  
+                  {/* Viewed Time */}
+                  <div className="flex items-center gap-1 text-xs text-slate-400">
                     <Clock className="w-3 h-3" />
                     <span>{formatTimeAgo(item.viewedAt)}</span>
                   </div>

@@ -4,14 +4,15 @@ import { useState } from "react";
 import { RAGApiService } from "@/lib/api/rag-api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Loader2, AlertCircle, MessageSquare } from "lucide-react";
+import { Loader2, AlertCircle, MessageSquare, FileText } from "lucide-react";
 
 type Props = {
+  abstract?: string;
   summary?: string;
-  documentId: string;
+  thesisId: string;
 };
 
-export default function DocumentAnalysis({ summary, documentId }: Props) {
+export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -20,12 +21,8 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
     Array<{ question: string; answer: string }>
   >([]);
 
+  const hasAbstract = abstract && abstract.trim().length > 0;
   const hasSummary = summary && summary.trim().length > 0;
-
-  const handleGenerateSummary = async () => {
-    console.log("Generate summary for document:", documentId);
-    // This could be connected to a backend endpoint in the future
-  };
 
   const handleAskQuestion = async () => {
     if (!question.trim()) {
@@ -41,7 +38,7 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
 
     try {
       const result = await RAGApiService.documentQA({
-        doc_id: documentId,
+        doc_id: thesisId,
         question: currentQuestion,
       });
 
@@ -53,7 +50,7 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
         { question: currentQuestion, answer: result.answer },
       ]);
     } catch (err) {
-      console.error("Document Q&A error:", err);
+      console.error("Thesis Q&A error:", err);
       setError(
         err instanceof Error
           ? err.message
@@ -67,19 +64,33 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md border border-slate-200">
-      <h3 className="text-2xl font-bold text-slate-800">Document Analysis</h3>
+      <h3 className="text-2xl font-bold text-slate-800">Thesis Overview</h3>
       <p className="text-sm text-slate-500 mb-4">
-        {hasSummary
-          ? "Summary of the document content."
-          : "Ask questions to understand the document better."}
+        {hasAbstract || hasSummary
+          ? "Abstract and summary of the research."
+          : "Ask questions to learn more about this thesis."}
       </p>
 
-      {/* Document Summary */}
-      {hasSummary && (
+      {/* Abstract Section */}
+      {hasAbstract && (
         <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-5 mb-4">
           <h4 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
             <span className="w-1 h-5 bg-blue-500 rounded-full"></span>
-            Summary
+            <FileText className="h-4 w-4" />
+            Abstract
+          </h4>
+          <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap text-justify hyphens-auto">
+            {abstract}
+          </p>
+        </div>
+      )}
+
+      {/* Summary Section */}
+      {hasSummary && (
+        <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-5 mb-4">
+          <h4 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
+            <span className="w-1 h-5 bg-amber-500 rounded-full"></span>
+            AI Summary
           </h4>
           <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap text-justify hyphens-auto">
             {summary}
@@ -88,10 +99,10 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
       )}
 
       {/* Q&A Section */}
-      <div className={hasSummary ? "mt-6 border-t pt-6" : ""}>
+      <div className={hasAbstract || hasSummary ? "mt-6 border-t pt-6" : ""}>
         <h4 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
           <MessageSquare className="h-5 w-5" />
-          Ask Questions About This Document
+          Ask Questions About This Thesis
         </h4>
 
         {/* Error Message */}
@@ -177,7 +188,7 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
               }
             }}
             disabled={isLoading}
-            placeholder="e.g., What are the key requirements? When does this take effect?"
+            placeholder="e.g., What methodology was used? What are the key findings?"
             className="flex-1 bg-slate-50 border border-slate-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none disabled:bg-slate-100 disabled:cursor-not-allowed text-sm"
           />
           <button
@@ -199,7 +210,7 @@ export default function DocumentAnalysis({ summary, documentId }: Props) {
         {/* Helper Text */}
         {conversationHistory.length === 0 && !answer && !isLoading && (
           <p className="mt-3 text-xs text-slate-500">
-            Ask specific questions about this document to get AI-powered answers
+            Ask specific questions about this thesis to get AI-powered answers
             based on its content.
           </p>
         )}

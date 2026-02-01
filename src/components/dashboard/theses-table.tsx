@@ -8,7 +8,7 @@ import {
   getBadgeVariant,
   getDynamicBadgeClasses,
 } from "@/lib/badge-variants";
-import { getTheses, type Thesis } from "@/server/documents/get-theses";
+import { getTheses, type Thesis } from "@/server/theses/get-theses";
 import { Funnel } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThesesFilterDialog from "@/components/dashboard/theses-filter-dialog";

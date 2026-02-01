@@ -1,4 +1,4 @@
-import PDFViewer from "@/components/document/manage-pdf-viewer";
+import PDFViewer from "@/components/thesis/pdf-viewer/manage-pdf-viewer";
 
 type Props = {
   sourcePath?: string;
