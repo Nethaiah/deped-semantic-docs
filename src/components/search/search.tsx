@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQueryStates } from "nuqs";
+import { useQueryStates, debounce } from "nuqs";
 import { searchPageParams, type SearchSortOption } from "@/lib/search-params";
 
 type Role = {
@@ -274,7 +274,20 @@ export default function Search({ role }: Role) {
               type="text"
               placeholder="Ask a question or search for 'learning recovery plan' or 'DO 22 s. 2023'..."
               value={searchQuery}
-              onChange={(e) => setUrlState({ q: e.target.value })}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (useRAG) {
+                  // RAG mode: shallow update (client-only, no server request)
+                  // Search only happens when button is clicked
+                  setUrlState({ q: value }, { shallow: true });
+                } else {
+                  // Keyword mode: debounce 500ms to reduce server requests while typing
+                  setUrlState(
+                    { q: value },
+                    { limitUrlUpdates: value === "" ? undefined : debounce(500) }
+                  );
+                }
+              }}
               onKeyDown={(e) =>
                 e.key === "Enter" && !isLoading && handleSearch()
               }

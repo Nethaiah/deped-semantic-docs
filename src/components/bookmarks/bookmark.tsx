@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { SearchIcon, Users, Calendar, Building, GraduationCap } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useQueryState } from "nuqs";
+import { useQueryState, parseAsString, debounce } from "nuqs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getDynamicBadgeClasses } from "@/lib/badge-variants";
@@ -59,7 +59,10 @@ export default function Bookmarks({
   const [isPending, startTransition] = useTransition();
 
   // Nuqs state for URL params
-  const [query, setQuery] = useQueryState("q", { defaultValue: initialQuery, shallow: false });
+  const [query, setQuery] = useQueryState(
+    "q",
+    parseAsString.withDefault(initialQuery).withOptions({ shallow: false })
+  );
   const [sortBy, setSortBy] = useQueryState("sort", { defaultValue: initialSort, shallow: false });
 
   const activeColor =
@@ -123,8 +126,13 @@ export default function Bookmarks({
             <input
               type="text"
               placeholder="Search by title, department, college, advisor..."
-              value={query || ""}
-              onChange={(e) => setQuery(e.target.value || null)}
+              value={query}
+              onChange={(e) =>
+                setQuery(e.target.value, {
+                  // Send immediate update if resetting, otherwise debounce at 500ms
+                  limitUrlUpdates: e.target.value === "" ? undefined : debounce(500)
+                })
+              }
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSearch();
               }}
@@ -133,7 +141,7 @@ export default function Bookmarks({
           </div>
 
           {/* Search Button */}
-          <Button
+          {/* <Button
             onClick={handleSearch}
             disabled={isPending}
             style={{ backgroundColor: activeColor }}
@@ -147,7 +155,7 @@ export default function Bookmarks({
             ) : (
               "Search"
             )}
-          </Button>
+          </Button> */}
 
           {/* Sort Dropdown */}
           <Select value={sortBy || "date_desc"} onValueChange={handleSortChange}>
