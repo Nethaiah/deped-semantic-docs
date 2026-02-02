@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/header";
-import { createClient } from "@/lib/supabase/server";
-import ConditionalLayout from "./conditional-layout";
-import ConditionalHeader from "./conditional-header";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Toaster } from "sonner";
 
 // ✅ Load only Poppins
 const poppins = Poppins({
@@ -19,35 +16,19 @@ export const metadata: Metadata = {
   description: "Comprehensive retrieval of DepEd memoranda and policies",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { data: userData } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user?.id)
-    .single();
-
-  const role = userData?.role || "user";
-
   return (
     <html lang="en">
       <body className={`${poppins.variable} font-sans antialiased`}>
         <NuqsAdapter>
-          <ConditionalHeader>
-            <Header />
-          </ConditionalHeader>
-          <ConditionalLayout user={user} role={role}>
-            {children}
-          </ConditionalLayout>
+          {children}
+          <Toaster />
         </NuqsAdapter>
       </body>
     </html>
   );
 }
+
 
