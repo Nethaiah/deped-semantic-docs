@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,121 +17,106 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export type CategoryFilterFormValues = {
-  fromDate: string;
-  toDate: string;
-  issuerLevel: string;
-  docType: string;
+export type CollegeFilterFormValues = {
+  yearFrom: string;
+  yearTo: string;
+  department: string;
 };
 
-type CategoryFilterDialogProps = {
+type CollegeFilterDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  values: CategoryFilterFormValues;
-  onValuesChange: (next: CategoryFilterFormValues) => void;
+  values: CollegeFilterFormValues;
+  onValuesChange: (next: CollegeFilterFormValues) => void;
   onApply: () => void;
   onReset: () => void;
+  departments: string[];
 };
 
-export default function CategoryFilterDialog({
+export default function CollegeFilterDialog({
   open,
   onOpenChange,
   values,
   onValuesChange,
   onApply,
   onReset,
-}: CategoryFilterDialogProps) {
+  departments,
+}: CollegeFilterDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Filter Category Documents</DialogTitle>
+          <DialogTitle>Filter Thesis Papers</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Input Grid */}
+          {/* Year Inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label
-                htmlFor="from-date"
+                htmlFor="year-from"
                 className="text-xs font-semibold text-slate-700"
               >
-                From Date
+                Year From
               </label>
               <input
-                id="from-date"
-                type="date"
-                value={values.fromDate}
-                onChange={(e) =>
-                  onValuesChange({ ...values, fromDate: e.target.value })
+                id="year-from"
+                type="number"
+                placeholder="e.g., 2020"
+                className="flex h-9 w-full rounded-md border border-slate-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
+                value={values.yearFrom}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  onValuesChange({ ...values, yearFrom: e.target.value })
                 }
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] transition-colors cursor-pointer"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label
-                htmlFor="to-date"
+                htmlFor="year-to"
                 className="text-xs font-semibold text-slate-700"
               >
-                To Date
+                Year To
               </label>
               <input
-                id="to-date"
-                type="date"
-                value={values.toDate}
-                onChange={(e) =>
-                  onValuesChange({ ...values, toDate: e.target.value })
+                id="year-to"
+                type="number"
+                placeholder="e.g., 2025"
+                className="flex h-9 w-full rounded-md border border-slate-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
+                value={values.yearTo}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  onValuesChange({ ...values, yearTo: e.target.value })
                 }
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] transition-colors cursor-pointer"
               />
             </div>
+          </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="issuer-level"
-                className="text-xs font-semibold text-slate-700"
-              >
-                Issuer Level
-              </label>
-              <Select
-                value={values.issuerLevel}
-                onValueChange={(val) =>
-                  onValuesChange({ ...values, issuerLevel: val })
-                }
-              >
-                <SelectTrigger id="issuer-level" className="w-full cursor-pointer">
-                  <SelectValue placeholder="All levels" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Central" className="cursor-pointer">Central</SelectItem>
-                  <SelectItem value="Division" className="cursor-pointer">Division</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="doc-type"
-                className="text-xs font-semibold text-slate-700"
-              >
-                Document Type
-              </label>
-              <Select
-                value={values.docType}
-                onValueChange={(val) =>
-                  onValuesChange({ ...values, docType: val })
-                }
-              >
-                <SelectTrigger id="doc-type" className="w-full cursor-pointer">
-                  <SelectValue placeholder="All types" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Order" className="cursor-pointer">Order</SelectItem>
-                  <SelectItem value="Memorandum" className="cursor-pointer">Memorandum</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Department Dropdown */}
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="department"
+              className="text-xs font-semibold text-slate-700"
+            >
+              Department
+            </label>
+            <Select
+              value={values.department || "_all"}
+              onValueChange={(val) =>
+                onValuesChange({ ...values, department: val === "_all" ? "" : val })
+              }
+            >
+              <SelectTrigger id="department" className="w-full cursor-pointer">
+                <SelectValue placeholder="All departments" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="_all" className="cursor-pointer">All departments</SelectItem>
+                {departments.map((dept) => (
+                  <SelectItem key={dept} value={dept} className="cursor-pointer">
+                    {dept}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

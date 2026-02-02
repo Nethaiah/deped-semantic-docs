@@ -1,7 +1,7 @@
 import Categories from "@/components/categories/categories";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { getAllCategories } from "@/server/categories/actions";
+import { getAllColleges } from "@/server/categories/actions";
 
 export default async function CategoriesPage() {
   const supabase = await createClient();
@@ -11,7 +11,7 @@ export default async function CategoriesPage() {
     redirect('/login');
   }
 
-  const categories = await getAllCategories();
+  const colleges = await getAllColleges();
 
-  return <Categories initialCategories={categories} />;
+  return <Categories initialColleges={colleges} />;
 }

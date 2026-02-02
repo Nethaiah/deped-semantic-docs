@@ -1,119 +1,76 @@
 "use server";
 
 import { verifySession } from "@/lib/dal";
+import { COLLEGE_FULL_NAMES } from "./constants";
 
-export type CategoryWithCount = {
+export type CollegeWithCount = {
   name: string;
+  fullName: string;
   count: number;
 };
 
-export type CategoryDocument = {
-  doc_id: string;
+export type CollegeThesis = {
+  thesis_id: string;
   title: string;
-  doc_number: string | null;
-  doc_type: string | null;
-  issuer: string | null;
-  date_issued: string | null;
+  year: number | null;
+  department: string | null;
+  college: string | null;
+  keywords: string[] | null;
+  advisor: string | null;
+  abstract: string | null;
   summary: string | null;
-  categories: string[] | null;
-  source_path: string | null;
 };
 
 /**
- * Get all unique categories with their document counts
+ * Get all colleges with their thesis counts
  */
-export async function getAllCategories(): Promise<CategoryWithCount[]> {
+export async function getAllColleges(): Promise<CollegeWithCount[]> {
   try {
     const { isAuth, user, supabase } = await verifySession();
-    
+
     if (!isAuth || !user) {
       return [];
     }
 
-    // Try RPC for efficient aggregation if available
-    const rpc = await supabase.rpc("category_counts");
-    if (!rpc.error && Array.isArray(rpc.data)) {
-      const rows = rpc.data as Array<{ name: string; count: number } | { category: string; count: number }>;
-      const categories = rows
-        .map((r: any) => ({ name: r.name ?? r.category, count: Number(r.count) }))
-        .filter((r) => !!r.name)
-        .sort((a, b) => a.name.localeCompare(b.name));
-      return categories;
-    }
+    // Get counts for each college
+    const colleges: CollegeWithCount[] = [];
 
-    // Fallback: fetch and count in app
-    const { data: documents, error } = await supabase.from("documents").select("categories");
-    if (error) return [];
-    const categoryCounts: Record<string, number> = {};
-    documents?.forEach((doc) => {
-      if (doc.categories && Array.isArray(doc.categories)) {
-        doc.categories.forEach((category) => {
-          if (category) {
-            categoryCounts[category] = (categoryCounts[category] || 0) + 1;
-          }
+    for (const [code, fullName] of Object.entries(COLLEGE_FULL_NAMES)) {
+      const { count, error } = await supabase
+        .from("theses")
+        .select("*", { count: "exact", head: true })
+        .eq("college", code);
+
+      if (!error) {
+        colleges.push({
+          name: code,
+          fullName,
+          count: count || 0,
         });
       }
-    });
-    const categories = Object.entries(categoryCounts)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-    return categories;
+    }
+
+    return colleges;
   } catch (error) {
-    console.error("Error in getAllCategories:", error);
+    console.error("Error in getAllColleges:", error);
     return [];
   }
 }
 
-/**
- * Get all documents that have a specific category
- */
-export async function getDocumentsByCategory(
-  categoryName: string
-): Promise<{ data: CategoryDocument[]; error: string | null }> {
-  try {
-    const { isAuth, user, supabase } = await verifySession();
-
-    if (!isAuth || !user) {
-      return { data: [], error: "Unauthorized" };
-    }
-
-    // Query documents where categories array contains the categoryName
-    const { data, error } = await supabase
-      .from("documents")
-      .select("*")
-      .contains("categories", [categoryName])
-      .order("date_issued", { ascending: false, nullsFirst: false });
-
-    if (error) {
-      console.error("Error fetching documents by category:", error);
-      return { data: [], error: error.message };
-    }
-
-    return { data: data || [], error: null };
-  } catch (error) {
-    console.error("Error in getDocumentsByCategory:", error);
-    return {
-      data: [],
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
-}
-
-export type CategoryFilters = {
+export type CollegeFilters = {
   query?: string;
-  fromDate?: string;
-  toDate?: string;
-  issuerLevel?: string;
-  docType?: string;
+  yearFrom?: string;
+  yearTo?: string;
+  department?: string;
 };
 
-export async function getDocumentsByCategoryPaginated(
-  categoryName: string,
+export async function getThesesByCollegePaginated(
+  collegeCode: string,
   page: number,
   pageSize: number,
-  filters: CategoryFilters = {},
-  sort: "date_desc" | "date_asc" | "title_asc" | "title_desc" = "date_desc"
-): Promise<{ data: CategoryDocument[]; total: number; error: string | null }> {
+  filters: CollegeFilters = {},
+  sort: "year_desc" | "year_asc" | "title_asc" | "title_desc" = "year_desc"
+): Promise<{ data: CollegeThesis[]; total: number; error: string | null }> {
   try {
     const { isAuth, user, supabase } = await verifySession();
 
@@ -125,22 +82,25 @@ export async function getDocumentsByCategoryPaginated(
     const to = from + pageSize - 1;
 
     let queryBuilder = supabase
-      .from("documents")
-      .select("*", { count: "exact" })
-      .contains("categories", [categoryName]);
+      .from("theses")
+      .select("thesis_id, title, year, department, college, keywords, advisor, abstract, summary", { count: "exact" })
+      .eq("college", collegeCode);
 
     // --- Filters ---
-    if (filters.fromDate) {
-      queryBuilder = queryBuilder.gte("date_issued", filters.fromDate);
+    if (filters.yearFrom) {
+      const yearFromNum = parseInt(filters.yearFrom);
+      if (!isNaN(yearFromNum)) {
+        queryBuilder = queryBuilder.gte("year", yearFromNum);
+      }
     }
-    if (filters.toDate) {
-      queryBuilder = queryBuilder.lte("date_issued", filters.toDate);
+    if (filters.yearTo) {
+      const yearToNum = parseInt(filters.yearTo);
+      if (!isNaN(yearToNum)) {
+        queryBuilder = queryBuilder.lte("year", yearToNum);
+      }
     }
-    if (filters.issuerLevel) {
-      queryBuilder = queryBuilder.ilike("issuer", `%${filters.issuerLevel}%`);
-    }
-    if (filters.docType) {
-      queryBuilder = queryBuilder.ilike("doc_type", `%${filters.docType}%`);
+    if (filters.department && filters.department.trim()) {
+      queryBuilder = queryBuilder.eq("department", filters.department.trim());
     }
     if (filters.query && filters.query.trim()) {
       const q = filters.query.trim();
@@ -148,17 +108,15 @@ export async function getDocumentsByCategoryPaginated(
       queryBuilder = queryBuilder.or(
         [
           `title.ilike.${pattern}`,
-          `doc_number.ilike.${pattern}`,
-          `issuer.ilike.${pattern}`,
-          `summary.ilike.${pattern}`,
+          `abstract.ilike.${pattern}`,
         ].join(",")
       );
     }
 
     // --- Server-Side Sorting ---
     switch (sort) {
-      case "date_asc":
-        queryBuilder = queryBuilder.order("date_issued", { ascending: true, nullsFirst: false });
+      case "year_asc":
+        queryBuilder = queryBuilder.order("year", { ascending: true, nullsFirst: false });
         break;
       case "title_asc":
         queryBuilder = queryBuilder.order("title", { ascending: true, nullsFirst: false });
@@ -166,22 +124,22 @@ export async function getDocumentsByCategoryPaginated(
       case "title_desc":
         queryBuilder = queryBuilder.order("title", { ascending: false, nullsFirst: false });
         break;
-      case "date_desc":
+      case "year_desc":
       default:
-        queryBuilder = queryBuilder.order("date_issued", { ascending: false, nullsFirst: false });
+        queryBuilder = queryBuilder.order("year", { ascending: false, nullsFirst: false });
         break;
     }
 
     const { data, error, count } = await queryBuilder.range(from, to);
 
     if (error) {
-      console.error("Error fetching paginated documents by category:", error);
+      console.error("Error fetching paginated theses by college:", error);
       return { data: [], total: 0, error: error.message };
     }
 
     return { data: data || [], total: count || 0, error: null };
   } catch (error) {
-    console.error("Error in getDocumentsByCategoryPaginated:", error);
+    console.error("Error in getThesesByCollegePaginated:", error);
     return {
       data: [],
       total: 0,
