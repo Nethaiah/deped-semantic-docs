@@ -282,12 +282,12 @@ export default function Category({
                         </h3>
                       </Link>
 
-                      {/* Advisor */}
-                      {thesis.advisor && (
+                      {/* Authors */}
+                      {thesis.authors && thesis.authors.length > 0 && (
                         <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
                           <Users className="h-4 w-4" />
                           <span className="line-clamp-1">
-                            Advisor: {thesis.advisor}
+                            {thesis.authors.join(", ")}
                           </span>
                         </div>
                       )}

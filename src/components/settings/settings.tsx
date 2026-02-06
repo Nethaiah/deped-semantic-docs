@@ -270,32 +270,9 @@ function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   );
 }
 
-export default function Settings() {
+export default function Settings({ provider }: { provider: string }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
-  const [provider, setProvider] = useState<string>("");
-  const [loading, setLoading] = useState(true);
-
-  // Check the logged-in provider on mount
-  useEffect(() => {
-    async function checkProvider() {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        // app_metadata.provider contains 'email', 'google', 'github', etc.
-        setProvider(user.app_metadata.provider || "email");
-      }
-      setLoading(false);
-    }
-    checkProvider();
-  }, []);
-
-  if (loading) {
-    return <div className="p-6">Loading settings...</div>;
-  }
 
   return (
     <div className="space-y-8 p-5 lg:p-6">

@@ -258,10 +258,10 @@ export default function Search({ role }: Role) {
       {/* Header Section */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Document Search
+          Thesis Search
         </h1>
         <p className="text-sm text-gray-600">
-          AI-powered semantic search for DepEd memoranda and policies.
+          AI-powered semantic search for academic theses and dissertations.
         </p>
       </div>
 
@@ -393,12 +393,12 @@ export default function Search({ role }: Role) {
               <>
                 Found{" "}
                 <span className="font-semibold">{searchResults.length}</span>{" "}
-                relevant document{searchResults.length !== 1 ? "s" : ""} for{" "}
+                relevant {searchResults.length !== 1 ? "theses" : "thesis"} for{" "}
                 <span className="font-semibold">"{searchQuery}"</span>
               </>
             ) : (
               <>
-                No documents found for{" "}
+                No theses found for{" "}
                 <span className="font-semibold">"{searchQuery}"</span>
               </>
             )}
@@ -540,7 +540,7 @@ export default function Search({ role }: Role) {
             <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-12 text-center">
               <SearchIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No documents found
+                No theses found
               </h3>
               <p className="text-sm text-gray-600">
                 Try adjusting your search query or using different keywords
@@ -558,7 +558,7 @@ export default function Search({ role }: Role) {
             Start your search
           </h3>
           <p className="text-md text-gray-600 mb-4">
-            Enter a query above to search through DepEd documents with
+            Enter a query above to search through academic theses with
             AI-powered semantic search
           </p>
           <div className="text-sm text-gray-500 max-w-md mx-auto">

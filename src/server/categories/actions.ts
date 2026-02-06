@@ -19,6 +19,7 @@ export type CollegeThesis = {
   advisor: string | null;
   abstract: string | null;
   summary: string | null;
+  authors: string[] | null;
 };
 
 /**
@@ -137,7 +138,37 @@ export async function getThesesByCollegePaginated(
       return { data: [], total: 0, error: error.message };
     }
 
-    return { data: data || [], total: count || 0, error: null };
+    // Filter out null results if any
+    const rawTheses = data || [];
+
+    if (rawTheses.length === 0) {
+      return { data: [], total: count || 0, error: null };
+    }
+
+    // Fetch authors for these theses
+    const thesisIds = rawTheses.map((t) => t.thesis_id);
+    const { data: allAuthors } = await supabase
+      .from("thesis_authors")
+      .select("thesis_id, author_name, author_order")
+      .in("thesis_id", thesisIds)
+      .order("author_order", { ascending: true });
+
+    // Group authors by thesis_id
+    const authorsByThesis: Record<string, string[]> = {};
+    (allAuthors || []).forEach((author) => {
+      if (!authorsByThesis[author.thesis_id]) {
+        authorsByThesis[author.thesis_id] = [];
+      }
+      authorsByThesis[author.thesis_id].push(author.author_name);
+    });
+
+    // Map authors to theses
+    const thesesWithAuthors: CollegeThesis[] = rawTheses.map((t) => ({
+      ...t,
+      authors: authorsByThesis[t.thesis_id] || [],
+    }));
+
+    return { data: thesesWithAuthors, total: count || 0, error: null };
   } catch (error) {
     console.error("Error in getThesesByCollegePaginated:", error);
     return {

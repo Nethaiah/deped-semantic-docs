@@ -10,5 +10,7 @@ export default async function SettingsPage() {
     redirect('/login');
   }
 
-  return <Settings />;
+  const provider = user.app_metadata.provider || "email";
+
+  return <Settings provider={provider} />;
 }
