@@ -1,11 +1,11 @@
 import { verifySession } from "@/lib/dal";
 
 export interface Stats {
-  totalOrders: number;
-  totalMemorandums: number;
+  totalTheses: number;
+  totalViews: number;
   recentUploads: number;
-  ordersDailyChange: number;
-  memorandumsDailyChange: number;
+  thesesDailyChange: number;
+  viewsDailyChange: number;
   currentMonth: string;
 }
 
@@ -17,17 +17,16 @@ export async function getStats(): Promise<Stats> {
       throw new Error("Unauthorized");
     }
 
-    // Get total orders
-    const { count: totalOrders } = await supabase
-      .from("documents")
-      .select("*", { count: "exact", head: true })
-      .eq("doc_type", "Order");
+    // Get total theses
+    const { count: totalTheses } = await supabase
+      .from("theses")
+      .select("*", { count: "exact", head: true });
 
-    // Get total memorandums
-    const { count: totalMemorandums } = await supabase
-      .from("documents")
-      .select("*", { count: "exact", head: true })
-      .eq("doc_type", "Memorandum");
+    // Get total views from recently_view table
+    // Note: This table tracks individual views, so count is total views
+    const { count: totalViews } = await supabase
+      .from("recently_view")
+      .select("*", { count: "exact", head: true });
 
     // Get current month and year
     const now = new Date();
@@ -35,14 +34,14 @@ export async function getStats(): Promise<Stats> {
     const currentMonth = now.getMonth() + 1; // 0-indexed, so add 1
     const currentMonthName = now.toLocaleDateString("en-US", { month: "long" });
     
-    // Calculate first day of current month (for date_issued comparison)
+    // Calculate first day of current month (for created_at comparison)
     const firstDayOfMonth = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01`;
 
-    // Get uploads for current month based on date_issued
+    // Get uploads (new theses) for current month based on created_at
     const { count: recentUploads } = await supabase
-      .from("documents")
+      .from("theses")
       .select("*", { count: "exact", head: true })
-      .gte("date_issued", firstDayOfMonth);
+      .gte("created_at", firstDayOfMonth);
 
     // Get today's date (YYYY-MM-DD format)
     const today = new Date();
@@ -53,55 +52,56 @@ export async function getStats(): Promise<Stats> {
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayDate = yesterday.toISOString().split('T')[0];
 
-    // Get orders issued today
-    const { count: todayOrders } = await supabase
-      .from("documents")
+    // Get theses created today
+    const { count: todayTheses } = await supabase
+      .from("theses")
       .select("*", { count: "exact", head: true })
-      .eq("doc_type", "Order")
-      .eq("date_issued", todayDate);
+      .gte("created_at", `${todayDate}T00:00:00`)
+      .lte("created_at", `${todayDate}T23:59:59`);
 
-    // Get orders issued yesterday
-    const { count: yesterdayOrders } = await supabase
-      .from("documents")
+    // Get theses created yesterday
+    const { count: yesterdayTheses } = await supabase
+      .from("theses")
       .select("*", { count: "exact", head: true })
-      .eq("doc_type", "Order")
-      .eq("date_issued", yesterdayDate);
+      .gte("created_at", `${yesterdayDate}T00:00:00`)
+      .lte("created_at", `${yesterdayDate}T23:59:59`);
 
-    // Get memorandums issued today
-    const { count: todayMemorandums } = await supabase
-      .from("documents")
+    // Get views today
+    const { count: todayViews } = await supabase
+      .from("recently_view")
       .select("*", { count: "exact", head: true })
-      .eq("doc_type", "Memorandum")
-      .eq("date_issued", todayDate);
+      // Assuming recently_view has a viewed_at or created_at timestamp
+      .gte("viewed_at", `${todayDate}T00:00:00`)
+      .lte("viewed_at", `${todayDate}T23:59:59`);
 
-    // Get memorandums issued yesterday
-    const { count: yesterdayMemorandums } = await supabase
-      .from("documents")
+    // Get views yesterday
+    const { count: yesterdayViews } = await supabase
+      .from("recently_view")
       .select("*", { count: "exact", head: true })
-      .eq("doc_type", "Memorandum")
-      .eq("date_issued", yesterdayDate);
+      .gte("viewed_at", `${yesterdayDate}T00:00:00`)
+      .lte("viewed_at", `${yesterdayDate}T23:59:59`);
 
     // Calculate daily changes (today - yesterday)
-    const ordersDailyChange = (todayOrders || 0) - (yesterdayOrders || 0);
-    const memorandumsDailyChange = (todayMemorandums || 0) - (yesterdayMemorandums || 0);
+    const thesesDailyChange = (todayTheses || 0) - (yesterdayTheses || 0);
+    const viewsDailyChange = (todayViews || 0) - (yesterdayViews || 0);
 
     return {
-      totalOrders: totalOrders || 0,
-      totalMemorandums: totalMemorandums || 0,
+      totalTheses: totalTheses || 0,
+      totalViews: totalViews || 0,
       recentUploads: recentUploads || 0,
-      ordersDailyChange,
-      memorandumsDailyChange,
+      thesesDailyChange,
+      viewsDailyChange,
       currentMonth: `${currentMonthName} ${currentYear}`,
     };
   } catch (error) {
     console.error("Error fetching user stats:", error);
     // Return default values on error
     return {
-      totalOrders: 0,
-      totalMemorandums: 0,
+      totalTheses: 0,
+      totalViews: 0,
       recentUploads: 0,
-      ordersDailyChange: 0,
-      memorandumsDailyChange: 0,
+      thesesDailyChange: 0,
+      viewsDailyChange: 0,
       currentMonth: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
     };
   }

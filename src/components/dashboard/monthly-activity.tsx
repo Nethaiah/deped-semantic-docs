@@ -20,7 +20,7 @@ export default function MonthlyActivity({ data, accentColor = "#278fb6" }: Month
       <HighlightedBarChart
         data={currentData}
         title="Monthly Activity"
-        description="New uploads and edits over the last 6 months."
+        description="New theses added over the last 6 months."
         color={accentColor}
       />
     </div>

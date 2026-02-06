@@ -7,12 +7,12 @@ interface StatsCardsProps {
 }
 
 export default function StatsCards({ stats, accentColor = "#278fb6" }: StatsCardsProps) {
-  const isOrdersPositive = stats.ordersDailyChange >= 0;
-  const isMemosPositive = stats.memorandumsDailyChange >= 0;
+  const isThesesPositive = stats.thesesDailyChange >= 0;
+  const isViewsPositive = stats.viewsDailyChange >= 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-      {/* Total Orders Card */}
+      {/* Total Theses Card */}
       <div className="group relative bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-all duration-300 overflow-hidden">
         {/* Gradient overlay on hover */}
         <div 
@@ -38,22 +38,22 @@ export default function StatsCards({ stats, accentColor = "#278fb6" }: StatsCard
             >
               <FileText className="w-6 h-6 text-slate-700" />
             </div>
-            {stats.ordersDailyChange !== 0 && (
+            {/* {stats.thesesDailyChange !== 0 && (
               <span
                 className={`text-sm font-semibold ${
-                  isOrdersPositive ? "text-green-600" : "text-red-600"
+                  isThesesPositive ? "text-green-600" : "text-red-600"
                 }`}
               >
-                {isOrdersPositive ? "+" : ""}
-                {stats.ordersDailyChange}
+                {isThesesPositive ? "+" : ""}
+                {stats.thesesDailyChange}
               </span>
-            )}
+            )} */}
           </div>
           <h3 className="text-slate-600 text-sm font-semibold mb-1">
-            Total Orders
+            Total Theses
           </h3>
           <p className="text-3xl font-bold text-slate-800">
-            {stats.totalOrders}
+            {stats.totalTheses}
           </p>
         </div>
 
@@ -64,7 +64,7 @@ export default function StatsCards({ stats, accentColor = "#278fb6" }: StatsCard
         ></div>
       </div>
 
-      {/* Total Memorandums Card */}
+      {/* Total Views Card */}
       <div className="group relative bg-white rounded-lg shadow-md border border-slate-200 p-6 hover:shadow-lg transition-all duration-300 overflow-hidden">
         {/* Gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -78,22 +78,22 @@ export default function StatsCards({ stats, accentColor = "#278fb6" }: StatsCard
             <div className="p-3 bg-emerald-100 rounded-xl">
               <Eye className="w-6 h-6 text-slate-700" />
             </div>
-            {stats.memorandumsDailyChange !== 0 && (
+            {/* {stats.viewsDailyChange !== 0 && (
               <span
                 className={`text-sm font-semibold ${
-                  isMemosPositive ? "text-green-600" : "text-red-600"
+                  isViewsPositive ? "text-green-600" : "text-red-600"
                 }`}
               >
-                {isMemosPositive ? "+" : ""}
-                {stats.memorandumsDailyChange}
+                {isViewsPositive ? "+" : ""}
+                {stats.viewsDailyChange}
               </span>
-            )}
+            )} */}
           </div>
           <h3 className="text-slate-600 text-sm font-semibold mb-1">
-            Total Memoranda
+            Total Views
           </h3>
           <p className="text-3xl font-bold text-slate-800">
-            {stats.totalMemorandums}
+            {stats.totalViews}
           </p>
         </div>
 

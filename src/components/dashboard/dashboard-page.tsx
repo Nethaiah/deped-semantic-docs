@@ -86,7 +86,7 @@ export default async function DashboardPage({ name, role, searchParams }: Dashbo
       <StatsCards stats={stats} accentColor={theme.primary} />
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Latest Issuances Table */}
         <ThesesTable
           initialData={theses.data}

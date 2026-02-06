@@ -18,14 +18,14 @@ export async function getMonthlyActivity(): Promise<MonthlyActivityData[]> {
       return [];
     }
 
-    // Get date_issued for all documents
+    // Get created_at for all theses
     // We'll fetch all and aggregate in memory for now as it's the most flexible
     // for filling gaps. For huge datasets, we'd want a database view or RPC.
     const { data, error } = await supabase
-      .from("documents")
-      .select("date_issued")
-      .not("date_issued", "is", null)
-      .order("date_issued", { ascending: true });
+      .from("theses")
+      .select("created_at")
+      .not("created_at", "is", null)
+      .order("created_at", { ascending: true });
 
     if (error) {
       console.error("Error fetching monthly activity:", error);
@@ -40,9 +40,9 @@ export async function getMonthlyActivity(): Promise<MonthlyActivityData[]> {
     const counts: Record<string, number> = {};
     
     data.forEach((doc) => {
-      if (doc.date_issued) {
-        // date_issued is YYYY-MM-DD
-        const date = new Date(doc.date_issued);
+      if (doc.created_at) {
+        // created_at is timestamp
+        const date = new Date(doc.created_at);
         const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         counts[key] = (counts[key] || 0) + 1;
       }

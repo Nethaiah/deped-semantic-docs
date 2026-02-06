@@ -272,7 +272,7 @@ export default function Search({ role }: Role) {
             <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Ask a question or search for 'learning recovery plan' or 'DO 22 s. 2023'..."
+              placeholder="Search titles, authors, or ask a question about a thesis..."
               value={searchQuery}
               onChange={(e) => {
                 const value = e.target.value;
@@ -564,9 +564,9 @@ export default function Search({ role }: Role) {
           <div className="text-sm text-gray-500 max-w-md mx-auto">
             <p className="mb-2">Try asking questions like:</p>
             <ul className="text-left list-disc list-inside space-y-1">
-              <li>"What is the ARAL Program?"</li>
-              <li>"School calendar guidelines for 2024"</li>
-              <li>"Curriculum implementation policies"</li>
+              <li>"Impact of AI on writing skills"</li>
+              <li>"Reading comprehension strategies"</li>
+              <li>"Gamification in mathematics"</li>
             </ul>
           </div>
         </div>
