@@ -1,5 +1,6 @@
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
+import { SidebarProvider } from "@/components/sidebar-context";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -26,9 +27,10 @@ export default async function MainLayout({
   const role = userData?.role || "user";
 
   return (
-    <>
+    <SidebarProvider>
       <Header />
       <Sidebar role={role}>{children}</Sidebar>
-    </>
+    </SidebarProvider>
   );
 }
+

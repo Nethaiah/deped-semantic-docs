@@ -3,6 +3,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import UserMenu from "./user-menu";
 import NotificationDropdown from "./notification-dropdown";
+import MobileMenuButton from "./mobile-header";
 
 export default async function Header() {
   const supabase = await createClient();
@@ -23,22 +24,38 @@ export default async function Header() {
   // Determine header background color based on role
   const headerBgColor = role === "admin" ? "bg-[#008c8b]" : "bg-[#087830]";
 
-  const containerClass = isAuthenticated
-    ? "flex items-center justify-between px-6 py-4"
-    : "mx-auto flex max-w-7xl items-center justify-between px-6 py-3";
-
   return (
     <nav
-      className={`fixed top-0 z-1220 w-full border-b border-gray-200 ${headerBgColor} backdrop-blur-sm`}
+      className={`fixed top-0 z-[1220] w-full border-b border-gray-200 ${headerBgColor} backdrop-blur-sm`}
     >
-      <div className={containerClass}>
-        {/* Logo */}
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
+        {/* Left section: Hamburger (mobile) + Logo (desktop) */}
         <div className="flex items-center gap-2">
+          {/* Hamburger - only visible on mobile when authenticated */}
+          {isAuthenticated && <MobileMenuButton />}
+
+          {/* Logo - visible on desktop, hidden on mobile (moved to center) */}
+          <div className="hidden lg:flex items-center gap-2">
+            <Image
+              src="/Logo.png"
+              alt="DocuLens Logo"
+              width={40}
+              height={40}
+              className="object-contain"
+            />
+            <span className="text-lg font-bold tracking-tight text-[#f3f3f3]">
+              DocuLens
+            </span>
+          </div>
+        </div>
+
+        {/* Center section: Logo (mobile only) */}
+        <div className="lg:hidden absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
           <Image
             src="/Logo.png"
             alt="DocuLens Logo"
-            width={40}
-            height={40}
+            width={36}
+            height={36}
             className="object-contain"
           />
           <span className="text-lg font-bold tracking-tight text-[#f3f3f3]">
@@ -46,13 +63,11 @@ export default async function Header() {
           </span>
         </div>
 
-        {/* Navigation Actions */}
-        <div className="flex items-center gap-4  cursor-pointer">
+        {/* Right section: Navigation Actions */}
+        <div className="flex items-center gap-3 sm:gap-4 cursor-pointer">
           {isAuthenticated ? (
             <>
-              {/* Notification Dropdown */}
-              <NotificationDropdown />
-
+              {/* <NotificationDropdown /> */}
               <UserMenu
                 name={userData?.full_name}
                 email={user.user_metadata.email}
@@ -60,14 +75,12 @@ export default async function Header() {
               />
             </>
           ) : (
-            <>
-              <Link
-                href="/login"
-                className="rounded-full bg-white px-5 py-2 text-sm font-medium text-[#333] hover:bg-gray-300 transition"
-              >
-                Log in
-              </Link>
-            </>
+            <Link
+              href="/login"
+              className="rounded-full bg-white px-5 py-2 text-sm font-medium text-[#333] hover:bg-gray-300 transition"
+            >
+              Log in
+            </Link>
           )}
         </div>
       </div>

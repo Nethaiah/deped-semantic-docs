@@ -1,20 +1,20 @@
 
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
-import ManageDocument from "@/components/document/manage-document";
-import { requireAdmin } from "@/lib/auth-utils";
+// import { createClient } from "@/lib/supabase/server";
+// import { redirect } from "next/navigation";
+// import ManageDocument from "@/components/document/manage-document";
+// import { requireAdmin } from "@/lib/auth-utils";
 
-export default async function DocumentsPage() {
-  const supabase = await createClient();
+// export default async function DocumentsPage() {
+//   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    redirect('/login');
-  }
+//   const { data: { user } } = await supabase.auth.getUser();
+//   if (!user) {
+//     redirect('/login');
+//   }
 
-  await requireAdmin();
+//   await requireAdmin();
 
-  return (
-    <ManageDocument />
-  );
-}
+//   return (
+//     <ManageDocument />
+//   );
+// }

@@ -12,8 +12,8 @@ import {
   PanelLeft,
   Upload,
   FileText,
-  X,
 } from "lucide-react";
+import { useSidebar } from "./sidebar-context";
 
 const menuItems = [
   { title: "Dashboard", icon: LayoutGrid, path: "/dashboard" },
@@ -40,39 +40,29 @@ export default function Sidebar({
   children,
   role,
 }: SidebarProps & UserRoleProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isDesktopExpanded, setIsDesktopExpanded] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const { isOpen: isMobileOpen, close: closeMobileSidebar } = useSidebar();
   const pathname = usePathname();
 
-  // Auto-collapse on small/medium screens
+  // Detect screen size
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
-
-      if (mobile) {
-        setIsExpanded(false);
-      } else {
-        setIsExpanded(true);
-      }
     };
 
-    // Set initial state
     handleResize();
-
-    // Add event listener
     window.addEventListener("resize", handleResize);
-
-    // Cleanup
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const toggleSidebar = () => setIsExpanded(!isExpanded);
+  const toggleDesktopSidebar = () => setIsDesktopExpanded(!isDesktopExpanded);
 
-  // Close sidebar when clicking on a link on mobile
+  // Close sidebar when clicking a nav link on mobile
   const handleLinkClick = () => {
-    if (isMobile && isExpanded) {
-      setIsExpanded(false);
+    if (isMobile && isMobileOpen) {
+      closeMobileSidebar();
     }
   };
 
@@ -80,49 +70,54 @@ export default function Sidebar({
   const activeLinkColor =
     String(role).toLowerCase() === "admin" ? "bg-[#278fb6]" : "bg-[#278fb6]";
 
+  // Desktop expanded state
+  const isExpanded = isMobile ? isMobileOpen : isDesktopExpanded;
+
   return (
     <div className="flex h-screen">
-      {/* Backdrop for mobile */}
-      {isMobile && isExpanded && (
+      {/* Backdrop for mobile overlay */}
+      {isMobile && isMobileOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 pt-[73px]"
-          onClick={toggleSidebar}
+          className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+          onClick={closeMobileSidebar}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 bottom-0 bg-white border-r border-gray-200 transition-all duration-300 flex flex-col pt-[73px] z-50
+        className={`fixed left-0 top-0 bottom-0 bg-white border-r border-gray-200 transition-all duration-300 ease-in-out flex flex-col pt-[73px] z-50
           ${
             isMobile
-              ? isExpanded
-                ? "w-64"
-                : "w-20"
-              : isExpanded
+              ? isMobileOpen
+                ? "w-72 translate-x-0 shadow-2xl"
+                : "w-72 -translate-x-full"
+              : isDesktopExpanded
               ? "w-64"
               : "w-20"
           }
         `}
       >
-        {/* Header */}
-        <div
-          className={`flex items-center px-4 py-4 border-b border-gray-200 ${
-            isExpanded ? "justify-between" : "justify-center"
-          }`}
-        >
-          {isExpanded && (
-            <h2 className="font-semibold text-base text-gray-900">
-              Navigation
-            </h2>
-          )}
-          <button
-            type="button"
-            onClick={toggleSidebar}
-            className="h-9 w-9 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+        {/* Header - hidden on mobile since hamburger handles toggle */}
+        {!isMobile && (
+          <div
+            className={`flex items-center px-4 py-4 border-b border-gray-200 ${
+              isDesktopExpanded ? "justify-between" : "justify-center"
+            }`}
           >
-            {isMobile && isExpanded ? <X size={20} /> : <PanelLeft size={20} />}
-          </button>
-        </div>
+            {isDesktopExpanded && (
+              <h2 className="font-semibold text-base text-gray-900">
+                Navigation
+              </h2>
+            )}
+            <button
+              type="button"
+              onClick={toggleDesktopSidebar}
+              className="h-9 w-9 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+            >
+              <PanelLeft size={20} />
+            </button>
+          </div>
+        )}
 
         {/* Menu Items */}
         <nav className="flex-1 px-3 py-4 overflow-y-auto">
@@ -210,8 +205,8 @@ export default function Sidebar({
         <main
           className={`flex-1 overflow-auto bg-gray-50 transition-all duration-300 pt-[73px] h-screen ${
             isMobile
-              ? "ml-20" // Always keep space for collapsed sidebar on mobile
-              : isExpanded
+              ? "ml-0" // Full width on mobile — no sidebar space
+              : isDesktopExpanded
               ? "ml-64"
               : "ml-20"
           }`}
