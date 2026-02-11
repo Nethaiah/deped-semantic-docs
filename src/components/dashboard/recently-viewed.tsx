@@ -46,7 +46,7 @@ export default function RecentlyViewed({ theses, accentColor = "#278fb6" }: Prop
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6">
+    <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-4">
       <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
         <History className="w-5 h-5" />
         Recently Viewed

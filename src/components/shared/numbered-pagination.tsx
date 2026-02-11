@@ -91,9 +91,9 @@ export default function NumberedPagination({
   };
 
   return (
-    <div className="flex items-center justify-between mt-6">
+    <div className="flex flex-col items-center justify-center gap-3 w-full sm:flex-row sm:justify-between">
       {/* Page info */}
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-gray-600 text-center sm:text-left">
         Page {currentPage} of {totalPages}
       </div>
 

@@ -63,7 +63,7 @@ export function HighlightedBarChart({
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0">
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
           <BarChart
             accessibilityLayer
             data={data}

@@ -44,7 +44,7 @@ export default function CollegeFilterDialog({
 }: CollegeFilterDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Filter Thesis Papers</DialogTitle>
         </DialogHeader>

@@ -4,7 +4,7 @@ import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
-import { Funnel } from "lucide-react";
+import { Funnel, FileText, Calendar, Building2, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThesesFilterDialog from "@/components/dashboard/theses-filter-dialog";
 import NumberedPagination from "@/components/shared/numbered-pagination";
@@ -117,7 +117,7 @@ export default function ThesesTable({
 
   return (
     <div className="col-span-2 bg-white rounded-lg shadow-md border border-slate-200 overflow-scroll">
-      <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-slate-50">
+      <div className="flex justify-between items-center px-4 lg:px-6 py-4 border-b border-slate-200 bg-slate-50">
         <h2 className="text-xl lg:text-2xl font-bold text-slate-800 flex items-center gap-2">
           Theses
         </h2>
@@ -151,7 +151,7 @@ export default function ThesesTable({
 
       <div className={isPending ? "opacity-50 pointer-events-none" : ""}>
         <table className="w-full text-left">
-          <thead className="bg-slate-100 border-b border-slate-200">
+          <thead className="hidden md:table-header-group bg-slate-100 border-b border-slate-200">
             <tr>
               <th className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide">
                 Year
@@ -168,7 +168,7 @@ export default function ThesesTable({
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="hidden md:table-row-group">
             {initialData.length > 0 ? (
               initialData.map((thesis, index) => (
                 <tr
@@ -219,16 +219,62 @@ export default function ThesesTable({
             )}
           </tbody>
         </table>
+
+        {/* Mobile View (Cards) */}
+        <div className="md:hidden">
+          {initialData.length > 0 ? (
+            initialData.map((thesis, index) => (
+              <div
+                key={thesis.id}
+                onClick={() => router.push(`/view/${thesis.id}`)}
+                className={`p-4 cursor-pointer hover:bg-slate-50 active:bg-slate-100 transition-colors ${
+                  index !== initialData.length - 1 ? "border-b border-slate-100" : ""
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex items-center gap-2">
+                    <span 
+                      className="text-xs font-bold px-2 py-1 rounded bg-slate-100"
+                      style={{ color: accentColor }}
+                    >
+                      {thesis.year}
+                    </span>
+                  </div>
+                </div>
+
+                <h3 className="font-semibold text-slate-800 mb-3 line-clamp-2 leading-tight">
+                  {thesis.title}
+                </h3>
+
+                <div className="space-y-2 text-sm text-slate-500">
+                  <div className="flex items-start gap-2">
+                    <Building2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-slate-400" />
+                    <span className="line-clamp-1">{thesis.department}</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <GraduationCap className="w-4 h-4 mt-0.5 flex-shrink-0 text-slate-400" />
+                    <span className="line-clamp-1">{thesis.college}</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="py-8 text-center text-slate-500">
+               No theses found
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Numbered Pagination */}
-      <div className="px-6 py-4 border-t border-slate-200 bg-slate-50">
+      <div className="px-4 lg:px-6 py-4 border-t border-slate-200 bg-slate-50">
         <NumberedPagination
           currentPage={currentPage}
           totalPages={totalPages}
           buildHref={buildHref}
           onPageChange={handlePageChange}
           isLoading={isPending}
+          siblings={1}
         />
       </div>
     </div>

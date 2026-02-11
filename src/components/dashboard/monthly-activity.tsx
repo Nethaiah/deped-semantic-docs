@@ -16,7 +16,7 @@ export default function MonthlyActivity({ data, accentColor = "#278fb6" }: Month
   }));
 
   return (
-    <div className="bg-white rounded-lg shadow-md border border-slate-200 p-4 relative">
+    <div className="bg-white rounded-lg shadow-md border border-slate-200 p-4 relative min-h-[350px]">
       <HighlightedBarChart
         data={currentData}
         title="Monthly Activity"
