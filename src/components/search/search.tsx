@@ -254,10 +254,10 @@ export default function Search({ role }: Role) {
   }, [searchResults, sortBy]);
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
           Thesis Search
         </h1>
         <p className="text-sm text-gray-600">
@@ -267,7 +267,7 @@ export default function Search({ role }: Role) {
 
       {/* Search Bar */}
       <div className="flex flex-col gap-3 mb-6">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
           <div className="relative flex-1">
             <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
@@ -307,7 +307,7 @@ export default function Search({ role }: Role) {
               </button>
             )}
           </div>
-          <div className="flex items-start justify-end gap-2 w-full lg:w-auto">
+          <div className="flex items-center justify-between lg:justify-end gap-2 w-full lg:w-auto">
             <Button
               variant="outline"
               onClick={() => setIsFilterOpen(true)}
@@ -325,7 +325,7 @@ export default function Search({ role }: Role) {
             <Button
               onClick={handleSearch}
               disabled={isLoading || !searchQuery.trim()}
-              className="cursor-pointer px-4 lg:px-8 py-4 lg:py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
+              className="flex-1 lg:flex-none lg:w-auto cursor-pointer px-4 lg:px-8 py-4 lg:py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
               style={{
                 opacity: isLoading || !searchQuery.trim() ? 0.5 : 1,
               }}
@@ -387,7 +387,7 @@ export default function Search({ role }: Role) {
 
       {/* Results Header */}
       {hasSearched && !isLoading && (
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
           <div className="text-sm text-gray-600">
             {searchResults.length > 0 ? (
               <>
@@ -404,8 +404,8 @@ export default function Search({ role }: Role) {
             )}
           </div>
           {searchResults.length > 0 && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Sort by:</span>
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+              <span className="text-sm text-gray-600 whitespace-nowrap">Sort by:</span>
               <Select value={sortBy} onValueChange={(v) => setUrlState({ sort: v as SearchSortOption })}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Sort by" />
@@ -430,7 +430,7 @@ export default function Search({ role }: Role) {
           {resultsToRender.map((doc) => (
             <div
               key={doc.thesis_id}
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
+              className="bg-white rounded-xl border border-gray-200 p-4 md:p-6 hover:shadow-md transition-all"
             >
               <div className="flex flex-col lg:flex-row justify-between gap-6">
                 {/* LEFT SECTION */}
@@ -537,7 +537,7 @@ export default function Search({ role }: Role) {
 
           {/* Empty State */}
           {searchResults.length === 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-12 text-center">
+            <div className="bg-white rounded-lg border border-gray-200 p-6 lg:p-12 text-center">
               <SearchIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 No theses found
