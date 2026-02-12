@@ -43,56 +43,45 @@ export default function Categories({
 }) {
   const colleges = initialColleges;
 
-  return (
-    <div className="p-5 lg:p-8 bg-gray-50">
-      {/* Header Section */}
-      <div className="mb-8">
-        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-          Browse by College
-        </h1>
-        <p className="text-sm text-gray-600">
-          Explore thesis papers organized by college and department.
-        </p>
+  if (colleges.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-600">No colleges found.</p>
       </div>
+    );
+  }
 
-      {/* Colleges Grid */}
-      {colleges.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-600">No colleges found.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {colleges.map((college) => {
-            const Icon = getCollegeIcon(college.name);
-            const colorClass = getCollegeColor(college.name);
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {colleges.map((college) => {
+        const Icon = getCollegeIcon(college.name);
+        const colorClass = getCollegeColor(college.name);
 
-            return (
-              <Link
-                key={college.name}
-                href={`/categories/${encodeURIComponent(college.name)}`}
-                className="flex items-center gap-4 px-6 py-4 shadow-sm bg-white rounded-2xl border border-gray-100 hover:shadow-md transition-shadow cursor-pointer group"
-              >
-                <div
-                  className={`flex-shrink-0 p-4 rounded-xl ${colorClass} group-hover:scale-110 transition-transform`}
-                >
-                  <Icon className="w-8 h-8" />
-                </div>
-                <div>
-                  <h3 className="text-md font-bold text-[#333]">
-                    {college.name}
-                  </h3>
-                  <p className="text-xs text-gray-500 mb-1">
-                    {college.fullName}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {college.count} Thesis{college.count !== 1 ? " Papers" : " Paper"}
-                  </p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      )}
+        return (
+          <Link
+            key={college.name}
+            href={`/categories/${encodeURIComponent(college.name)}`}
+            className="flex items-center gap-4 px-6 py-4 shadow-sm bg-white rounded-2xl border border-gray-100 hover:shadow-md transition-shadow cursor-pointer group"
+          >
+            <div
+              className={`flex-shrink-0 p-4 rounded-xl ${colorClass} group-hover:scale-110 transition-transform`}
+            >
+              <Icon className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-md font-bold text-[#333]">
+                {college.name}
+              </h3>
+              <p className="text-xs text-gray-500 mb-1">
+                {college.fullName}
+              </p>
+              <p className="text-sm text-gray-600">
+                {college.count} Thesis{college.count !== 1 ? " Papers" : " Paper"}
+              </p>
+            </div>
+          </Link>
+        );
+      })}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { Search as SearchIcon, Loader2, X, Funnel, Users, Calendar, Building, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SearchResultsSkeleton } from "@/components/search/skeleton";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -365,8 +366,11 @@ export default function Search({ role }: Role) {
         />
       </div>
 
+      {/* Loading Skeleton */}
+      {isLoading && <SearchResultsSkeleton showAnswer={useRAG} />}
+
       {/* AI Answer Section */}
-      {answer && (
+      {!isLoading && answer && (
         <div className="mb-6 p-6 bg-gradient-to-br from-white to-blue-50/30 rounded-xl shadow-md border border-gray-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shadow-sm">
