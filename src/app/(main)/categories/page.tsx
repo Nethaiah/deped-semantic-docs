@@ -1,17 +1,41 @@
-import Categories from "@/components/categories/categories";
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { getAllColleges } from "@/server/categories/actions";
 
+import Categories from "@/components/categories/categories";
+import { getAllColleges } from "@/server/categories/actions";
+import { CollegesGridSkeleton } from "@/components/categories/skeleton";
+
+/* ── Async data-fetching section ── */
+async function CollegesSection() {
+  const colleges = await getAllColleges();
+  return <Categories initialColleges={colleges} />;
+}
+
+/* ── Page ── */
 export default async function CategoriesPage() {
   const supabase = await createClient();
-
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     redirect('/login');
   }
 
-  const colleges = await getAllColleges();
+  return (
+    <div className="p-5 lg:p-8 bg-gray-50">
+      {/* Header Section — renders instantly */}
+      <div className="mb-8">
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+          Browse by College
+        </h1>
+        <p className="text-sm text-gray-600">
+          Explore thesis papers organized by college and department.
+        </p>
+      </div>
 
-  return <Categories initialColleges={colleges} />;
+      {/* Colleges Grid — streams in */}
+      <Suspense fallback={<CollegesGridSkeleton />}>
+        <CollegesSection />
+      </Suspense>
+    </div>
+  );
 }

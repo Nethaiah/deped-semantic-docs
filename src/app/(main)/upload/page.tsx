@@ -1,4 +1,4 @@
-import UploadForm from "../../features/upload/components/upload-file"
+import UploadForm from "@/components/upload/upload-file"
 import { requireAdmin } from "@/lib/auth-utils";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
