@@ -34,7 +34,7 @@ const COLLEGE_DEPARTMENTS: Record<string, string[]> = {
     "Secondary Education Major in PE",
     "Elementary Education",
   ],
-  COEng: ["Mechanical Engineering"],
+  COE: ["Mechanical Engineering"],
 };
 
 export type ThesesFilterFormValues = {

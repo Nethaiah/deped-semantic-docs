@@ -17,7 +17,7 @@ function getCollegeIcon(collegeCode: string) {
     CCS: Building2,
     CBAA: Briefcase,
     COED: GraduationCap,
-    COEng: Wrench,
+    COE: Wrench,
   };
 
   return iconMap[collegeCode] || GraduationCap;
@@ -30,7 +30,7 @@ function getCollegeColor(collegeCode: string): string {
     CCS: "bg-blue-100 text-blue-600",
     CBAA: "bg-emerald-100 text-emerald-600",
     COED: "bg-orange-100 text-orange-600",
-    COEng: "bg-red-100 text-red-600",
+    COE: "bg-red-100 text-red-600",
   };
 
   return colorMap[collegeCode] || "bg-gray-100 text-gray-600";

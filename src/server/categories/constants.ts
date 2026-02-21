@@ -15,7 +15,7 @@ export const COLLEGE_DEPARTMENTS: Record<string, string[]> = {
     "Secondary Education Major in PE",
     "Elementary Education",
   ],
-  COEng: ["Mechanical Engineering"],
+  COE: ["Mechanical Engineering"],
 };
 
 // College full names
@@ -24,7 +24,7 @@ export const COLLEGE_FULL_NAMES: Record<string, string> = {
   CCS: "College of Computer Studies",
   CBAA: "College of Business Administration and Accountancy",
   COED: "College of Education",
-  COEng: "College of Engineering",
+  COE: "College of Engineering",
 };
 
 /**

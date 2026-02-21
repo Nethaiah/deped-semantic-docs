@@ -43,13 +43,13 @@ export interface SearchResponse {
 }
 
 export interface DocumentQARequest {
-  doc_id: string;     // Document UUID
+  thesis_id: string;  // Thesis UUID (must match backend field name)
   question: string;   // User's question about the document
 }
 
 export interface DocumentQAResponse {
   answer: string;              // Markdown-formatted answer
-  document?: DocumentSource;   // Document metadata
+  thesis?: DocumentSource;     // Thesis metadata
 }
 
 // ============================================================================
@@ -73,6 +73,13 @@ export class RAGApiService {
         },
         body: JSON.stringify(request),
       });
+
+      if (response.status === 429) {
+        const retryAfter = response.headers.get('Retry-After') || '60';
+        throw new Error(
+          `You're sending too many requests. Please wait ${retryAfter} seconds before trying again.`
+        );
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -99,13 +106,20 @@ export class RAGApiService {
    */
   static async documentQA(request: DocumentQARequest): Promise<DocumentQAResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/document/qa`, {
+      const response = await fetch(`${API_BASE_URL}/thesis/qa`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(request),
       });
+
+      if (response.status === 429) {
+        const retryAfter = response.headers.get('Retry-After') || '60';
+        throw new Error(
+          `You're sending too many requests. Please wait ${retryAfter} seconds before trying again.`
+        );
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

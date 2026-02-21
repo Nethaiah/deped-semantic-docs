@@ -40,7 +40,7 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
 
     try {
       const result = await RAGApiService.documentQA({
-        doc_id: thesisId,
+        thesis_id: thesisId,
         question: currentQuestion,
       });
 
