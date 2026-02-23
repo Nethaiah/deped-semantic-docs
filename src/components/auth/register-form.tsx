@@ -7,19 +7,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterSchema } from "@/lib/zodSchema";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { register } from "@/server/auth/register";
 import { User, Mail, Lock, Eye, EyeOff, X } from "lucide-react";
 
 export default function RegisterForm() {
   const router = useRouter();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
-  const supabase = createClient();
 
   const form = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
@@ -30,46 +27,6 @@ export default function RegisterForm() {
       terms: false,
     },
   });
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const {
-          data: { user },
-          error,
-        } = await supabase.auth.getUser();
-
-        if (error || !user) {
-          await supabase.auth.signOut();
-          setIsCheckingAuth(false);
-          return;
-        }
-
-        router.replace("/dashboard");
-
-        if (user.email_confirmed_at) {
-          toast.success("You're already logged in! Redirecting to dashboard.", {
-            duration: 5000,
-            position: "bottom-right",
-          });
-        } else {
-          toast.info(
-            "You've already registered. Please check your email to verify your account.",
-            {
-              duration: 5000,
-              position: "bottom-right",
-            }
-          );
-        }
-      } catch (error) {
-        console.error("Auth check error:", error);
-      } finally {
-        setIsCheckingAuth(false);
-      }
-    };
-
-    checkAuth();
-  }, [router]);
 
   async function onSubmit(values: RegisterSchema) {
     form.setValue("terms", !!values.terms);

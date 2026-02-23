@@ -7,6 +7,9 @@ import ThesisActionButtons from "@/components/shared/thesis-action-buttons";
 import { getDynamicBadgeClasses } from "@/lib/badge-variants";
 import { SearchIcon, Users, Calendar, Building } from "lucide-react";
 import NumberedPagination from "@/components/shared/numbered-pagination";
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { CategoryResultsSkeleton } from "@/components/categories/skeleton";
 
 type Props = {
   theses: CollegeThesis[];
@@ -34,6 +37,19 @@ export default function CategoryResults({
   const activeColor = "#3a7c94";
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const hasAny = total > 0;
+
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const handlePageChange = (newPage: number) => {
+    startTransition(() => {
+      router.push(buildHref(newPage));
+    });
+  };
+
+  if (isPending) {
+    return <CategoryResultsSkeleton />;
+  }
 
   const buildHref = (targetPage: number) => {
     const params = new URLSearchParams();
@@ -179,7 +195,7 @@ export default function CategoryResults({
             currentPage={page}
             totalPages={totalPages}
             buildHref={buildHref}
-            onPageChange={() => {}}
+            onPageChange={handlePageChange}
           />
         </div>
       )}

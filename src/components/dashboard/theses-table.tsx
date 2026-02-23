@@ -7,6 +7,7 @@ import { useQueryState } from "nuqs";
 import { Funnel, FileText, Calendar, Building2, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThesesFilterDialog from "@/components/dashboard/theses-filter-dialog";
+import { ThesesTableSkeleton } from "@/components/dashboard/skeleton";
 import NumberedPagination from "@/components/shared/numbered-pagination";
 import type { Thesis } from "@/server/theses/get-theses";
 import type { FilterOptions } from "@/server/theses/get-filter-options";
@@ -111,9 +112,15 @@ export default function ThesesTable({
     return `/dashboard?${params.toString()}`;
   };
 
-  const handlePageChange = () => {
-    startTransition(() => {});
+  const handlePageChange = (newPage: number) => {
+    startTransition(() => {
+      router.push(buildHref(newPage));
+    });
   };
+
+  if (isPending) {
+    return <ThesesTableSkeleton />;
+  }
 
   return (
     <div className="col-span-2 bg-white rounded-lg shadow-md border border-slate-200 overflow-scroll">
@@ -149,7 +156,7 @@ export default function ThesesTable({
         </div>
       </div>
 
-      <div className={isPending ? "opacity-50 pointer-events-none" : ""}>
+      <div>
         <table className="w-full text-left">
           <thead className="hidden md:table-header-group bg-slate-100 border-b border-slate-200">
             <tr>

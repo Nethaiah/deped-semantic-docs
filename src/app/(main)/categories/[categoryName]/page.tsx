@@ -153,7 +153,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       />
 
       {/* Results — streams in after data fetch */}
-      <Suspense fallback={<CategoryResultsSkeleton />}>
+      <Suspense key={JSON.stringify(sp)} fallback={<CategoryResultsSkeleton />}>
         <ResultsSection collegeCode={collegeCode} sp={sp} />
       </Suspense>
     </div>

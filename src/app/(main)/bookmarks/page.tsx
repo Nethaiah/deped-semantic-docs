@@ -91,7 +91,7 @@ export default async function BookmarksPage({ searchParams }: Props) {
       />
 
       {/* Results — streams in after data fetch */}
-      <Suspense fallback={<BookmarkResultsSkeleton />}>
+      <Suspense key={JSON.stringify({ page, q, sort })} fallback={<BookmarkResultsSkeleton />}>
         <ResultsSection
           role={role}
           page={page}

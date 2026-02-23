@@ -163,7 +163,7 @@ export default async function DocumentsPage({ searchParams }: Props) {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Theses Table — streams in */}
-        <Suspense fallback={<ThesesTableSkeleton />}>
+        <Suspense key={JSON.stringify({ page, yearFrom, yearTo, department, college, title })} fallback={<ThesesTableSkeleton />}>
           <ThesesSection
             page={page}
             filters={{

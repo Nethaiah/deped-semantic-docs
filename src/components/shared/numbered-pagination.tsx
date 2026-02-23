@@ -84,8 +84,9 @@ export default function NumberedPagination({
   const canGoPrevious = currentPage > 1;
   const canGoNext = currentPage < totalPages;
 
-  const handlePageClick = (page: number) => {
+  const handlePageClick = (page: number, e: React.MouseEvent) => {
     if (onPageChange && !isLoading) {
+      e.preventDefault();
       onPageChange(page);
     }
   };
@@ -107,7 +108,7 @@ export default function NumberedPagination({
               e.preventDefault();
               return;
             }
-            handlePageClick(currentPage - 1);
+            handlePageClick(currentPage - 1, e);
           }}
           className={`
             flex items-center gap-1 px-3 py-2 text-sm rounded-md border
@@ -150,7 +151,7 @@ export default function NumberedPagination({
                   e.preventDefault();
                   return;
                 }
-                handlePageClick(pageNum);
+                handlePageClick(pageNum, e);
               }}
               className={`
                 px-3 py-2 text-sm rounded-md border min-w-[40px] text-center
@@ -178,7 +179,7 @@ export default function NumberedPagination({
               e.preventDefault();
               return;
             }
-            handlePageClick(currentPage + 1);
+            handlePageClick(currentPage + 1, e);
           }}
           className={`
             flex items-center gap-1 px-3 py-2 text-sm rounded-md border

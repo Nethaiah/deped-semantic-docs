@@ -10,8 +10,11 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getDynamicBadgeClasses } from "@/lib/badge-variants";
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import ThesisActionButtons from "@/components/shared/thesis-action-buttons";
 import NumberedPagination from "@/components/shared/numbered-pagination";
+import { BookmarkResultsSkeleton } from "@/components/bookmarks/skeleton";
 
 type BookmarkedThesis = {
   id: string;
@@ -53,6 +56,19 @@ export default function BookmarkResults({
     String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const hasAny = total > 0;
+
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const handlePageChange = (newPage: number) => {
+    startTransition(() => {
+      router.push(buildHref(newPage));
+    });
+  };
+
+  if (isPending) {
+    return <BookmarkResultsSkeleton />;
+  }
 
   const buildHref = (targetPage: number) => {
     const params = new URLSearchParams();
@@ -182,7 +198,7 @@ export default function BookmarkResults({
             currentPage={page}
             totalPages={totalPages}
             buildHref={buildHref}
-            onPageChange={() => {}}
+            onPageChange={handlePageChange}
           />
         </div>
       )}
