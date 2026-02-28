@@ -1,9 +1,10 @@
 "use client";
 
 import { useTransition } from "react";
-import { SearchIcon } from "lucide-react";
+import { SearchIcon, ArrowUpDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQueryState, parseAsString, debounce } from "nuqs";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -45,32 +46,35 @@ export default function BookmarkControls({
   };
 
   return (
-    <div className="flex flex-col gap-3 mb-6">
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
-        {/* Search Input */}
-        <div className="relative flex-1">
-          <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search by title, department, college, advisor..."
-            value={query}
-            onChange={(e) =>
-              setQuery(e.target.value, {
-                limitUrlUpdates:
-                  e.target.value === "" ? undefined : debounce(500),
-              })
-            }
-            className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-4 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
+    <div className="flex flex-row gap-2 mb-6 w-full">
+      {/* Search Input */}
+      <div className="relative flex-1 min-w-0">
+        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          type="text"
+          placeholder="Search by title, department, college, advisor..."
+          value={query || ""}
+          onChange={(e) =>
+            setQuery(e.target.value, {
+              limitUrlUpdates:
+                e.target.value === "" ? undefined : debounce(500),
+            })
+          }
+          className="w-full h-10 pl-10 pr-4 rounded-lg bg-background text-base md:text-sm"
+        />
+      </div>
 
-        {/* Sort Dropdown */}
+      {/* Sort Dropdown */}
+      <div className="flex gap-2 shrink-0">
         <Select
           value={sortBy || "date_desc"}
           onValueChange={handleSortChange}
         >
-          <SelectTrigger className="w-full lg:w-48 py-6">
-            <SelectValue placeholder="Sort by" />
+          <SelectTrigger className="!h-10 w-10 sm:w-40 lg:w-48 p-0 sm:px-3 flex items-center justify-center sm:justify-between shrink-0 [&>svg:last-child]:hidden sm:[&>svg:last-child]:block bg-white">
+            <ArrowUpDown className="h-4 w-4 sm:hidden shrink-0 text-muted-foreground m-auto" />
+            <span className="hidden sm:inline-block truncate text-left w-full">
+              <SelectValue placeholder="Sort by" />
+            </span>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="date_desc">Newest First</SelectItem>

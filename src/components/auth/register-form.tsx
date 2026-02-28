@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterSchema } from "@/lib/zodSchema";
 import { toast } from "sonner";
@@ -12,6 +12,8 @@ import { register } from "@/server/auth/register";
 import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import TermsDialog from "@/components/auth/terms-dialog";
 import PrivacyDialog from "@/components/auth/privacy-dialog";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -62,130 +64,131 @@ export default function RegisterForm() {
 
         {/* Form */}
         <div className="space-y-5">
-          {/* Full Name */}
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 mb-1.5"
-            >
-              Full name
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
-                <User className="h-4 w-4 text-gray-400" />
-              </div>
-              <input
-                id="name"
-                type="text"
-                placeholder="John Doe"
-                {...form.register("fullName")}
-                aria-invalid={!!form.formState.errors.fullName || undefined}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    form.handleSubmit(onSubmit)();
-                  }
-                }}
-                className={`w-full text-gray-900 rounded-lg border pl-10 pr-4 py-2.5 text-sm transition focus:border-[#278fb6] focus:outline-none focus:ring-4 focus:ring-[#278fb6]/10 ${
-                  form.formState.errors.fullName
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
-              />
-            </div>
-            {form.formState.errors.fullName && (
-              <p className="mt-1.5 text-sm text-red-600">
-                {form.formState.errors.fullName.message}
-              </p>
-            )}
-          </div>
+          <FieldGroup>
+            {/* Full Name */}
+            <Controller
+              name="fullName"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="name" className="font-semibold text-gray-700">
+                    Full name
+                  </FieldLabel>
+                  <InputGroup>
+                    <InputGroupAddon align="inline-start">
+                      <InputGroupText>
+                        <User className="h-4 w-4 text-gray-400" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <InputGroupInput
+                      id="name"
+                      type="text"
+                      placeholder="John Doe"
+                      {...field}
+                      aria-invalid={fieldState.invalid}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          form.handleSubmit(onSubmit)();
+                        }
+                      }}
+                      className="py-2.5 text-sm"
+                    />
+                  </InputGroup>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
 
-          {/* Email */}
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1.5"
-            >
-              Email address
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
-                <Mail className="h-4 w-4 text-gray-400" />
-              </div>
-              <input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                {...form.register("email")}
-                aria-invalid={!!form.formState.errors.email || undefined}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    form.handleSubmit(onSubmit)();
-                  }
-                }}
-                className={`w-full text-gray-900 rounded-lg border pl-10 pr-4 py-2.5 text-sm transition focus:border-[#278fb6] focus:outline-none focus:ring-4 focus:ring-[#278fb6]/10 ${
-                  form.formState.errors.email
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
-              />
-            </div>
-            {form.formState.errors.email && (
-              <p className="mt-1.5 text-sm text-red-600">
-                {form.formState.errors.email.message}
-              </p>
-            )}
-          </div>
+            {/* Email */}
+            <Controller
+              name="email"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="email" className="font-semibold text-gray-700">
+                    Email address
+                  </FieldLabel>
+                  <InputGroup>
+                    <InputGroupAddon align="inline-start">
+                      <InputGroupText>
+                        <Mail className="h-4 w-4 text-gray-400" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <InputGroupInput
+                      id="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      {...field}
+                      aria-invalid={fieldState.invalid}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          form.handleSubmit(onSubmit)();
+                        }
+                      }}
+                      className="py-2.5 text-sm"
+                    />
+                  </InputGroup>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
 
-          {/* Password */}
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1.5"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
-                <Lock className="h-4 w-4 text-gray-400" />
-              </div>
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                {...form.register("password")}
-                aria-invalid={!!form.formState.errors.password || undefined}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    form.handleSubmit(onSubmit)();
-                  }
-                }}
-                className={`w-full text-gray-900 rounded-lg border pl-10 pr-11 py-2.5 text-sm transition focus:border-[#278fb6] focus:outline-none focus:ring-4 focus:ring-[#278fb6]/10 ${
-                  form.formState.errors.password
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600 transition"
-              >
-                {showPassword ? (
-                  <Eye className="h-4 w-4 cursor-pointer" />
-                ) : (
-                  <EyeOff className="h-4 w-4 cursor-pointer" />
-                )}
-              </button>
-            </div>
-            <p className="mt-1.5 text-xs text-gray-400">
-              Must be at least 8 characters
-            </p>
-            {form.formState.errors.password && (
-              <p className="mt-1.5 text-sm text-red-600">
-                {form.formState.errors.password.message}
-              </p>
-            )}
-          </div>
+            {/* Password */}
+            <Controller
+              name="password"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="password" className="font-semibold text-gray-700">
+                    Password
+                  </FieldLabel>
+                  <InputGroup>
+                    <InputGroupAddon align="inline-start">
+                      <InputGroupText>
+                        <Lock className="h-4 w-4 text-gray-400" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <InputGroupInput
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      {...field}
+                      aria-invalid={fieldState.invalid}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          form.handleSubmit(onSubmit)();
+                        }
+                      }}
+                      className="py-2.5 text-sm"
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="flex items-center text-gray-400 hover:text-gray-600 transition"
+                      >
+                        {showPassword ? (
+                          <Eye className="h-4 w-4 cursor-pointer" />
+                        ) : (
+                          <EyeOff className="h-4 w-4 cursor-pointer" />
+                        )}
+                      </button>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <p className="mt-1 text-xs text-gray-400">
+                    Must be at least 8 characters
+                  </p>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
 
           {/* Terms Checkbox */}
           <div>

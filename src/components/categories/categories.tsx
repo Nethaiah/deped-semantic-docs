@@ -8,6 +8,7 @@ import {
   BookOpen,
   Wrench,
 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import type { CollegeWithCount } from "@/server/categories/actions";
 
 // Map college codes to Lucide icons
@@ -52,7 +53,7 @@ export default function Categories({
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
       {colleges.map((college) => {
         const Icon = getCollegeIcon(college.name);
         const colorClass = getCollegeColor(college.name);
@@ -61,24 +62,28 @@ export default function Categories({
           <Link
             key={college.name}
             href={`/categories/${encodeURIComponent(college.name)}`}
-            className="flex items-center gap-4 px-6 py-4 shadow-sm bg-white rounded-2xl border border-gray-100 hover:shadow-md transition-shadow cursor-pointer group"
+            className="block group"
           >
-            <div
-              className={`flex-shrink-0 p-4 rounded-xl ${colorClass} group-hover:scale-110 transition-transform`}
-            >
-              <Icon className="w-8 h-8" />
-            </div>
-            <div>
-              <h3 className="text-md font-bold text-[#333]">
-                {college.name}
-              </h3>
-              <p className="text-xs text-gray-500 mb-1">
-                {college.fullName}
-              </p>
-              <p className="text-sm text-gray-600">
-                {college.count} Thesis{college.count !== 1 ? " Papers" : " Paper"}
-              </p>
-            </div>
+            <Card className="flex-row items-center gap-4 px-4 sm:px-6 py-4 rounded-2xl border-gray-100 hover:shadow-md transition-shadow cursor-pointer overflow-hidden">
+              <CardContent className="flex items-center gap-4 p-0 min-w-0 flex-1">
+                <div
+                  className={`flex-shrink-0 p-3 sm:p-4 rounded-xl ${colorClass} group-hover:scale-110 transition-transform`}
+                >
+                  <Icon className="w-6 h-6 sm:w-8 sm:h-8" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-md font-bold text-[#333]">
+                    {college.name}
+                  </h3>
+                  <p className="text-xs text-gray-500 mb-1 truncate">
+                    {college.fullName}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {college.count} Thesis{college.count !== 1 ? " Papers" : " Paper"}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </Link>
         );
       })}

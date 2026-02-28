@@ -24,7 +24,7 @@ type Props = {
 /* ── Sidebar skeleton (thesis info + actions) ── */
 function SidebarSkeleton() {
   return (
-    <div>
+    <div className="bg-card text-card-foreground p-4 sm:p-5 rounded-xl border border-gray-200">
       <Skeleton className="w-full h-6 mb-2 rounded" />
       <Skeleton className="w-3/4 h-6 mb-4 rounded" />
       <div className="flex items-start gap-3 mt-3">
@@ -62,7 +62,7 @@ function SidebarSkeleton() {
 /* ── Abstract skeleton ── */
 function AbstractSkeleton() {
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border">
+    <div className="bg-card text-card-foreground p-4 sm:p-5 rounded-xl border border-gray-200">
       <div className="flex gap-2 mb-4">
         <Skeleton className="w-24 h-9 rounded-md" />
         <Skeleton className="w-24 h-9 rounded-md" />
@@ -86,8 +86,8 @@ function AbstractSkeleton() {
 /* ── Similar theses skeleton ── */
 function SimilarSkeleton() {
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm border">
-      <Skeleton className="w-32 h-5 mb-3 rounded" />
+    <div className="bg-card text-card-foreground p-4 sm:p-5 rounded-xl border border-gray-200">
+      <Skeleton className="w-32 h-5 mb-4 sm:mb-6 rounded" />
       <div className="space-y-3">
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="p-3 rounded-md">
@@ -124,14 +124,14 @@ async function ThesisSidebar({ thesisId }: { thesisId: string }) {
   }
 
   return (
-    <>
+    <div className="space-y-6">
       <ThesisInfoSidebar thesis={thesis} />
       <ThesisActions
         sourcePath={thesis.sourcePath}
         thesisId={thesis.thesisId}
         initialBookmarked={bookmarked}
       />
-    </>
+    </div>
   );
 }
 
@@ -181,37 +181,37 @@ export default async function ViewThesisPage({ params }: Props) {
     <>
       <TrackThesisView thesisId={thesisId} />
 
-      <div className="p-5 lg:p-8">
+      <div className="p-5 lg:p-8 w-full">
         {/* Back Button — renders instantly */}
         <div className="mb-4">
           <BackButton />
         </div>
 
-        <div className="grid grid-cols-13 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Sidebar — Thesis Info + Actions */}
-          <div className="col-span-13 lg:col-span-3">
+          <div className="col-span-1 lg:col-span-3 space-y-6">
             <Suspense fallback={<SidebarSkeleton />}>
               <ThesisSidebar thesisId={thesisId} />
             </Suspense>
           </div>
 
           {/* Main Content — Abstract & Q&A */}
-          <div className="col-span-13 lg:col-span-6 space-y-6">
+          <div className="col-span-1 lg:col-span-6 space-y-6">
             <Suspense fallback={<AbstractSkeleton />}>
               <ThesisMainContent thesisId={thesisId} />
             </Suspense>
           </div>
 
           {/* Right Sidebar — PDF Viewer + Similar Theses */}
-          <div className="col-span-13 lg:col-span-4 space-y-6">
+          <div className="col-span-1 lg:col-span-3 space-y-6">
             <Suspense
               fallback={
-                <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-                  <div className="p-3 border-b flex items-center justify-between">
-                    <Skeleton className="w-32 h-4 rounded" />
+                <div className="bg-card text-card-foreground rounded-xl border border-gray-200 overflow-hidden">
+                  <div className="p-4 sm:p-5 border-b border-gray-100 flex items-center justify-between">
+                    <Skeleton className="w-32 h-6 rounded" />
                     <Skeleton className="w-8 h-8 rounded" />
                   </div>
-                  <Skeleton className="w-full h-[400px]" />
+                  <Skeleton className="w-full h-[500px]" />
                 </div>
               }
             >

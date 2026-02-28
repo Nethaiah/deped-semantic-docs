@@ -7,6 +7,7 @@ import {
   getDynamicBadgeClasses,
 } from "@/lib/badge-variants";
 import { Clock, ArrowRight, History, Users, Calendar } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { RecentlyViewedThesis } from "@/server/theses/get-recently-viewed";
 
 type Props = {
@@ -27,31 +28,38 @@ export default function RecentlyViewed({ theses, accentColor = "#278fb6" }: Prop
 
   if (theses.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-4">
-        <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <History className="w-5 h-5" />
-          Recently Viewed
-        </h2>
-        <div className="text-center py-8">
-          <History className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <p className="text-sm text-slate-500">
-            No recently viewed theses yet.
-          </p>
-          <p className="text-xs text-slate-400 mt-1">
-            Start exploring theses to see your history here.
-          </p>
-        </div>
-      </div>
+      <Card className="bg-white rounded-lg shadow-md flex flex-col gap-0 border-slate-200 p-0 overflow-hidden">
+        <CardHeader className="p-4 border-b border-transparent bg-slate-50/50 mb-0">
+          <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2 m-0">
+            <History className="w-5 h-5" />
+            Recently Viewed
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-4">
+          <div className="text-center py-8">
+            <History className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+            <p className="text-sm text-slate-500">
+              No recently viewed theses yet.
+            </p>
+            <p className="text-xs text-slate-400 mt-1">
+              Start exploring theses to see your history here.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-4">
-      <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-        <History className="w-5 h-5" />
-        Recently Viewed
-      </h2>
-      <div className="space-y-3">
+    <Card className="bg-white rounded-lg shadow-md border border-slate-200 p-0 flex flex-col gap-0 overflow-hidden">
+      <CardHeader className="p-4 border-b border-slate-100 bg-slate-50/50 mb-0">
+        <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2 m-0">
+          <History className="w-5 h-5" />
+          Recently Viewed
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-4 pt-4">
+        <div className="space-y-3">
         {theses.map((item) => {
           const firstKeyword = item.keywords?.[0];
           const variant = firstKeyword ? getBadgeVariant(firstKeyword) : null;
@@ -106,8 +114,9 @@ export default function RecentlyViewed({ theses, accentColor = "#278fb6" }: Prop
             </div>
           );
         })}
-      </div>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

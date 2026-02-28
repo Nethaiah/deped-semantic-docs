@@ -359,7 +359,7 @@ export default function TableUpload({
                       <div className="flex items-center gap-1">
                         {fileItem.preview && (
                           <Button
-                            variant="dim"
+                            variant="ghost"
                             size="icon"
                             className="size-8"
                             asChild
@@ -371,7 +371,7 @@ export default function TableUpload({
                         )}
                         <Button
                           onClick={() => removeUploadFile(fileItem.id)}
-                          variant="dim"
+                          variant="ghost"
                           size="icon"
                           className="size-8"
                         >

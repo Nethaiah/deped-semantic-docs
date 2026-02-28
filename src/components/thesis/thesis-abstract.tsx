@@ -1,5 +1,6 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
 import { RAGApiService } from "@/lib/api/rag-api";
 import ReactMarkdown from "react-markdown";
@@ -65,13 +66,14 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md border border-slate-200">
-      <h3 className="text-2xl font-bold text-slate-800">Thesis Overview</h3>
-      <p className="text-sm text-slate-500 mb-4">
-        {hasContent
-          ? "Abstract and summary of the research."
-          : "Ask questions to learn more about this thesis."}
-      </p>
+    <Card className="rounded-xl border-gray-200 p-0 gap-0">
+      <CardContent className="p-4 sm:p-5">
+        <h3 className="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Thesis Overview</h3>
+        <p className="text-sm text-slate-500 mb-2 sm:mb-4">
+          {hasContent
+            ? "Abstract and summary of the research."
+            : "Ask questions to learn more about this thesis."}
+        </p>
 
       {/* Tabs for Abstract and AI Summary */}
       {hasContent && (
@@ -194,7 +196,7 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
         )}
 
         {/* Question Input */}
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <input
             type="text"
             value={question}
@@ -205,13 +207,13 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
               }
             }}
             disabled={isLoading}
-            placeholder="e.g., What methodology was used? What are the key findings?"
-            className="flex-1 bg-slate-50 border border-slate-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none disabled:bg-slate-100 disabled:cursor-not-allowed text-sm"
+            placeholder="e.g., What methodology was used?"
+            className="flex-1 w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none disabled:bg-slate-100 disabled:cursor-not-allowed text-sm"
           />
           <button
             onClick={handleAskQuestion}
             disabled={isLoading || !question.trim()}
-            className="bg-slate-700 text-white font-semibold py-2 px-6 rounded-lg hover:bg-slate-800 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center gap-2"
+            className="w-full sm:w-auto justify-center bg-slate-700 text-white font-semibold py-2 px-6 rounded-lg hover:bg-slate-800 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {isLoading ? (
               <>
@@ -232,6 +234,7 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
           </p>
         )}
       </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

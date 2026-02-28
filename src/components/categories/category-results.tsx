@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
 import type { CollegeThesis } from "@/server/categories/actions";
 import ThesisActionButtons from "@/components/shared/thesis-action-buttons";
 import { getDynamicBadgeClasses } from "@/lib/badge-variants";
@@ -92,100 +94,107 @@ export default function CategoryResults({
       {hasAny ? (
         <div className="space-y-4">
           {theses.map((thesis) => (
-            <div
+            <Card
               key={thesis.thesis_id}
-              className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
+              className="rounded-xl border-gray-200 p-3 sm:p-4 hover:shadow-md transition-all"
             >
-              <div className="flex flex-col lg:flex-row justify-between gap-6">
-                {/* LEFT SECTION */}
-                <div className="flex-1">
-                  <Link
-                    href={`/view/${thesis.thesis_id}`}
-                    className="block group"
-                  >
-                    <h3
-                      className="text-md lg:text-xl font-semibold mb-2 group-hover:underline line-clamp-2"
-                      style={{ color: activeColor }}
+              <CardContent className="p-0">
+                <div className="flex flex-col lg:flex-row justify-between gap-3 sm:gap-4">
+                  {/* LEFT SECTION */}
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      href={`/view/${thesis.thesis_id}`}
+                      className="block group"
                     >
-                      {thesis.title}
-                    </h3>
-                  </Link>
+                      <h3
+                        className="text-sm sm:text-base lg:text-lg font-semibold mb-1 group-hover:underline line-clamp-2"
+                        style={{ color: activeColor }}
+                      >
+                        {thesis.title}
+                      </h3>
+                    </Link>
 
-                  {/* Authors */}
-                  {thesis.authors && thesis.authors.length > 0 && (
-                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                      <Users className="h-4 w-4" />
-                      <span className="line-clamp-1">
-                        {thesis.authors.join(", ")}
-                      </span>
+                    {/* Authors */}
+                    {thesis.authors && thesis.authors.length > 0 && (
+                      <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 mb-1.5">
+                        <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
+                        <span className="line-clamp-1">
+                          {thesis.authors.join(", ")}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Metadata Row */}
+                    <div className="flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm text-gray-500 mb-2">
+                      {thesis.year && (
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                          <span>{thesis.year}</span>
+                        </div>
+                      )}
+                      {thesis.department && (
+                        <div className="flex items-center gap-1">
+                          <Building className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                          <span>{thesis.department}</span>
+                        </div>
+                      )}
                     </div>
-                  )}
 
-                  {/* Metadata Row */}
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-3">
-                    {thesis.year && (
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>{thesis.year}</span>
-                      </div>
+                    {/* Abstract */}
+                    {thesis.abstract && (
+                      <p className="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-2">
+                        {thesis.abstract}
+                      </p>
                     )}
-                    {thesis.department && (
-                      <div className="flex items-center gap-1">
-                        <Building className="h-4 w-4" />
-                        <span>{thesis.department}</span>
-                      </div>
-                    )}
+
+                    {/* Keywords */}
+                    <div className="flex flex-wrap gap-1.5 overflow-hidden">
+                      {thesis.keywords
+                        ?.slice(0, 5)
+                        .map((keyword: string) => (
+                          <Badge
+                            key={keyword}
+                            size="md"
+                            className={cn(getDynamicBadgeClasses(keyword), "max-w-full")}
+                            title={keyword}
+                          >
+                            <span className="truncate">{keyword}</span>
+                          </Badge>
+                        ))}
+                      {thesis.keywords && thesis.keywords.length > 5 && (
+                        <Badge variant="outline" size="md" className="shrink-0 max-w-full">
+                          <span className="truncate">+{thesis.keywords.length - 5} more</span>
+                        </Badge>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Abstract */}
-                  {thesis.abstract && (
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                      {thesis.abstract}
-                    </p>
-                  )}
-
-                  {/* Keywords */}
-                  <div className="flex flex-wrap gap-1.5">
-                    {thesis.keywords
-                      ?.slice(0, 5)
-                      .map((keyword: string) => (
-                        <Badge
-                          key={keyword}
-                          size="md"
-                          className={getDynamicBadgeClasses(keyword)}
-                        >
-                          {keyword}
-                        </Badge>
-                      ))}
-                    {thesis.keywords && thesis.keywords.length > 5 && (
-                      <Badge variant="outline" size="md">
-                        +{thesis.keywords.length - 5} more
-                      </Badge>
-                    )}
+                  {/* ACTION BUTTONS — right-aligned on mobile, column on desktop */}
+                  <div className="flex justify-end lg:justify-start pt-2 lg:pt-0 border-t lg:border-t-0 border-gray-100">
+                    <ThesisActionButtons
+                      thesisId={thesis.thesis_id}
+                      initialBookmarked={bookmarks[thesis.thesis_id]}
+                    />
                   </div>
                 </div>
-
-                {/* ACTION BUTTONS */}
-                <ThesisActionButtons
-                  thesisId={thesis.thesis_id}
-                  initialBookmarked={bookmarks[thesis.thesis_id]}
-                />
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <div className="text-gray-400 mb-4">
-            <SearchIcon className="h-12 w-12 mx-auto" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No thesis papers found
-          </h3>
-          <p className="text-sm text-gray-500">
-            Try adjusting your search query or filters
-          </p>
-        </div>
+        <Card className="rounded-xl border-gray-200 p-12 text-center">
+          <CardContent className="p-0 flex flex-col items-center">
+            <div className="text-gray-400 mb-4">
+              <SearchIcon className="h-12 w-12 mx-auto" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No thesis papers found
+            </h3>
+            <p className="text-sm text-gray-500">
+              Try adjusting your search query or filters
+            </p>
+          </CardContent>
+        </Card>
       )}
 
       {/* Pagination */}

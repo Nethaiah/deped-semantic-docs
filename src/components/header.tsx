@@ -28,40 +28,42 @@ export default async function Header() {
     <nav
       className={`fixed top-0 z-[1220] w-full border-b border-gray-200 ${headerBgColor} backdrop-blur-sm`}
     >
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3">
         {/* Left section: Hamburger (mobile) + Logo (desktop) */}
         <div className="flex items-center gap-2">
           {/* Hamburger - only visible on mobile when authenticated */}
           {isAuthenticated && <MobileMenuButton />}
 
-          {/* Logo - visible on desktop, hidden on mobile (moved to center) */}
-          <div className="hidden lg:flex items-center gap-2">
+          {/* Logo - visible on desktop always, visible on mobile ONLY if unauthenticated */}
+          <div className={`${isAuthenticated ? 'hidden lg:flex' : 'flex'} items-center gap-2`}>
             <Image
               src="/Logo.png"
               alt="DocuLens Logo"
-              width={40}
-              height={40}
+              width={32}
+              height={32}
               className="object-contain"
             />
-            <span className="text-lg font-bold tracking-tight text-[#f3f3f3]">
+            <span className="text-base font-bold tracking-tight text-[#f3f3f3]">
               DocuLens
             </span>
           </div>
         </div>
 
-        {/* Center section: Logo (mobile only) */}
-        <div className="lg:hidden absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
-          <Image
-            src="/Logo.png"
-            alt="DocuLens Logo"
-            width={36}
-            height={36}
-            className="object-contain"
-          />
-          <span className="text-lg font-bold tracking-tight text-[#f3f3f3]">
-            DocuLens
-          </span>
-        </div>
+        {/* Center section: Logo (mobile only, and ONLY when authenticated so it doesn't overlap the hamburger) */}
+        {isAuthenticated && (
+          <div className="lg:hidden absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+            <Image
+              src="/Logo.png"
+              alt="DocuLens Logo"
+              width={28}
+              height={28}
+              className="object-contain"
+            />
+            <span className="text-base font-bold tracking-tight text-[#f3f3f3]">
+              DocuLens
+            </span>
+          </div>
+        )}
 
         {/* Right section: Navigation Actions */}
         <div className="flex items-center gap-3 sm:gap-4 cursor-pointer">

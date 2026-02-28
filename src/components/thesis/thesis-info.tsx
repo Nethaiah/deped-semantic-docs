@@ -1,3 +1,4 @@
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   Calendar, 
@@ -22,8 +23,9 @@ export default function ThesisInfoSidebar({ thesis }: Props) {
   };
 
   return (
-    <div>
-      {/* Title */}
+    <Card className="rounded-xl border-gray-200 p-0 gap-0">
+      <CardContent className="p-4 sm:p-5">
+        {/* Title */}
       <h3 className="text-xl font-bold text-slate-800 leading-tight">
         {thesis.title}
       </h3>
@@ -39,35 +41,35 @@ export default function ThesisInfoSidebar({ thesis }: Props) {
 
       <div className="mt-4 space-y-3 text-sm">
         {/* Year */}
-        <div className="flex items-center gap-3 text-slate-600">
-          <Calendar className="h-4 w-4" />
+        <div className="flex items-start gap-3 text-slate-600">
+          <Calendar className="h-4 w-4 mt-0.5 flex-shrink-0" />
           <span>Year: {thesis.year}</span>
         </div>
 
         {/* Department */}
-        <div className="flex items-center gap-3 text-slate-600">
-          <GraduationCap className="h-4 w-4" />
+        <div className="flex items-start gap-3 text-slate-600">
+          <GraduationCap className="h-4 w-4 mt-0.5 flex-shrink-0" />
           <span>Department: {thesis.department}</span>
         </div>
 
         {/* College */}
-        <div className="flex items-center gap-3 text-slate-600">
-          <Building2 className="h-4 w-4" />
+        <div className="flex items-start gap-3 text-slate-600">
+          <Building2 className="h-4 w-4 mt-0.5 flex-shrink-0" />
           <span>College: {thesis.college}</span>
         </div>
 
         {/* Advisor */}
         {thesis.advisor && (
-          <div className="flex items-center gap-3 text-slate-600">
-            <BookOpen className="h-4 w-4" />
+          <div className="flex items-start gap-3 text-slate-600">
+            <BookOpen className="h-4 w-4 mt-0.5 flex-shrink-0" />
             <span>Advisor: {thesis.advisor}</span>
           </div>
         )}
 
         {/* Total Pages */}
         {thesis.totalPages > 0 && (
-          <div className="flex items-center gap-3 text-slate-600">
-            <FileText className="h-4 w-4" />
+          <div className="flex items-start gap-3 text-slate-600">
+            <FileText className="h-4 w-4 mt-0.5 flex-shrink-0" />
             <span>{thesis.totalPages} pages</span>
           </div>
         )}
@@ -97,6 +99,7 @@ export default function ThesisInfoSidebar({ thesis }: Props) {
           </div>
         )}
       </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

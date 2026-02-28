@@ -16,6 +16,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 
 export type SearchMode = "rag" | "keyword";
@@ -146,53 +148,53 @@ export default function SearchFilterDialog({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Year Range */}
             <div className="flex flex-col gap-1.5">
-              <label
+              <Label
                 htmlFor="year-from"
                 className="text-xs font-semibold text-slate-700"
               >
                 Year From
-              </label>
-              <input
+              </Label>
+              <Input
                 id="year-from"
                 type="number"
                 placeholder="e.g., 2020"
                 value={localValues.yearFrom}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setLocalValues({ ...localValues, yearFrom: e.target.value })
                 }
                 disabled={filtersDisabled}
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors cursor-text"
+                className="transition-colors cursor-text"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label
+              <Label
                 htmlFor="year-to"
                 className="text-xs font-semibold text-slate-700"
               >
                 Year To
-              </label>
-              <input
+              </Label>
+              <Input
                 id="year-to"
                 type="number"
                 placeholder="e.g., 2025"
                 value={localValues.yearTo}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setLocalValues({ ...localValues, yearTo: e.target.value })
                 }
                 disabled={filtersDisabled}
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors cursor-text"
+                className="transition-colors cursor-text"
               />
             </div>
 
             {/* College */}
             <div className="flex flex-col gap-1.5">
-              <label
+              <Label
                 htmlFor="college"
                 className="text-xs font-semibold text-slate-700"
               >
                 College
-              </label>
+              </Label>
               <Select
                 value={localValues.college || "_all"}
                 onValueChange={handleCollegeChange}
@@ -220,12 +222,12 @@ export default function SearchFilterDialog({
 
             {/* Department */}
             <div className="flex flex-col gap-1.5">
-              <label
+              <Label
                 htmlFor="department"
                 className="text-xs font-semibold text-slate-700"
               >
                 Department
-              </label>
+              </Label>
               <Select
                 value={localValues.department || "_all"}
                 onValueChange={(val) =>
@@ -255,22 +257,22 @@ export default function SearchFilterDialog({
 
             {/* Keywords */}
             <div className="flex flex-col gap-1.5 sm:col-span-2">
-              <label
+              <Label
                 htmlFor="keywords"
                 className="text-xs font-semibold text-slate-700"
               >
                 Keywords
-              </label>
-              <input
+              </Label>
+              <Input
                 id="keywords"
                 type="text"
                 placeholder="e.g., machine learning, AI (comma separated)"
                 value={localValues.keywords}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setLocalValues({ ...localValues, keywords: e.target.value })
                 }
                 disabled={filtersDisabled}
-                className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#278fb6] disabled:bg-slate-100 disabled:text-slate-500 disabled:cursor-not-allowed transition-colors placeholder:text-slate-400"
+                className="transition-colors"
               />
             </div>
           </div>

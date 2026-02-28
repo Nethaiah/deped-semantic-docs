@@ -28,7 +28,7 @@ export async function register({ name, email, password }: { name: string; email:
 		password: parsed.data.password,
 		options: {
 			data: { name: parsed.data.fullName, full_name: parsed.data.fullName },
-			emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/verify-email`,
+			emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/auth/confirm?type=signup`,
 		},
 	});
 

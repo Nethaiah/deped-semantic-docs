@@ -14,6 +14,14 @@ import {
   FileText,
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const menuItems = [
   { title: "Dashboard", icon: LayoutGrid, path: "/dashboard" },
@@ -74,18 +82,19 @@ export default function Sidebar({
   const isExpanded = isMobile ? isMobileOpen : isDesktopExpanded;
 
   return (
-    <div className="flex h-screen">
-      {/* Backdrop for mobile overlay */}
-      {isMobile && isMobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
-          onClick={closeMobileSidebar}
-        />
-      )}
+    <TooltipProvider delayDuration={0}>
+      <div className="flex h-screen">
+        {/* Backdrop for mobile overlay */}
+        {isMobile && isMobileOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+            onClick={closeMobileSidebar}
+          />
+        )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 bottom-0 bg-white border-r border-gray-200 transition-all duration-300 ease-in-out flex flex-col pt-[73px] z-50
+        className={`fixed left-0 top-0 bottom-0 bg-white border-r border-gray-200 transition-all duration-300 ease-in-out flex flex-col pt-[65px] z-50
           ${
             isMobile
               ? isMobileOpen
@@ -93,7 +102,7 @@ export default function Sidebar({
                 : "w-72 -translate-x-full"
               : isDesktopExpanded
               ? "w-64"
-              : "w-20"
+              : "w-16"
           }
         `}
       >
@@ -105,17 +114,18 @@ export default function Sidebar({
             }`}
           >
             {isDesktopExpanded && (
-              <h2 className="font-semibold text-base text-gray-900">
+              <h2 className="font-semibold text-sm text-gray-900">
                 Navigation
               </h2>
             )}
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={toggleDesktopSidebar}
-              className="h-9 w-9 flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+              className="h-9 w-9 text-gray-600 hover:text-gray-900 cursor-pointer"
             >
               <PanelLeft size={20} />
-            </button>
+            </Button>
           </div>
         )}
 
@@ -126,36 +136,45 @@ export default function Sidebar({
               const isActive = pathname.startsWith(path);
               return (
                 <li key={title}>
-                  <Link
-                    href={path}
-                    onClick={handleLinkClick}
-                    title={!isExpanded ? title : undefined}
-                    className={`
-                      w-full flex items-center ${
-                        isExpanded ? "justify-start" : "justify-center"
-                      }
-                      gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                      ${
-                        isActive
-                          ? `${activeLinkColor} text-white shadow-md`
-                          : "text-gray-700 hover:bg-gray-100"
-                      }
-                    `}
-                  >
-                    <Icon className="w-5 h-5 flex-shrink-0" />
-                    {isExpanded && (
-                      <span className="text-base font-medium whitespace-nowrap">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={path}
+                        onClick={handleLinkClick}
+                        className={`
+                          w-full flex items-center ${
+                            isExpanded ? "justify-start" : "justify-center"
+                          }
+                          gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
+                          ${
+                            isActive
+                              ? `${activeLinkColor} text-white shadow-md`
+                              : "text-gray-700 hover:bg-gray-100"
+                          }
+                        `}
+                      >
+                        <Icon className="w-[18px] h-[18px] flex-shrink-0" />
+                        {isExpanded && (
+                          <span className="text-sm font-medium whitespace-nowrap">
+                            {title}
+                          </span>
+                        )}
+                      </Link>
+                    </TooltipTrigger>
+                    {!isExpanded && (
+                      <TooltipContent side="right" sideOffset={16}>
                         {title}
-                      </span>
+                      </TooltipContent>
                     )}
-                  </Link>
+                  </Tooltip>
                 </li>
               );
             })}
 
             {/* Admin Section */}
             {String(role).toLowerCase() === "admin" && (
-              <li className="pt-4 border-t border-gray-200 mt-4">
+              <li className="pt-4 mt-4">
+                <Separator className="mb-4" />
                 {isExpanded && (
                   <p className="px-4 pb-3 font-semibold text-[#333]/70 text-sm">
                     Administration
@@ -167,29 +186,37 @@ export default function Sidebar({
                     const isActive = pathname.startsWith(path);
                     return (
                       <li key={title}>
-                        <Link
-                          href={path}
-                          onClick={handleLinkClick}
-                          title={!isExpanded ? title : undefined}
-                          className={`
-                            w-full flex items-center ${
-                              isExpanded ? "justify-start" : "justify-center"
-                            }
-                            gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                            ${
-                              isActive
-                                ? `${activeLinkColor} text-white shadow-md`
-                                : "text-gray-700 hover:bg-gray-100"
-                            }
-                          `}
-                        >
-                          <Icon className="w-5 h-5 flex-shrink-0" />
-                          {isExpanded && (
-                            <span className="text-base font-medium whitespace-nowrap">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Link
+                              href={path}
+                              onClick={handleLinkClick}
+                              className={`
+                                w-full flex items-center ${
+                                  isExpanded ? "justify-start" : "justify-center"
+                                }
+                                gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
+                                ${
+                                  isActive
+                                    ? `${activeLinkColor} text-white shadow-md`
+                                    : "text-gray-700 hover:bg-gray-100"
+                                }
+                              `}
+                            >
+                              <Icon className="w-[18px] h-[18px] flex-shrink-0" />
+                              {isExpanded && (
+                                <span className="text-sm font-medium whitespace-nowrap">
+                                  {title}
+                                </span>
+                              )}
+                            </Link>
+                          </TooltipTrigger>
+                          {!isExpanded && (
+                            <TooltipContent side="right" sideOffset={16}>
                               {title}
-                            </span>
+                            </TooltipContent>
                           )}
-                        </Link>
+                        </Tooltip>
                       </li>
                     );
                   })}
@@ -203,17 +230,18 @@ export default function Sidebar({
       {/* Main Content */}
       {children && (
         <main
-          className={`flex-1 overflow-auto bg-gray-50 transition-all duration-300 pt-[73px] h-screen ${
+          className={`flex-1 overflow-auto bg-gray-50 transition-all duration-300 pt-[65px] h-screen ${
             isMobile
               ? "ml-0" // Full width on mobile — no sidebar space
               : isDesktopExpanded
               ? "ml-64"
-              : "ml-20"
+              : "ml-16"
           }`}
         >
           {children}
         </main>
       )}
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }

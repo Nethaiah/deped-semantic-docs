@@ -52,8 +52,9 @@ export function HighlightedBarChart({
 
   return (
     <Card className="border-none shadow-none">
-      <CardHeader className="p-0 mb-6">
+      <CardHeader className="p-0 mb-0 border-none">
         <CardTitle className="flex items-center gap-2 text-lg font-bold text-slate-800">
+          <TrendingUp className="w-5 h-5" />
           {title}
         </CardTitle>
         <CardDescription className="text-sm text-slate-500 mt-1">
