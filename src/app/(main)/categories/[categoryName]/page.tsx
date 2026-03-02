@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import CategoryControls from "@/components/categories/category-controls";
 import CategoryResults from "@/components/categories/category-results";
 import { CategoryResultsSkeleton } from "@/components/categories/skeleton";
@@ -125,13 +126,12 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       {/* Header — renders instantly */}
       <div className="mb-6">
         <div className="mb-4">
-          <Link
-            href="/categories"
-            className="inline-flex items-center justify-center gap-2 text-sm text-[#278fb6] cursor-pointer bg-gray-200 hover:bg-gray-300 border-gray-300 border-1 px-5 py-1 rounded-sm"
-          >
-            <ChevronLeft className="h-4 w-4" />
+          <Button variant="outline" size="sm" asChild className="cursor-pointer text-[#278fb6] bg-gray-200 hover:bg-gray-300 border-gray-300">
+          <Link href="/categories">
+              <ChevronLeft className="h-4 w-4" />
             Back to Colleges
           </Link>
+        </Button>
         </div>
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
           {collegeCode}

@@ -1,9 +1,16 @@
 "use client";
 
-import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
-type PaginationItem = number | "...";
+type PaginationItemType = number | "...";
 
 interface NumberedPaginationProps {
   currentPage: number;
@@ -24,13 +31,13 @@ function generatePageNumbers(
   current: number,
   total: number,
   siblings: number = 3
-): PaginationItem[] {
+): PaginationItemType[] {
   // If total pages <= 5, show all pages
   if (total <= 5) {
     return Array.from({ length: total }, (_, i) => i + 1);
   }
 
-  const items: PaginationItem[] = [];
+  const items: PaginationItemType[] = [];
   
   // Always include first page
   items.push(1);
@@ -92,110 +99,97 @@ export default function NumberedPagination({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3 w-full sm:flex-row sm:justify-between">
+    <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4 sm:gap-3 w-full">
       {/* Page info */}
-      <div className="text-sm text-gray-600 text-center sm:text-left">
+      <div className="text-sm text-gray-600 text-center sm:text-left whitespace-nowrap">
         Page {currentPage} of {totalPages}
       </div>
 
-      {/* Pagination controls */}
-      <div className="flex items-center gap-1">
-        {/* Previous Button */}
-        <Link
-          href={buildHref(currentPage - 1)}
-          onClick={(e) => {
-            if (!canGoPrevious || isLoading) {
-              e.preventDefault();
-              return;
-            }
-            handlePageClick(currentPage - 1, e);
-          }}
-          className={`
-            flex items-center gap-1 px-3 py-2 text-sm rounded-md border
-            ${
-              !canGoPrevious || isLoading
-                ? "pointer-events-none opacity-50 cursor-not-allowed"
-                : "hover:bg-gray-50 cursor-pointer"
-            }
-          `}
-          aria-disabled={!canGoPrevious || isLoading}
-          aria-label="Go to previous page"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          <span className="hidden sm:inline">Previous</span>
-        </Link>
-
-        {/* Page Numbers */}
-        {pageNumbers.map((item, index) => {
-          if (item === "...") {
-            return (
-              <span
-                key={`ellipsis-${index}`}
-                className="px-3 py-2 text-sm text-gray-400"
-                aria-hidden="true"
-              >
-                ...
-              </span>
-            );
-          }
-
-          const pageNum = item as number;
-          const isCurrent = pageNum === currentPage;
-
-          return (
-            <Link
-              key={pageNum}
-              href={buildHref(pageNum)}
+      <Pagination className="justify-center sm:justify-end mx-0 w-auto">
+        <PaginationContent>
+          {/* Previous Button */}
+          <PaginationItem>
+            <PaginationPrevious
+              href={buildHref(currentPage - 1)}
+              scroll={false}
               onClick={(e) => {
-                if (isCurrent || isLoading) {
+                if (!canGoPrevious || isLoading) {
                   e.preventDefault();
                   return;
                 }
-                handlePageClick(pageNum, e);
+                handlePageClick(currentPage - 1, e);
               }}
-              className={`
-                px-3 py-2 text-sm rounded-md border min-w-[40px] text-center
-                ${
-                  isCurrent
-                    ? "bg-[#278fb6] text-white border-[#278fb6] font-semibold cursor-default"
-                    : isLoading
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-gray-50 cursor-pointer"
-                }
-              `}
-              aria-label={`Go to page ${pageNum}`}
-              aria-current={isCurrent ? "page" : undefined}
-            >
-              {pageNum}
-            </Link>
-          );
-        })}
+              className={
+                !canGoPrevious || isLoading
+                  ? "pointer-events-none opacity-50"
+                  : ""
+              }
+              aria-disabled={!canGoPrevious || isLoading}
+            />
+          </PaginationItem>
 
-        {/* Next Button */}
-        <Link
-          href={buildHref(currentPage + 1)}
-          onClick={(e) => {
-            if (!canGoNext || isLoading) {
-              e.preventDefault();
-              return;
+          {/* Page Numbers */}
+          {pageNumbers.map((item, index) => {
+            if (item === "...") {
+              return (
+                <PaginationItem key={`ellipsis-${index}`}>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              );
             }
-            handlePageClick(currentPage + 1, e);
-          }}
-          className={`
-            flex items-center gap-1 px-3 py-2 text-sm rounded-md border
-            ${
-              !canGoNext || isLoading
-                ? "pointer-events-none opacity-50 cursor-not-allowed"
-                : "hover:bg-gray-50 cursor-pointer"
-            }
-          `}
-          aria-disabled={!canGoNext || isLoading}
-          aria-label="Go to next page"
-        >
-          <span className="hidden sm:inline">Next</span>
-          <ChevronRight className="w-4 h-4" />
-        </Link>
-      </div>
+
+            const pageNum = item as number;
+            const isCurrent = pageNum === currentPage;
+
+            return (
+              <PaginationItem key={pageNum}>
+                <PaginationLink
+                  href={buildHref(pageNum)}
+                  isActive={isCurrent}
+                  scroll={false}
+                  onClick={(e) => {
+                    if (isCurrent || isLoading) {
+                      e.preventDefault();
+                      return;
+                    }
+                    handlePageClick(pageNum, e);
+                  }}
+                  className={
+                    isCurrent
+                      ? "bg-[#278fb6] text-white hover:bg-[#278fb6]/90 hover:text-white border-[#278fb6] font-semibold"
+                      : isLoading
+                      ? "text-slate-400 opacity-50 cursor-not-allowed"
+                      : "text-slate-700 hover:bg-slate-50"
+                  }
+                >
+                  {pageNum}
+                </PaginationLink>
+              </PaginationItem>
+            );
+          })}
+
+          {/* Next Button */}
+          <PaginationItem>
+            <PaginationNext
+              href={buildHref(currentPage + 1)}
+              scroll={false}
+              onClick={(e) => {
+                if (!canGoNext || isLoading) {
+                  e.preventDefault();
+                  return;
+                }
+                handlePageClick(currentPage + 1, e);
+              }}
+              className={
+                !canGoNext || isLoading
+                  ? "pointer-events-none opacity-50"
+                  : ""
+              }
+              aria-disabled={!canGoNext || isLoading}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 }

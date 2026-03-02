@@ -1,9 +1,12 @@
 "use client";
 
-import { Search as SearchIcon, Loader2, X, Funnel, Users, Calendar, Building, GraduationCap } from "lucide-react";
+import { Search as SearchIcon, Loader2, X, Funnel, Users, Calendar, Building, GraduationCap, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { SearchResultsSkeleton } from "@/components/search/skeleton";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { useState, useEffect, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { RAGApiService, type DocumentSource } from "@/lib/api/rag-api";
@@ -267,82 +270,77 @@ export default function Search({ role }: Role) {
       </div>
 
       {/* Search Bar */}
-      <div className="flex flex-col gap-3 mb-6">
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
-          <div className="relative flex-1">
-            <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search titles, authors, or ask a question about a thesis..."
-              value={searchQuery}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (useRAG) {
-                  // RAG mode: shallow update (client-only, no server request)
-                  // Search only happens when button is clicked
-                  setUrlState({ q: value }, { shallow: true });
-                } else {
-                  // Keyword mode: debounce 500ms to reduce server requests while typing
-                  setUrlState(
-                    { q: value },
-                    { limitUrlUpdates: value === "" ? undefined : debounce(500) }
-                  );
-                }
-              }}
-              onKeyDown={(e) =>
-                e.key === "Enter" && !isLoading && handleSearch()
+      <div className="flex flex-row gap-2 mb-6 w-full">
+        {/* Search Input */}
+        <div className="relative flex-1 min-w-0">
+          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search titles, authors, or ask a question about a thesis..."
+            value={searchQuery || ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (useRAG) {
+                setUrlState({ q: value }, { shallow: true });
+              } else {
+                setUrlState(
+                  { q: value },
+                  { limitUrlUpdates: value === "" ? undefined : debounce(500) }
+                );
               }
+            }}
+            onKeyDown={(e) => e.key === "Enter" && !isLoading && handleSearch()}
+            disabled={isLoading}
+            className="w-full h-10 pl-10 pr-10 rounded-lg bg-background text-base md:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+          />
+          {(searchQuery || hasSearched) && (
+            <button
+              type="button"
+              onClick={clearSearch}
               disabled={isLoading}
-              className="w-full rounded-lg border border-gray-300 bg-white pl-12 pr-10 py-3 text-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-            />
-            {(searchQuery || hasSearched) && (
-              <button
-                type="button"
-                onClick={clearSearch}
-                disabled={isLoading}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
-                aria-label="Clear search"
-                title="Clear search"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-          <div className="flex items-center justify-between lg:justify-end gap-2 w-full lg:w-auto">
-            <Button
-              variant="outline"
-              onClick={() => setIsFilterOpen(true)}
-              disabled={isLoading}
-              className="cursor-pointer px-4 py-4 lg:py-6 text-md relative"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground disabled:opacity-50"
+              aria-label="Clear search"
+              title="Clear search"
             >
-              <Funnel className="h-4 w-4 mr-2" />
-              Filters
-              {activeFilterCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {activeFilterCount}
-                </span>
-              )}
-            </Button>
-            <Button
-              onClick={handleSearch}
-              disabled={isLoading || !searchQuery.trim()}
-              className="flex-1 lg:flex-none lg:w-auto cursor-pointer px-4 lg:px-8 py-4 lg:py-6 text-md bg-[#278fb6] hover:bg-[#278fb6]/80"
-              style={{
-                opacity: isLoading || !searchQuery.trim() ? 0.5 : 1,
-              }}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Searching...
-                </>
-              ) : (
-                "Search"
-              )}
-            </Button>
-          </div>
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
-        <SearchFilterDialog
+
+        {/* Action Buttons */}
+        <div className="flex gap-2 shrink-0">
+          <Button
+            variant="outline"
+            onClick={() => setIsFilterOpen(true)}
+            disabled={isLoading}
+            className="h-10 w-10 p-0 sm:w-auto sm:px-4 cursor-pointer relative shrink-0 bg-white"
+          >
+            <Funnel className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Filters</span>
+            {activeFilterCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                {activeFilterCount}
+              </span>
+            )}
+          </Button>
+          <Button
+            onClick={handleSearch}
+            disabled={isLoading || !searchQuery?.trim()}
+            className="h-10 w-10 p-0 sm:w-auto sm:px-4 cursor-pointer bg-[#278fb6] hover:bg-[#278fb6]/80 shrink-0 text-white"
+            style={{ opacity: isLoading || !searchQuery?.trim() ? 0.5 : 1 }}
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 sm:mr-2 animate-spin shrink-0" />
+            ) : (
+              <SearchIcon className="h-4 w-4 sm:hidden shrink-0" />
+            )}
+            <span className="hidden sm:inline">
+              {isLoading ? "Searching..." : "Search"}
+            </span>
+          </Button>
+        </div>
+      </div>
+      <SearchFilterDialog
           open={isFilterOpen}
           onOpenChange={setIsFilterOpen}
           values={searchFilters}
@@ -364,7 +362,6 @@ export default function Search({ role }: Role) {
             setIsFilterOpen(false);
           }}
         />
-      </div>
 
       {/* Loading Skeleton */}
       {isLoading && <SearchResultsSkeleton showAnswer={useRAG} />}
@@ -391,8 +388,8 @@ export default function Search({ role }: Role) {
 
       {/* Results Header */}
       {hasSearched && !isLoading && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-          <div className="text-sm text-gray-600">
+        <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 mb-4">
+          <div className="text-sm text-gray-600 truncate flex-1 min-w-0">
             {searchResults.length > 0 ? (
               <>
                 Found{" "}
@@ -408,14 +405,16 @@ export default function Search({ role }: Role) {
             )}
           </div>
           {searchResults.length > 0 && (
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-              <span className="text-sm text-gray-600 whitespace-nowrap">Sort by:</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-sm text-gray-600 whitespace-nowrap hidden sm:inline">Sort by:</span>
               <Select value={sortBy} onValueChange={(v) => setUrlState({ sort: v as SearchSortOption })}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Sort by" />
+                <SelectTrigger className="!h-10 w-10 sm:w-40 lg:w-48 p-0 sm:px-3 flex items-center justify-center sm:justify-between shrink-0 [&>svg:last-child]:hidden sm:[&>svg:last-child]:block bg-white">
+                  <ArrowUpDown className="h-4 w-4 sm:hidden shrink-0 text-muted-foreground m-auto" />
+                  <span className="hidden sm:inline-block truncate text-left w-full">
+                    <SelectValue placeholder="Sort by" />
+                  </span>
                 </SelectTrigger>
                 <SelectContent>
-                  {/* Only show Relevance option when using RAG/Semantic Search */}
                   {useRAG && <SelectItem value="relevance">Relevance</SelectItem>}
                   <SelectItem value="date_desc">Date (Newest)</SelectItem>
                   <SelectItem value="date_asc">Date (Oldest)</SelectItem>
@@ -432,111 +431,117 @@ export default function Search({ role }: Role) {
       {hasSearched && !isLoading && (
         <div className="space-y-4">
           {resultsToRender.map((doc) => (
-            <div
+            <Card
               key={doc.thesis_id}
-              className="bg-white rounded-xl border border-gray-200 p-4 md:p-6 hover:shadow-md transition-all"
+              className="rounded-xl border-gray-200 p-3 sm:p-4 hover:shadow-md transition-all"
             >
-              <div className="flex flex-col lg:flex-row justify-between gap-6">
-                {/* LEFT SECTION */}
-                <div className="flex-1">
-                  <Link href={`/view/${doc.thesis_id}`} className="block group">
-                    <h3
-                      className="text-md lg:text-xl font-semibold mb-2 group-hover:underline line-clamp-2"
-                      style={{ color: activeColor }}
-                    >
-                      {doc.title}
-                    </h3>
-                  </Link>
+              <CardContent className="p-0">
+                <div className="flex flex-col lg:flex-row justify-between gap-3 sm:gap-4">
+                  {/* LEFT SECTION */}
+                  <div className="flex-1 min-w-0">
+                    <Link href={`/view/${doc.thesis_id}`} className="block group">
+                      <h3
+                        className="text-sm sm:text-base lg:text-lg font-semibold mb-1 group-hover:underline line-clamp-2"
+                        style={{ color: activeColor }}
+                      >
+                        {doc.title}
+                      </h3>
+                    </Link>
 
-                  {/* Authors */}
-                  {doc.authors && doc.authors.length > 0 && (
-                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                      <Users className="h-4 w-4" />
-                      <span className="line-clamp-1">
-                        {doc.authors.join(", ")}
-                      </span>
+                    {/* Authors */}
+                    {doc.authors && doc.authors.length > 0 && (
+                      <div className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-600 mb-1.5">
+                        <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
+                        <span className="line-clamp-1">
+                          {doc.authors.join(", ")}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Metadata Row */}
+                    <div className="flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm text-gray-500 mb-2">
+                      {doc.year && (
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                          <span>{doc.year}</span>
+                        </div>
+                      )}
+                      {doc.department && (
+                        <div className="flex items-center gap-1">
+                          <Building className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                          <span>{doc.department}</span>
+                        </div>
+                      )}
+                      {doc.college && (
+                        <div className="flex items-center gap-1">
+                          <GraduationCap className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                          <span>{doc.college}</span>
+                        </div>
+                      )}
                     </div>
-                  )}
 
-                  {/* Metadata Row */}
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-3">
-                    {doc.year && (
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        <span>{doc.year}</span>
-                      </div>
+                    {/* Summary */}
+                    {doc.summary && (
+                      <p className="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-2">
+                        {doc.summary}
+                      </p>
                     )}
-                    {doc.department && (
-                      <div className="flex items-center gap-1">
-                        <Building className="h-4 w-4" />
-                        <span>{doc.department}</span>
-                      </div>
-                    )}
-                    {doc.college && (
-                      <div className="flex items-center gap-1">
-                        <GraduationCap className="h-4 w-4" />
-                        <span>{doc.college}</span>
-                      </div>
-                    )}
+
+                    {/* Keywords/Categories */}
+                    <div className="flex flex-wrap gap-1.5 overflow-hidden">
+                      {doc.keywords && doc.keywords.slice(0, 5).map((keyword: string) => (
+                        <Badge
+                          key={keyword}
+                          size="md"
+                          className={cn(getDynamicBadgeClasses(keyword), "max-w-full")}
+                          title={keyword}
+                        >
+                          <span className="truncate">{keyword}</span>
+                        </Badge>
+                      ))}
+                      {doc.keywords && doc.keywords.length > 5 && (
+                        <Badge variant="outline" size="md" className="shrink-0 max-w-full">
+                          <span className="truncate">+{doc.keywords.length - 5} more</span>
+                        </Badge>
+                      )}
+                      {/* Fallback to categories if no keywords */}
+                      {(!doc.keywords || doc.keywords.length === 0) && doc.categories &&
+                        doc.categories.slice(0, 5).map((category: string) => {
+                          const variant = getBadgeVariant(category);
+                          return (
+                            <Badge
+                              key={category}
+                              size="md"
+                              {...(variant === "dynamic"
+                                ? { className: cn(getDynamicBadgeClasses(category), "max-w-full") }
+                                : { variant, className: "max-w-full" })}
+                              title={category}
+                            >
+                              <span className="truncate">{category}</span>
+                            </Badge>
+                          );
+                        })}
+                      {(!doc.keywords || doc.keywords.length === 0) && doc.categories && doc.categories.length > 5 && (
+                        <Badge variant="outline" size="md" className="shrink-0 max-w-full">
+                          <span className="truncate">+{doc.categories.length - 5} more</span>
+                        </Badge>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Summary */}
-                  {doc.summary && (
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                      {doc.summary}
-                    </p>
-                  )}
-
-                  {/* Keywords/Categories */}
-                  <div className="flex flex-wrap gap-1.5">
-                    {doc.keywords && doc.keywords.slice(0, 5).map((keyword: string) => (
-                      <Badge
-                        key={keyword}
-                        size="md"
-                        className={getDynamicBadgeClasses(keyword)}
-                      >
-                        {keyword}
-                      </Badge>
-                    ))}
-                    {doc.keywords && doc.keywords.length > 5 && (
-                      <Badge variant="outline" size="md">
-                        +{doc.keywords.length - 5} more
-                      </Badge>
-                    )}
-                    {/* Fallback to categories if no keywords */}
-                    {(!doc.keywords || doc.keywords.length === 0) && doc.categories &&
-                      doc.categories.slice(0, 5).map((category: string) => {
-                        const variant = getBadgeVariant(category);
-                        return (
-                          <Badge
-                            key={category}
-                            size="md"
-                            {...(variant === "dynamic"
-                              ? { className: getDynamicBadgeClasses(category) }
-                              : { variant })}
-                          >
-                            {category}
-                          </Badge>
-                        );
-                      })}
-                    {(!doc.keywords || doc.keywords.length === 0) && doc.categories && doc.categories.length > 5 && (
-                      <Badge variant="outline" size="md">
-                        +{doc.categories.length - 5} more
-                      </Badge>
-                    )}
+                  {/* ACTION BUTTONS */}
+                  <div className="flex justify-end lg:justify-start pt-2 lg:pt-0 border-t lg:border-t-0 border-gray-100">
+                    <DocumentActionButtons
+                      thesisId={doc.thesis_id}
+                      initialBookmarked={!!bookmarks[doc.thesis_id]}
+                      onBookmarkChange={(id, state) =>
+                        setBookmarks((prev) => ({ ...prev, [id]: state }))
+                      }
+                    />
                   </div>
                 </div>
-
-                {/* ACTION BUTTONS */}
-                <DocumentActionButtons
-                  thesisId={doc.thesis_id}
-                  initialBookmarked={!!bookmarks[doc.thesis_id]}
-                  onBookmarkChange={(id, state) =>
-                    setBookmarks((prev) => ({ ...prev, [id]: state }))
-                  }
-                />
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           ))}
 
           {/* Empty State */}

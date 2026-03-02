@@ -1,5 +1,6 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
 import { Bookmark, Share2, FileDown } from "lucide-react";
 import Link from "next/link";
 import { toggleBookmark } from "@/server/bookmarks/toggle-bookmark";
@@ -71,11 +72,12 @@ export default function ThesisActions({
 
   return (
     <>
-      <div className="mt-6 border-t pt-4 space-y-2">
+      <Card className="rounded-xl border-gray-200 p-0 gap-0">
+        <CardContent className="p-4 sm:p-5">
         <button 
           onClick={handleBookmarkToggle}
           disabled={isPending}
-          className="w-full text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2 px-3 rounded-md flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full mb-2 text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-4 rounded-md flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`} /> 
           {isBookmarked ? "Bookmarked" : "Bookmark"}
@@ -83,7 +85,7 @@ export default function ThesisActions({
         
         <button 
           onClick={handleShare} 
-          className="w-full text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2 px-3 rounded-md flex items-center gap-3 transition-colors"
+          className="w-full mb-2 text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-4 rounded-md flex items-center gap-3 transition-colors"
         >
           <Share2 className="h-4 w-4" /> Share
         </button>
@@ -93,12 +95,13 @@ export default function ThesisActions({
             href={sourcePath} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="w-full text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2 px-3 rounded-md flex items-center gap-3 transition-colors"
+            className="w-full text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-4 rounded-md flex items-center gap-3 transition-colors"
           >
             <FileDown className="h-4 w-4" /> Download PDF
           </Link>
         )}
-      </div>
+      </CardContent>
+    </Card>
 
       {/* Unbookmark Confirmation Dialog */}
       <AlertDialog open={showUnbookmarkDialog} onOpenChange={setShowUnbookmarkDialog}>

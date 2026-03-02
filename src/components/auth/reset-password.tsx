@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { resetPasswordSchema, type ResetPasswordSchema } from "@/lib/zodSchema";
 import { toast } from "sonner";
@@ -11,6 +11,8 @@ import { createClient } from "@/lib/supabase/client";
 import { Spinner } from "@/components/ui/spinner";
 import { updatePassword } from "@/server/auth/reset-password";
 import { Lock, Eye, EyeOff } from "lucide-react";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
 
 export default function ResetPasswordForm() {
   const router = useRouter();
@@ -128,110 +130,108 @@ export default function ResetPasswordForm() {
 
         {/* Form */}
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          {/* New Password */}
-          <div>
-            <label
-              htmlFor="newPassword"
-              className="block text-sm font-medium text-gray-700 mb-1.5"
-            >
-              New Password
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
-                <Lock className="h-4 w-4 text-gray-400" />
-              </div>
-              <input
-                id="newPassword"
-                type={showNewPassword ? "text" : "password"}
-                placeholder="Enter new password"
-                {...form.register("newPassword")}
-                aria-invalid={
-                  !!form.formState.errors.newPassword || undefined
-                }
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    form.handleSubmit(onSubmit)();
-                  }
-                }}
-                className={`w-full text-gray-900 rounded-lg border pl-10 pr-11 py-2.5 text-sm transition focus:border-[#278fb6] focus:outline-none focus:ring-4 focus:ring-[#278fb6]/10 ${
-                  form.formState.errors.newPassword
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
-              />
-              <button
-                type="button"
-                onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600 transition"
-              >
-                {showNewPassword ? (
-                  <Eye className="h-4 w-4 cursor-pointer" />
-                ) : (
-                  <EyeOff className="h-4 w-4 cursor-pointer" />
-                )}
-              </button>
-            </div>
-            <p className="mt-1.5 text-xs text-gray-400">
-              Must be at least 8 characters
-            </p>
-            {form.formState.errors.newPassword && (
-              <p className="mt-1.5 text-sm text-red-600">
-                {form.formState.errors.newPassword.message}
-              </p>
-            )}
-          </div>
+          <FieldGroup>
+            {/* New Password */}
+            <Controller
+              name="newPassword"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="newPassword" className="font-semibold text-gray-700">
+                    New Password
+                  </FieldLabel>
+                  <InputGroup>
+                    <InputGroupAddon align="inline-start">
+                      <InputGroupText>
+                        <Lock className="h-4 w-4 text-gray-400" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <InputGroupInput
+                      id="newPassword"
+                      type={showNewPassword ? "text" : "password"}
+                      placeholder="Enter new password"
+                      {...field}
+                      aria-invalid={fieldState.invalid}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          form.handleSubmit(onSubmit)();
+                        }
+                      }}
+                      className="py-2.5 text-sm"
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="flex items-center text-gray-400 hover:text-gray-600 transition"
+                      >
+                        {showNewPassword ? (
+                          <Eye className="h-4 w-4 cursor-pointer" />
+                        ) : (
+                          <EyeOff className="h-4 w-4 cursor-pointer" />
+                        )}
+                      </button>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <p className="mt-1 text-xs text-gray-400">
+                    Must be at least 8 characters
+                  </p>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
 
-          {/* Confirm Password */}
-          <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700 mb-1.5"
-            >
-              Confirm Password
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
-                <Lock className="h-4 w-4 text-gray-400" />
-              </div>
-              <input
-                id="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm new password"
-                {...form.register("confirmPassword")}
-                aria-invalid={
-                  !!form.formState.errors.confirmPassword || undefined
-                }
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    form.handleSubmit(onSubmit)();
-                  }
-                }}
-                className={`w-full text-gray-900 rounded-lg border pl-10 pr-11 py-2.5 text-sm transition focus:border-[#278fb6] focus:outline-none focus:ring-4 focus:ring-[#278fb6]/10 ${
-                  form.formState.errors.confirmPassword
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
-              />
-              <button
-                type="button"
-                onClick={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
-                }
-                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 hover:text-gray-600 transition"
-              >
-                {showConfirmPassword ? (
-                  <Eye className="h-4 w-4 cursor-pointer" />
-                ) : (
-                  <EyeOff className="h-4 w-4 cursor-pointer" />
-                )}
-              </button>
-            </div>
-            {form.formState.errors.confirmPassword && (
-              <p className="mt-1.5 text-sm text-red-600">
-                {form.formState.errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
+            {/* Confirm Password */}
+            <Controller
+              name="confirmPassword"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="confirmPassword" className="font-semibold text-gray-700">
+                    Confirm Password
+                  </FieldLabel>
+                  <InputGroup>
+                    <InputGroupAddon align="inline-start">
+                      <InputGroupText>
+                        <Lock className="h-4 w-4 text-gray-400" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <InputGroupInput
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirm new password"
+                      {...field}
+                      aria-invalid={fieldState.invalid}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          form.handleSubmit(onSubmit)();
+                        }
+                      }}
+                      className="py-2.5 text-sm"
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="flex items-center text-gray-400 hover:text-gray-600 transition"
+                      >
+                        {showConfirmPassword ? (
+                          <Eye className="h-4 w-4 cursor-pointer" />
+                        ) : (
+                          <EyeOff className="h-4 w-4 cursor-pointer" />
+                        )}
+                      </button>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
 
           {/* Submit Button */}
           <button

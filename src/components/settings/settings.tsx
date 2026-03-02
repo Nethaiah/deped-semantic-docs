@@ -4,7 +4,7 @@
 
 import { Settings2, User, Lock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -36,14 +45,13 @@ const SettingsSection = ({
   description: string;
   children: React.ReactNode;
 }) => (
-  <div className="space-y-6">
-    <div>
-      <h2 className="text-lg font-medium">{title}</h2>
-      <p className="text-sm text-muted-foreground">{description}</p>
-    </div>
-    <div className="space-y-4">{children}</div>
-    <Separator className="my-6" />
-  </div>
+  <Card className="rounded-xl border-gray-200">
+    <CardHeader>
+      <CardTitle>{title}</CardTitle>
+      <CardDescription>{description}</CardDescription>
+    </CardHeader>
+    <CardContent className="space-y-6">{children}</CardContent>
+  </Card>
 );
 
 const SettingItem = ({
@@ -57,17 +65,19 @@ const SettingItem = ({
   description: string;
   action: React.ReactNode;
 }) => (
-  <div className="flex items-center justify-between">
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div className="flex items-center gap-4">
-      <div className="p-2 rounded-lg bg-muted">
+      <div className="p-2 rounded-lg bg-muted shrink-0">
         <Icon className="h-5 w-5" />
       </div>
       <div>
-        <h3 className="font-medium">{title}</h3>
+        <h3 className="font-medium text-base md:text-md">{title}</h3>
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
     </div>
-    {action}
+    <div className="flex items-center w-full sm:w-auto pl-14 sm:pl-0">
+      {action}
+    </div>
   </div>
 );
 
@@ -137,16 +147,10 @@ function ProfileForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
-        <label
-          htmlFor="fullName"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Full Name
-        </label>
-        <input
+        <Label htmlFor="fullName">Full Name</Label>
+        <Input
           id="fullName"
           {...form.register("fullName")}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder="Enter your full name"
         />
         {form.formState.errors.fullName && (
@@ -195,17 +199,11 @@ function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
-        <label
-          htmlFor="currentPassword"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Current Password
-        </label>
-        <input
+        <Label htmlFor="currentPassword">Current Password</Label>
+        <Input
           id="currentPassword"
           type="password"
           {...form.register("currentPassword")}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder="Enter current password"
         />
         {form.formState.errors.currentPassword && (
@@ -215,17 +213,11 @@ function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         )}
       </div>
       <div className="space-y-2">
-        <label
-          htmlFor="newPassword"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          New Password
-        </label>
-        <input
+        <Label htmlFor="newPassword">New Password</Label>
+        <Input
           id="newPassword"
           type="password"
           {...form.register("newPassword")}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder="Enter new password"
         />
         {form.formState.errors.newPassword && (
@@ -235,17 +227,11 @@ function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         )}
       </div>
       <div className="space-y-2">
-        <label
-          htmlFor="confirmPassword"
-          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-        >
-          Confirm New Password
-        </label>
-        <input
+        <Label htmlFor="confirmPassword">Confirm New Password</Label>
+        <Input
           id="confirmPassword"
           type="password"
           {...form.register("confirmPassword")}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           placeholder="Confirm new password"
         />
         {form.formState.errors.confirmPassword && (
@@ -275,10 +261,9 @@ export default function Settings({ provider }: { provider: string }) {
   const [passwordOpen, setPasswordOpen] = useState(false);
 
   return (
-    <div className="space-y-8 p-5 lg:p-6">
+    <div className="space-y-8 p-6 lg:p-8 w-full">
       <div className="space-y-2">
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight flex items-center gap-2">
-          <Settings2 className="h-7 w-7 text-primary" />
           Settings
         </h1>
         <p className="text-muted-foreground">
@@ -297,7 +282,7 @@ export default function Settings({ provider }: { provider: string }) {
           action={
             <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="w-full sm:w-auto">
                   Edit
                 </Button>
               </DialogTrigger>
@@ -324,7 +309,7 @@ export default function Settings({ provider }: { provider: string }) {
             action={
               <Dialog open={passwordOpen} onOpenChange={setPasswordOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="w-full sm:w-auto">
                     Change
                   </Button>
                 </DialogTrigger>

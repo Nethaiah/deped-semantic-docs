@@ -1,5 +1,5 @@
 import UploadForm from "@/components/upload/upload-file"
-import { requireAdmin } from "@/lib/auth-utils";
+
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -11,7 +11,7 @@ export default async function Page() {
     redirect('/login');
   }
   
-  await requireAdmin();
+
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">

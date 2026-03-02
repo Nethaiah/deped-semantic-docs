@@ -16,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 // College to Department mapping
 const COLLEGE_DEPARTMENTS: Record<string, string[]> = {
@@ -92,17 +94,16 @@ export default function ThesesFilterDialog({
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label
+              <Label
                 htmlFor="year-from"
                 className="text-xs font-semibold text-slate-700"
               >
                 Year From
-              </label>
-              <input
+              </Label>
+              <Input
                 id="year-from"
                 type="number"
                 placeholder="e.g., 2020"
-                className="flex h-9 w-full rounded-md border border-slate-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
                 value={values.yearFrom}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   onValuesChange({ ...values, yearFrom: e.target.value })
@@ -111,17 +112,16 @@ export default function ThesesFilterDialog({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label
+              <Label
                 htmlFor="year-to"
                 className="text-xs font-semibold text-slate-700"
               >
                 Year To
-              </label>
-              <input
+              </Label>
+              <Input
                 id="year-to"
                 type="number"
                 placeholder="e.g., 2025"
-                className="flex h-9 w-full rounded-md border border-slate-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
                 value={values.yearTo}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   onValuesChange({ ...values, yearTo: e.target.value })
@@ -132,12 +132,12 @@ export default function ThesesFilterDialog({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label
+              <Label
                 htmlFor="college"
                 className="text-xs font-semibold text-slate-700"
               >
                 College
-              </label>
+              </Label>
               <Select
                 value={values.college || "_all"}
                 onValueChange={handleCollegeChange}
@@ -157,12 +157,12 @@ export default function ThesesFilterDialog({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label
+              <Label
                 htmlFor="department"
                 className="text-xs font-semibold text-slate-700"
               >
                 Department
-              </label>
+              </Label>
               <Select
                 value={values.department || "_all"}
                 onValueChange={(val) =>
@@ -186,17 +186,16 @@ export default function ThesesFilterDialog({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label
+            <Label
               htmlFor="title"
               className="text-xs font-semibold text-slate-700"
             >
               Title
-            </label>
-            <input
+            </Label>
+            <Input
               id="title"
               type="text"
               placeholder="Search by title..."
-              className="flex h-9 w-full rounded-md border border-slate-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
               value={values.title}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 onValuesChange({ ...values, title: e.target.value })

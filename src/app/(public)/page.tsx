@@ -25,21 +25,21 @@ export default function Home() {
               <span>Laguna University Research Archives</span>
             </div>
 
-            <h1 className="text-5xl font-bold leading-tight text-[#333] mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-[#333] mb-4 sm:mb-6">
               AI-assisted research intelligence
             </h1>
-            <p className="text-lg text-gray-600 leading-relaxed mb-8 w-[75%]">
+            <p className="text-base sm:text-lg text-gray-600 leading-relaxed mb-8 w-full lg:w-[85%]">
               Doculens uses advanced AI to automatically read, summarize, and
               organize <span className="text-[#087830]">Laguna University</span>{" "}
               research papers, theses, and capstone projects so you can find and
               understand them faster.
             </p>
-            <div className="flex justify-center lg:justify-start gap-2 lg:gap-4">
-              <button className="group flex items-center gap-2 rounded-full bg-[#087830] px-4 lg:px-7 py-2 lg:py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#065a24] transition">
+            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4 w-full sm:w-auto">
+              <button className="w-full sm:w-auto justify-center group flex items-center gap-2 rounded-full bg-[#087830] px-4 lg:px-7 py-3 lg:py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#065a24] transition">
                 Get started
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="flex items-center gap-2 rounded-full border-2 border-gray-300 px-4 lg:px-7 py-2 lg:py-3.5 text-base font-semibold text-gray-700 hover:border-gray-400 transition">
+              <button className="w-full sm:w-auto justify-center flex items-center gap-2 rounded-full border-2 border-gray-300 px-4 lg:px-7 py-3 lg:py-3.5 text-base font-semibold text-gray-700 hover:border-gray-400 transition">
                 Watch demo
               </button>
             </div>
@@ -97,11 +97,11 @@ export default function Home() {
       {/* Problem Statement */}
       <section className="border-y border-gray-200 bg-gray-100 py-16">
         <div className="mx-auto max-w-4xl px-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
             Hundreds of research papers. One system.
           </h2>
-          <div className="mx-auto w-30 h-1 bg-[#087830] rounded-full mb-6"></div>
-          <p className="text-lg text-gray-600 leading-relaxed">
+          <div className="mx-auto w-20 sm:w-30 h-1 bg-[#087830] rounded-full mb-6"></div>
+          <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
             Students, faculty, and researchers at Laguna University deal with
             hundreds of theses, capstones, and studies. Finding the right paper,
             understanding its key findings, and seeing related works shouldn't
@@ -113,7 +113,7 @@ export default function Home() {
       {/* Features - Magazine Style Layout */}
       <section className="mx-auto max-w-7xl px-6 py-20">
         <div className="mb-16 text-center">
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
             Everything you need, nothing you don't
           </h2>
           <p className="text-lg text-gray-600">
@@ -129,7 +129,7 @@ export default function Home() {
                 <BookOpen className="h-4 w-4" />
                 Instant Summaries
               </div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
                 Read 50 pages in 30 seconds
               </h3>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
@@ -224,7 +224,7 @@ export default function Home() {
                 <Search className="h-4 w-4" />
                 Smart Search
               </div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
                 Find papers by meaning, not just keywords
               </h3>
               <p className="text-lg text-gray-600 leading-relaxed mb-6">
@@ -256,7 +256,7 @@ export default function Home() {
 
             <div className="mx-auto max-w-7xl px-6 relative z-10">
               <div className="mb-20 text-center lg:text-left">
-                <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
                   Platform Features
                 </h2>
                 <p className="text-lg text-gray-600 max-w-2xl">

@@ -6,8 +6,17 @@ import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import { Funnel, FileText, Calendar, Building2, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import ThesesFilterDialog from "@/components/dashboard/theses-filter-dialog";
-import { ThesesTableSkeleton } from "@/components/dashboard/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import NumberedPagination from "@/components/shared/numbered-pagination";
 import type { Thesis } from "@/server/theses/get-theses";
 import type { FilterOptions } from "@/server/theses/get-filter-options";
@@ -66,7 +75,7 @@ export default function ThesesTable({
       if (formFilters.department) params.set("department", formFilters.department);
       if (formFilters.college) params.set("college", formFilters.college);
       if (formFilters.title) params.set("title", formFilters.title);
-      router.push(`/dashboard?${params.toString()}`);
+      router.push(`/dashboard?${params.toString()}`, { scroll: false });
       setIsFilterOpen(false);
     });
   };
@@ -74,7 +83,7 @@ export default function ThesesTable({
   const onResetFilters = () => {
     startTransition(() => {
       setFormFilters({ yearFrom: "", yearTo: "", department: "", college: "", title: "" });
-      router.push("/dashboard");
+      router.push("/dashboard", { scroll: false });
       setIsFilterOpen(false);
     });
   };
@@ -114,20 +123,17 @@ export default function ThesesTable({
 
   const handlePageChange = (newPage: number) => {
     startTransition(() => {
-      router.push(buildHref(newPage));
+      router.push(buildHref(newPage), { scroll: false });
     });
   };
 
-  if (isPending) {
-    return <ThesesTableSkeleton />;
-  }
 
   return (
-    <div className="col-span-2 bg-white rounded-lg shadow-md border border-slate-200 overflow-scroll">
-      <div className="flex justify-between items-center px-4 lg:px-6 py-4 border-b border-slate-200 bg-slate-50">
-        <h2 className="text-xl lg:text-2xl font-bold text-slate-800 flex items-center gap-2">
+    <Card className={`bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden p-0 gap-0 transition-opacity duration-200 ${isPending ? "pointer-events-none" : ""}`}>
+      <CardHeader className="flex flex-row justify-between items-center px-4 lg:px-6 py-4 border-b border-slate-200 bg-slate-50 space-y-0">
+        <CardTitle className="text-xl lg:text-2xl font-bold text-slate-800 flex items-center gap-2 m-0">
           Theses
-        </h2>
+        </CardTitle>
         <div className="flex items-center gap-2">
           {activeFilterCount > 0 && (
             <span className="text-xs font-semibold text-slate-600 px-2 py-1 rounded-md bg-slate-100 border border-slate-200">
@@ -154,42 +160,58 @@ export default function ThesesTable({
             colleges={filterOptions.colleges}
           />
         </div>
-      </div>
+      </CardHeader>
 
-      <div>
-        <table className="w-full text-left">
-          <thead className="hidden md:table-header-group bg-slate-100 border-b border-slate-200">
-            <tr>
-              <th className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide">
-                Year
-              </th>
-              <th className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide">
-                Title
-              </th>
-              <th className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide">
-                Department
-              </th>
-              <th className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide">
-                College
-              </th>
-            </tr>
-          </thead>
+      <div className="p-0">
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader className="bg-slate-100 border-b border-slate-200">
+              <TableRow className="hover:bg-slate-100">
+                <TableHead className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto target">
+                  Year
+                </TableHead>
+                <TableHead className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto">
+                  Title
+                </TableHead>
+                <TableHead className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto">
+                  Department
+                </TableHead>
+                <TableHead className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto">
+                  College
+                </TableHead>
+              </TableRow>
+            </TableHeader>
 
-          <tbody className="hidden md:table-row-group">
-            {initialData.length > 0 ? (
-              initialData.map((thesis, index) => (
-                <tr
+            <TableBody>
+            {isPending ? (
+              Array.from({ length: 10 }).map((_, i) => (
+                <TableRow key={`skeleton-${i}`}>
+                  <TableCell className="py-4 px-4 align-top w-[10%]">
+                    <Skeleton className="h-5 w-14 rounded" />
+                  </TableCell>
+                  <TableCell className="py-4 px-4 align-top w-[50%]">
+                    <Skeleton className="h-5 w-full max-w-[280px] rounded" />
+                  </TableCell>
+                  <TableCell className="py-4 px-4 align-top w-[20%]">
+                    <Skeleton className="h-4 w-32 rounded" />
+                  </TableCell>
+                  <TableCell className="py-4 px-4 align-top w-[20%]">
+                    <Skeleton className="h-4 w-28 rounded" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : initialData.length > 0 ? (
+              initialData.map((thesis) => (
+                <TableRow
                   key={thesis.id}
                   onClick={() => router.push(`/view/${thesis.id}`)}
-                  className={`hover:bg-slate-50 transition-colors cursor-pointer ${
-                    index !== initialData.length - 1 ? "border-b border-slate-200" : ""
-                  }`}
+                  className="hover:bg-slate-50 transition-colors cursor-pointer"
                 >
-                  <td className="py-4 px-4 text-md text-slate-600 font-semibold">
+                  <TableCell className="py-4 px-4 text-md text-slate-600 font-semibold align-top">
                     <span style={{ color: accentColor }}>{thesis.year}</span>
-                  </td>
+                  </TableCell>
 
-                  <td className="py-4 px-4 text-md text-slate-900 max-w-[300px]">
+                  <TableCell className="py-4 px-4 text-md text-slate-900 max-w-[300px] align-top">
                     <Link
                       href={`/view/${thesis.id}`}
                       className="block hover:opacity-80 transition-opacity"
@@ -202,34 +224,48 @@ export default function ThesesTable({
                         <span className="text-slate-900">{thesis.title}</span>
                       </div>
                     </Link>
-                  </td>
+                  </TableCell>
 
-                  <td className="py-4 px-4 text-md text-slate-600">
+                  <TableCell className="py-4 px-4 text-md text-slate-600 align-top max-w-[200px] truncate" title={thesis.department}>
                     <span className="text-slate-600 text-sm">
                       {thesis.department}
                     </span>
-                  </td>
+                  </TableCell>
 
-                  <td className="py-4 px-4 text-md text-slate-600">
+                  <TableCell className="py-4 px-4 text-md text-slate-600 align-top max-w-[200px] truncate" title={thesis.college}>
                     <span className="text-slate-500 text-sm">
                       {thesis.college}
                     </span>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))
             ) : (
-              <tr>
-                <td colSpan={4} className="py-8 text-center text-slate-500">
+              <TableRow>
+                <TableCell colSpan={4} className="py-8 text-center text-slate-500">
                   No theses found
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
+        </div>
 
         {/* Mobile View (Cards) */}
         <div className="md:hidden">
-          {initialData.length > 0 ? (
+          {isPending ? (
+            Array.from({ length: 10 }).map((_, i) => (
+              <div key={`mob-skeleton-${i}`} className="p-4 border-b border-slate-100">
+                <div className="mb-2">
+                  <Skeleton className="h-5 w-14 rounded" />
+                </div>
+                <Skeleton className="h-5 w-full max-w-[280px] rounded mb-3" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-48 rounded" />
+                  <Skeleton className="h-4 w-32 rounded" />
+                </div>
+              </div>
+            ))
+          ) : initialData.length > 0 ? (
             initialData.map((thesis, index) => (
               <div
                 key={thesis.id}
@@ -274,17 +310,19 @@ export default function ThesesTable({
       </div>
 
       {/* Numbered Pagination */}
-      <div className="px-4 lg:px-6 py-4 border-t border-slate-200 bg-slate-50">
-        <NumberedPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          buildHref={buildHref}
-          onPageChange={handlePageChange}
-          isLoading={isPending}
-          siblings={1}
-        />
-      </div>
-    </div>
+      <CardFooter className="px-4 lg:px-6 py-4 pb-6 border-t border-slate-200 bg-slate-50 rounded-b-lg">
+        <div className="w-full">
+          <NumberedPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            buildHref={buildHref}
+            onPageChange={handlePageChange}
+            isLoading={isPending}
+            siblings={1}
+          />
+        </div>
+      </CardFooter>
+    </Card>
   );
 }
 

@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 
 export default function PrivacyDialog({
@@ -15,28 +14,26 @@ export default function PrivacyDialog({
 }: {
   children: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(false);
-
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="text-[#278fb6] hover:text-[#278fb6]/80 font-medium underline"
-      >
-        {children}
-      </button>
+    <Dialog>
+      <DialogTrigger asChild>
+        <button
+          type="button"
+          className="text-[#278fb6] hover:text-[#278fb6]/80 font-medium underline"
+        >
+          {children}
+        </button>
+      </DialogTrigger>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">
-              Privacy Policy
-            </DialogTitle>
-            <DialogDescription>Last updated: December 01, 2025</DialogDescription>
-          </DialogHeader>
+      <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col p-6">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold">
+            Privacy Policy
+          </DialogTitle>
+          <DialogDescription>Last updated: December 01, 2025</DialogDescription>
+        </DialogHeader>
 
-          <div className="overflow-y-auto flex-1 pr-2 space-y-4 text-sm text-gray-700 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="overflow-y-auto space-y-4 text-sm text-gray-700 mt-2 pr-2">
             <section>
               <h4 className="font-semibold text-base mb-1.5">
                 1. Information We Collect
@@ -169,17 +166,7 @@ export default function PrivacyDialog({
               </p>
             </section>
           </div>
-
-          <DialogFooter>
-            <button
-              onClick={() => setOpen(false)}
-              className="w-full rounded-lg bg-[#278fb6] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#278fb6]/90 transition cursor-pointer"
-            >
-              Close
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+      </DialogContent>
+    </Dialog>
   );
 }

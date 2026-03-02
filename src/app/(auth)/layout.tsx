@@ -22,7 +22,7 @@ export default function AuthLayout({
       {/* Centered Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-16">
         {/* Logo & App Name */}
-        <div className="flex items-center gap-3 mb-2">
+        <div className="hidden sm:flex items-center gap-3 mb-2">
           <img
             src="/Logo.png"
             alt="Doculens Logo"
@@ -30,7 +30,7 @@ export default function AuthLayout({
           />
           <span className="text-xl font-bold text-gray-900">Doculens</span>
         </div>
-        <p className="text-center text-sm text-gray-500 mb-8">
+        <p className="hidden sm:block text-center text-sm text-gray-500 mb-8">
           Process Smarter. Extract Faster. Understand More.
         </p>
 

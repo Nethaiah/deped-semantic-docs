@@ -15,6 +15,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import ShareDialog from "./share-dialog";
 
 type Props = {
@@ -78,38 +84,58 @@ export default function ThesisActionButtons({
   return (
     <div className="flex flex-col items-end justify-between">
       <div className="flex items-center gap-2">
-        {/* View Thesis */}
-        <Link
-          href={`/view/${thesisId}`}
-          className="bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors"
-          title="View thesis"
-        >
-          <Eye className="h-5 w-5" />
-        </Link>
+        <TooltipProvider delayDuration={150}>
+          {/* View Thesis */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href={`/view/${thesisId}`}
+                className="bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors"
+              >
+                <Eye className="h-4 w-4" />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>View thesis</p>
+            </TooltipContent>
+          </Tooltip>
 
-        {/* Bookmark Toggle */}
-        <button
-          onClick={handleBookmarkToggle}
-          disabled={isPending}
-          className={`bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer ${
-            isBookmarked ? "text-blue-600" : ""
-          }`}
-          title={isBookmarked ? "Remove bookmark" : "Bookmark"}
-        >
-          <Bookmark
-            className={`h-5 w-5 ${isBookmarked ? "fill-current" : ""}`}
-          />
-        </button>
+          {/* Bookmark Toggle */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={handleBookmarkToggle}
+                disabled={isPending}
+                className={`bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer ${
+                  isBookmarked ? "text-blue-600" : ""
+                }`}
+              >
+                <Bookmark
+                  className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
+                />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{isBookmarked ? "Remove bookmark" : "Bookmark"}</p>
+            </TooltipContent>
+          </Tooltip>
 
-        {/* Share Button */}
-        <button
-          type="button"
-          onClick={handleShare}
-          className="bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors cursor-pointer"
-          title="Share"
-        >
-          <Share2 className="h-5 w-5" />
-        </button>
+          {/* Share Button */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={handleShare}
+                className="bg-slate-100 border border-gray-200 hover:bg-slate-200 text-slate-700 font-medium p-2 rounded-md flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Share</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       {/* Unbookmark Confirmation Dialog */}

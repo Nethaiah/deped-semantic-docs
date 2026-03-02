@@ -6,11 +6,13 @@ export default function ClientTimeDisplay() {
   const { formattedTime, formattedDate } = useCurrentTime();
 
   return (
-    <div className="text-right w-full lg:w-[30%]">
-      <div className="text-xl lg:text-3xl text-[#333] font-bold tracking-[0.2rem]">
+    <div className="flex flex-col items-start sm:items-end gap-0.5">
+      <span className="text-xl sm:text-2xl font-bold tabular-nums tracking-widest text-foreground">
         {formattedTime}
-      </div>
-      <div className="text-sm lg:text-lg text-[#333]">{formattedDate}</div>
+      </span>
+      <span className="text-xs sm:text-sm text-muted-foreground font-medium">
+        {formattedDate}
+      </span>
     </div>
   );
 }

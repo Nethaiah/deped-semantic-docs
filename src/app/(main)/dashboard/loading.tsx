@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 p-5 lg:p-6">
+    <div className="min-h-screen bg-muted/30 p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Header Skeleton */}
       <div className="bg-white rounded-lg shadow-md border border-slate-200 px-8 py-10 lg:py-15 mb-6 relative overflow-hidden">
         <div className="relative z-10 gap-5 lg:gap-0 flex-col lg:flex-row flex justify-between items-start">
