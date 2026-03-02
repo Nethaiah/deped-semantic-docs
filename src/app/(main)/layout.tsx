@@ -28,7 +28,7 @@ export default async function MainLayout({
 
   return (
     <SidebarProvider>
-      <Header showMobileMenu={true} />
+      <Header variant="main" />
       <Sidebar role={role}>{children}</Sidebar>
     </SidebarProvider>
   );
