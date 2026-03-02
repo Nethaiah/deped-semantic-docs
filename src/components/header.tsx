@@ -5,7 +5,11 @@ import UserMenu from "./user-menu";
 import NotificationDropdown from "./notification-dropdown";
 import MobileMenuButton from "./mobile-header";
 
-export default async function Header() {
+interface HeaderProps {
+  showMobileMenu?: boolean;
+}
+
+export default async function Header({ showMobileMenu = false }: HeaderProps = {}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -31,8 +35,8 @@ export default async function Header() {
       <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3">
         {/* Left section: Hamburger (mobile) + Logo (desktop) */}
         <div className="flex items-center gap-2">
-          {/* Hamburger - only visible on mobile when authenticated */}
-          {isAuthenticated && <MobileMenuButton />}
+          {/* Hamburger - only visible on mobile when authenticated and sidebar is present */}
+          {isAuthenticated && showMobileMenu && <MobileMenuButton />}
 
           {/* Logo - visible on desktop always, visible on mobile ONLY if unauthenticated */}
           <div className={`${isAuthenticated ? 'hidden lg:flex' : 'flex'} items-center gap-2`}>

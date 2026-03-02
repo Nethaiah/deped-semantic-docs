@@ -28,9 +28,8 @@ export default async function MainLayout({
 
   return (
     <SidebarProvider>
-      <Header />
+      <Header showMobileMenu={true} />
       <Sidebar role={role}>{children}</Sidebar>
     </SidebarProvider>
   );
 }
-
