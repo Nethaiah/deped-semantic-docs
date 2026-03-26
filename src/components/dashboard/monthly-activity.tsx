@@ -10,7 +10,7 @@ interface MonthlyActivityProps {
 
 import { Card, CardContent } from "@/components/ui/card";
 
-export default function MonthlyActivity({ data, accentColor = "#278fb6" }: MonthlyActivityProps) {
+export default function MonthlyActivity({ data, accentColor = "var(--theme-color)" }: MonthlyActivityProps) {
   const currentData = data.map((d) => ({
     month: d.month,
     desktop: d.uploads,

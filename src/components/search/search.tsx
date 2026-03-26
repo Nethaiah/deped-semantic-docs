@@ -120,7 +120,7 @@ export default function Search({ role }: Role) {
   // Note: Filters are now synced via nuqs URL params, no need for sessionStorage
 
   const activeColor =
-    String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
+    String(role).toLowerCase() === "admin" ? "var(--theme-color)" : "var(--theme-color)";
 
   // Handle search
   const handleSearch = async () => {
@@ -326,7 +326,7 @@ export default function Search({ role }: Role) {
           <Button
             onClick={handleSearch}
             disabled={isLoading || !searchQuery?.trim()}
-            className="h-10 w-10 p-0 sm:w-auto sm:px-4 cursor-pointer bg-[#278fb6] hover:bg-[#278fb6]/80 shrink-0 text-white"
+            className="h-10 w-10 p-0 sm:w-auto sm:px-4 cursor-pointer bg-theme hover:bg-theme/80 shrink-0 text-white"
             style={{ opacity: isLoading || !searchQuery?.trim() ? 0.5 : 1 }}
           >
             {isLoading ? (

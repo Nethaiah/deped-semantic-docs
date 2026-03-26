@@ -118,7 +118,7 @@ export default function ThesisActions({
             <AlertDialogAction 
               onClick={handleConfirmUnbookmark} 
               disabled={isPending} 
-              className="bg-[#278fb6] hover:bg-[#278fb6] focus:ring-[#278fb6] cursor-pointer"
+              className="bg-theme hover:bg-theme focus:ring-theme cursor-pointer"
             >
               {isPending ? "Removing..." : "Remove Bookmark"}
             </AlertDialogAction>

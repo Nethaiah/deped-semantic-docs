@@ -42,7 +42,7 @@ export default function SimilarTheses({ similar }: Props) {
               <div className="flex-1 min-w-0">
                 {/* Year and Department Badge */}
                 <div className="flex justify-between items-center mb-1">
-                  <p className="font-bold text-sm text-[#278fb6]">
+                  <p className="font-bold text-sm text-theme">
                     {thesis.year}
                   </p>
                 </div>
@@ -67,7 +67,7 @@ export default function SimilarTheses({ similar }: Props) {
               
               {/* Hover Arrow */}
               <ArrowRight 
-                className="w-5 h-5 group-hover:translate-x-1 transition-transform flex-shrink-0 mt-1 text-[#278fb6]" 
+                className="w-5 h-5 group-hover:translate-x-1 transition-transform flex-shrink-0 mt-1 text-theme" 
               />
             </div>
           </Link>

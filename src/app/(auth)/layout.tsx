@@ -12,7 +12,7 @@ export default function AuthLayout({
       <div className="absolute top-6 left-6 z-20">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-[#278fb6] transition-colors"
+          className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-theme transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Home
