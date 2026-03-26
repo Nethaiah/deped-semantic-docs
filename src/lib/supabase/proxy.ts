@@ -30,10 +30,10 @@ export async function updateSession(request: NextRequest) {
 
   const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/auth')
   const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard') || 
-                           request.nextUrl.pathname.startsWith('/manage-document') || 
+                           request.nextUrl.pathname.startsWith('/user-management') || 
                            request.nextUrl.pathname.startsWith('/upload');
   
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/manage-document') || 
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/user-management') || 
                        request.nextUrl.pathname.startsWith('/upload');
 
   if (!user && isProtectedRoute) {

@@ -6,18 +6,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterSchema } from "@/lib/zodSchema";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { register } from "@/server/auth/register";
-import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import TermsDialog from "@/components/auth/terms-dialog";
 import PrivacyDialog from "@/components/auth/privacy-dialog";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { createClient } from "@/lib/supabase/client";
+
+type DialogState = "idle" | "verify" | "redirecting";
 
 export default function RegisterForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [dialogState, setDialogState] = useState<DialogState>("idle");
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   const form = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
@@ -28,6 +34,27 @@ export default function RegisterForm() {
       terms: false,
     },
   });
+
+  // Listen for cross-tab email verification
+  useEffect(() => {
+    if (dialogState !== "verify") return;
+
+    const supabase = createClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        setDialogState("redirecting");
+        // Small delay so the user sees the "Redirecting" state
+        setTimeout(() => {
+          router.replace("/dashboard");
+          router.refresh();
+        }, 1500);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dialogState, router]);
 
   async function onSubmit(values: RegisterSchema) {
     form.setValue("terms", !!values.terms);
@@ -41,12 +68,9 @@ export default function RegisterForm() {
       toast.error(result.error, { duration: 5000, position: "bottom-right" });
       return;
     }
+    setRegisteredEmail(values.email);
     form.reset({ fullName: "", email: "", password: "", terms: false });
-    toast.success(
-      "Registration successful! Please check your email and click the verification link.",
-      { duration: 5000, position: "bottom-right" }
-    );
-    router.push("/login");
+    setDialogState("verify");
   }
 
   return (
@@ -254,6 +278,57 @@ export default function RegisterForm() {
           </Link>
         </p>
       </div>
+
+      {/* Verification / Redirecting Dialog */}
+      <Dialog open={dialogState !== "idle"} onOpenChange={(open) => {
+        // Only allow closing the dialog in "verify" state (not while redirecting)
+        if (!open && dialogState === "verify") {
+          setDialogState("idle");
+        }
+      }}>
+        <DialogContent showCloseButton={dialogState === "verify"} className="sm:max-w-md">
+          {dialogState === "verify" && (
+            <>
+              <DialogHeader className="items-center text-center">
+                {/* Animated mail icon */}
+                <div className="mx-auto w-16 h-16 bg-blue-50 text-[#278fb6] rounded-full flex items-center justify-center mb-2 animate-bounce">
+                  <Mail className="w-8 h-8" />
+                </div>
+                <DialogTitle className="text-xl">Check your email</DialogTitle>
+                <DialogDescription className="text-gray-500 text-[13px] leading-relaxed">
+                  We&apos;ve sent a verification link to{" "}
+                  <span className="font-semibold text-gray-700">{registeredEmail}</span>.
+                  Please open it to verify your account.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm px-4 py-3 rounded-lg text-center">
+                <p className="font-medium">Keep this tab open!</p>
+                <p className="text-xs text-amber-600 mt-0.5">
+                  You&apos;ll be automatically redirected once verified.
+                </p>
+              </div>
+            </>
+          )}
+
+          {dialogState === "redirecting" && (
+            <>
+              <DialogHeader className="items-center text-center">
+                <div className="mx-auto w-16 h-16 bg-green-50 text-[#087830] rounded-full flex items-center justify-center mb-2">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <DialogTitle className="text-xl">Email Verified!</DialogTitle>
+                <DialogDescription className="text-gray-500 text-[13px] leading-relaxed">
+                  Your account has been verified successfully.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex items-center justify-center gap-2 text-[#278fb6] font-medium text-sm py-2">
+                <Spinner className="size-4" />
+                Redirecting to dashboard...
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
