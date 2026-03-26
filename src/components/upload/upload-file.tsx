@@ -33,8 +33,8 @@ export default function UploadFile() {
       <div className="space-y-2">
         <h2 className="text-xl font-semibold">Upload Document(s)</h2>
         <p className="text-sm text-muted-foreground">
-          Choose one or multiple theses, IMRADS, or abstracts in PDF or DOCX
-          format, then confirm the upload to the RDC repository.
+          Choose one or multiple DepEd Orders or Memoranda in PDF or DOCX
+          format, then confirm the upload.
         </p>
       </div>
 
@@ -66,32 +66,32 @@ export default function UploadFile() {
             <Badge variant="secondary" className="shrink-0">
               1
             </Badge>
-            <span>Text parsing directly from digital PDFs and DOCX files.</span>
+            <span>Text extraction with OCR for scanned PDFs.</span>
           </li>
           <li className="flex items-start gap-2">
             <Badge variant="secondary" className="shrink-0">
               2
             </Badge>
-            <span>Structure parsing (separating IMRAD sections or abstract).</span>
+            <span>Cleaning to remove headers, footers, and noise.</span>
           </li>
           <li className="flex items-start gap-2">
             <Badge variant="secondary" className="shrink-0">
               3
             </Badge>
-            <span>Metadata extraction (title, authors, year, and college).</span>
+            <span>Metadata extraction (title, date, and related details).</span>
           </li>
           <li className="flex items-start gap-2">
             <Badge variant="secondary" className="shrink-0">
               4
             </Badge>
-            <span>Store the text and metadata securely in the repository.</span>
+            <span>Store the extracted text and metadata in the database.</span>
           </li>
           <li className="flex items-start gap-2">
             <Badge variant="secondary" className="shrink-0">
               5
             </Badge>
             <span>
-              Generate vector embeddings for AI-powered semantic search and Q&A.
+              Prepare for embeddings, categorization, and summarization.
             </span>
           </li>
         </ul>

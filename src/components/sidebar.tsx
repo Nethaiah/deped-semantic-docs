@@ -11,7 +11,7 @@ import {
   Settings,
   PanelLeft,
   Upload,
-  Users,
+  FileText,
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ const menuItems = [
 ];
 
 const adminMenuItems = [
-  { title: "User Management", icon: Users, path: "/user-management" },
+  { title: "Manage Documents", icon: FileText, path: "/manage-document" },
   { title: "Upload", icon: Upload, path: "/upload" },
 ];
 
