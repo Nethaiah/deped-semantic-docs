@@ -5,22 +5,28 @@ import { Separator } from "@/components/ui/separator";
 /* ─────────────────────────── Stats Cards Skeleton ─────────────────────────── */
 export function StatsCardsSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <Card key={i} className="border shadow-sm p-0 gap-0">
-          <CardContent className="p-5 sm:p-6">
-            <div className="flex items-start justify-between gap-3">
-              <Skeleton className="h-11 w-11 rounded-xl" />
-              <Skeleton className="h-5 w-16 rounded-full" />
-            </div>
-            <div className="mt-4 space-y-2">
-              <Skeleton className="h-3 w-24 rounded" />
-              <Skeleton className="h-8 w-20 rounded" />
-              <Skeleton className="h-3 w-16 rounded" />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+    <div className="flex flex-col sm:flex-row items-center justify-between sm:justify-around rounded-[2rem] border border-white/20 bg-white/10 p-6 backdrop-blur-md shadow-lg gap-6 sm:gap-2 animate-pulse">
+      {/* Item 1 */}
+      <div className="flex flex-col items-center justify-center flex-1 w-full text-center gap-2 sm:gap-3">
+        <div className="h-8 sm:h-10 w-16 bg-white/20 rounded-md" />
+        <div className="h-4 sm:h-5 w-24 bg-white/10 rounded-md" />
+      </div>
+
+      <div className="hidden sm:block w-px h-12 bg-white/20" />
+
+      {/* Item 2 */}
+      <div className="flex flex-col items-center justify-center flex-1 w-full text-center gap-2 sm:gap-3">
+        <div className="h-8 sm:h-10 w-16 bg-white/20 rounded-md" />
+        <div className="h-4 sm:h-5 w-24 bg-white/10 rounded-md" />
+      </div>
+
+      <div className="hidden sm:block w-px h-12 bg-white/20" />
+
+      {/* Item 3 */}
+      <div className="flex flex-col items-center justify-center flex-1 w-full text-center gap-2 sm:gap-3">
+        <div className="h-8 sm:h-10 w-16 bg-white/20 rounded-md" />
+        <div className="h-4 sm:h-5 w-32 bg-white/10 rounded-md" />
+      </div>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import {
 import ThesesFilterDialog from "@/components/dashboard/theses-filter-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import NumberedPagination from "@/components/shared/numbered-pagination";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Thesis } from "@/server/theses/get-theses";
 import type { FilterOptions } from "@/server/theses/get-filter-options";
 
@@ -46,6 +47,24 @@ export default function ThesesTable({
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+
+  const tagStyles = [
+    { bg: "bg-emerald-100", text: "text-emerald-800" },
+    { bg: "bg-orange-100", text: "text-orange-800" },
+    { bg: "bg-purple-100", text: "text-purple-800" },
+    { bg: "bg-rose-100", text: "text-rose-800" },
+    { bg: "bg-cyan-100", text: "text-cyan-800" },
+    { bg: "bg-blue-100", text: "text-blue-800" },
+  ];
+
+  const getTagStyle = (tag: string) => {
+    if (!tag) return tagStyles[0];
+    let hash = 0;
+    for (let i = 0; i < tag.length; i++) {
+      hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return tagStyles[Math.abs(hash) % tagStyles.length];
+  };
 
   // URL state with nuqs
   const [page, setPage] = useQueryState("page", { defaultValue: String(initialPage), shallow: false });
@@ -129,8 +148,9 @@ export default function ThesesTable({
 
 
   return (
-    <Card className={`bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden p-0 gap-0 transition-opacity duration-200 ${isPending ? "pointer-events-none" : ""}`}>
-      <CardHeader className="flex flex-row justify-between items-center px-4 lg:px-6 py-4 border-b border-slate-200 bg-slate-50 space-y-0">
+    <TooltipProvider delayDuration={200}>
+      <Card className={`bg-white rounded-lg shadow-md border border-slate-200 overflow-hidden p-0 gap-0 transition-opacity duration-200 ${isPending ? "pointer-events-none" : ""}`}>
+        <CardHeader className="flex flex-row justify-between items-center px-4 lg:px-6 py-4 border-b border-slate-200 bg-slate-50 space-y-0">
         <CardTitle className="text-xl lg:text-2xl font-bold text-slate-800 flex items-center gap-2 m-0">
           Theses
         </CardTitle>
@@ -167,16 +187,19 @@ export default function ThesesTable({
           <Table>
             <TableHeader className="bg-slate-100 border-b border-slate-200">
               <TableRow className="hover:bg-slate-100">
-                <TableHead className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto target">
+                <TableHead className="py-3 px-4 lg:px-6 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto target w-[10%]">
                   Year
                 </TableHead>
-                <TableHead className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto">
+                <TableHead className="py-3 px-4 lg:px-6 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto w-[35%]">
                   Title
                 </TableHead>
-                <TableHead className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto">
+                <TableHead className="py-3 px-4 lg:px-6 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto w-[15%]">
+                  Tags
+                </TableHead>
+                <TableHead className="py-3 px-4 lg:px-6 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto w-[20%]">
                   Department
                 </TableHead>
-                <TableHead className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto">
+                <TableHead className="py-3 px-4 lg:px-6 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto w-[20%]">
                   College
                 </TableHead>
               </TableRow>
@@ -186,17 +209,23 @@ export default function ThesesTable({
             {isPending ? (
               Array.from({ length: 10 }).map((_, i) => (
                 <TableRow key={`skeleton-${i}`}>
-                  <TableCell className="py-4 px-4 align-top w-[10%]">
+                  <TableCell className="py-4 px-4 lg:px-6 align-top w-[10%]">
                     <Skeleton className="h-5 w-14 rounded" />
                   </TableCell>
-                  <TableCell className="py-4 px-4 align-top w-[50%]">
+                  <TableCell className="py-4 px-4 lg:px-6 align-top w-[35%]">
                     <Skeleton className="h-5 w-full max-w-[280px] rounded" />
                   </TableCell>
-                  <TableCell className="py-4 px-4 align-top w-[20%]">
-                    <Skeleton className="h-4 w-32 rounded" />
+                  <TableCell className="py-4 px-4 lg:px-6 align-top w-[15%]">
+                    <div className="flex gap-2">
+                       <Skeleton className="h-6 w-16 rounded-md" />
+                       <Skeleton className="h-6 w-20 rounded-md" />
+                    </div>
                   </TableCell>
-                  <TableCell className="py-4 px-4 align-top w-[20%]">
-                    <Skeleton className="h-4 w-28 rounded" />
+                  <TableCell className="py-4 px-4 lg:px-6 align-top w-[20%]">
+                    <Skeleton className="h-4 w-24 rounded" />
+                  </TableCell>
+                  <TableCell className="py-4 px-4 lg:px-6 align-top w-[20%]">
+                    <Skeleton className="h-4 w-20 rounded" />
                   </TableCell>
                 </TableRow>
               ))
@@ -207,11 +236,11 @@ export default function ThesesTable({
                   onClick={() => router.push(`/view/${thesis.id}`)}
                   className="hover:bg-slate-50 transition-colors cursor-pointer"
                 >
-                  <TableCell className="py-4 px-4 text-md text-slate-600 font-semibold align-top">
+                  <TableCell className="py-4 px-4 lg:px-6 text-md text-slate-600 font-semibold align-top">
                     <span style={{ color: accentColor }}>{thesis.year}</span>
                   </TableCell>
 
-                  <TableCell className="py-4 px-4 text-md text-slate-900 max-w-[300px] align-top">
+                  <TableCell className="py-4 px-4 lg:px-6 text-md text-slate-900 max-w-[300px] align-top">
                     <Link
                       href={`/view/${thesis.id}`}
                       className="block hover:opacity-80 transition-opacity"
@@ -226,13 +255,45 @@ export default function ThesesTable({
                     </Link>
                   </TableCell>
 
-                  <TableCell className="py-4 px-4 text-md text-slate-600 align-top max-w-[200px] truncate" title={thesis.department}>
+                  <TableCell className="py-4 px-4 lg:px-6 align-top">
+                    <div className="flex flex-nowrap items-center w-full overflow-hidden gap-1.5 pt-0.5">
+                      {thesis.keywords && thesis.keywords.slice(0, 1).map((tag, i) => {
+                        const style = getTagStyle(tag);
+                        return (
+                          <span key={i} className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-nowrap ${style.bg} ${style.text}`}>
+                            {tag}
+                          </span>
+                        );
+                      })}
+                      {thesis.keywords && thesis.keywords.length > 1 && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600 shrink-0 cursor-default hover:bg-slate-200 transition-colors pointer-events-auto">
+                              +{thesis.keywords.length - 1}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="flex flex-wrap gap-1.5 max-w-[400px] p-2 bg-white rounded-xl shadow-lg border border-slate-200">
+                            {thesis.keywords.slice(1).map((tag, i) => {
+                              const style = getTagStyle(tag);
+                              return (
+                                <span key={i} className={`px-2.5 py-1 rounded-md text-[11px] font-medium whitespace-normal break-words text-center ${style.bg} ${style.text}`}>
+                                  {tag}
+                                </span>
+                              );
+                            })}
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="py-4 px-4 lg:px-6 text-md text-slate-600 align-top max-w-[200px] truncate" title={thesis.department}>
                     <span className="text-slate-600 text-sm">
                       {thesis.department}
                     </span>
                   </TableCell>
 
-                  <TableCell className="py-4 px-4 text-md text-slate-600 align-top max-w-[200px] truncate" title={thesis.college}>
+                  <TableCell className="py-4 px-4 lg:px-6 text-md text-slate-600 align-top max-w-[200px] truncate" title={thesis.college}>
                     <span className="text-slate-500 text-sm">
                       {thesis.college}
                     </span>
@@ -323,6 +384,7 @@ export default function ThesesTable({
         </div>
       </CardFooter>
     </Card>
+    </TooltipProvider>
   );
 }
 
