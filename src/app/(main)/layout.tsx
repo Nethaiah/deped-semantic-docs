@@ -4,8 +4,6 @@ import { SidebarProvider } from "@/components/sidebar-context";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
-import { getThemeForRole } from "@/lib/theme-config";
-
 export default async function MainLayout({
   children,
 }: {
@@ -27,14 +25,11 @@ export default async function MainLayout({
     .single();
 
   const role = userData?.role || "user";
-  const theme = getThemeForRole(role);
 
   return (
-    <div style={{ "--theme-color": theme.primary } as React.CSSProperties} className="h-full">
-      <SidebarProvider>
-        <Header showMobileMenu={true} />
-        <Sidebar role={role}>{children}</Sidebar>
-      </SidebarProvider>
-    </div>
+    <SidebarProvider>
+      <Header variant="main" />
+      <Sidebar role={role}>{children}</Sidebar>
+    </SidebarProvider>
   );
 }

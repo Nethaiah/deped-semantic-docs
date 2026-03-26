@@ -16,7 +16,7 @@ export const roleThemes: Record<Role, ThemeColors> = {
     baseColor: "gray",
   },
   user: {
-    primary: "#087830",
+    primary: "#278fb6",
     baseColor: "slate",
   },
 };

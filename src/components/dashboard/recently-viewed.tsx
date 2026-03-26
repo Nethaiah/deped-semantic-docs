@@ -15,7 +15,7 @@ type Props = {
   accentColor?: string;
 };
 
-export default function RecentlyViewed({ theses, accentColor = "var(--theme-color)" }: Props) {
+export default function RecentlyViewed({ theses, accentColor = "#278fb6" }: Props) {
   const router = useRouter();
 
   // Format authors for display

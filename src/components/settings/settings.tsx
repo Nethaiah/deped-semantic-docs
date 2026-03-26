@@ -163,7 +163,7 @@ function ProfileForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="bg-theme"
+          className="bg-[#278fb6]"
         >
           {form.formState.isSubmitting && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -244,7 +244,7 @@ function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="bg-theme"
+          className="bg-[#278fb6]"
         >
           {form.formState.isSubmitting && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

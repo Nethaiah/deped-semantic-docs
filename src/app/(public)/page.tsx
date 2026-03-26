@@ -20,8 +20,8 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-6 pt-32 pb-20">
         <div className="grid gap-12 lg:grid-cols-12 items-center">
           <div className="lg:col-span-7 py-10 lg:py-20">
-            <div className="group flex items-center gap-2 text-sm text-theme/70">
-              <span className="h-1.5 w-3 rounded-full bg-theme" />
+            <div className="group flex items-center gap-2 text-sm text-[#087830]/70">
+              <span className="h-1.5 w-3 rounded-full bg-[#087830]" />
               <span>Laguna University Research Archives</span>
             </div>
 
@@ -30,12 +30,12 @@ export default function Home() {
             </h1>
             <p className="text-base sm:text-lg text-gray-600 leading-relaxed mb-8 w-full lg:w-[85%]">
               Doculens uses advanced AI to automatically read, summarize, and
-              organize <span className="text-theme">Laguna University</span>{" "}
+              organize <span className="text-[#087830]">Laguna University</span>{" "}
               research papers, theses, and capstone projects so you can find and
               understand them faster.
             </p>
             <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4 w-full sm:w-auto">
-              <button className="w-full sm:w-auto justify-center group flex items-center gap-2 rounded-full bg-theme px-4 lg:px-7 py-3 lg:py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#065a24] transition">
+              <button className="w-full sm:w-auto justify-center group flex items-center gap-2 rounded-full bg-[#087830] px-4 lg:px-7 py-3 lg:py-3.5 text-sm lg:text-base font-semibold text-white hover:bg-[#065a24] transition">
                 Get started
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </button>
@@ -51,7 +51,7 @@ export default function Home() {
               <div className="relative space-y-4">
                 <div className="relative rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                   <div className="mb-3 flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-theme" />
+                    <FileText className="h-5 w-5 text-[#087830]" />
                     <span className="text-sm font-semibold text-gray-900">
                       Thesis 2024-025
                     </span>
@@ -68,7 +68,7 @@ export default function Home() {
                       Undergraduate
                     </span>
                   </div>
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-theme/20 to-transparent rounded-bl-full"></div>
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#087830]/20 to-transparent rounded-bl-full"></div>
                 </div>
                 <div className="relative rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                   <div className="mb-3 flex items-center gap-2">
@@ -86,7 +86,7 @@ export default function Home() {
                       Computer Science
                     </span>
                   </div>
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-theme/20 to-transparent rounded-bl-full"></div>
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#087830]/20 to-transparent rounded-bl-full"></div>
                 </div>
               </div>
             </div>
@@ -100,7 +100,7 @@ export default function Home() {
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
             Hundreds of research papers. One system.
           </h2>
-          <div className="mx-auto w-20 sm:w-30 h-1 bg-theme rounded-full mb-6"></div>
+          <div className="mx-auto w-20 sm:w-30 h-1 bg-[#087830] rounded-full mb-6"></div>
           <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
             Students, faculty, and researchers at Laguna University deal with
             hundreds of theses, capstones, and studies. Finding the right paper,
@@ -139,15 +139,15 @@ export default function Home() {
               </p>
               <ul className="space-y-3">
                 <li className="flex gap-3 text-gray-700">
-                  <span className="text-theme">✓</span>
+                  <span className="text-[#087830]">✓</span>
                   <span>Captures objectives, results, and recommendations</span>
                 </li>
                 <li className="flex gap-3 text-gray-700">
-                  <span className="text-theme">✓</span>
+                  <span className="text-[#087830]">✓</span>
                   <span>Highlights key dates, variables, and sample size</span>
                 </li>
                 <li className="flex gap-3 text-gray-700">
-                  <span className="text-theme">✓</span>
+                  <span className="text-[#087830]">✓</span>
                   <span>Notes related studies and references</span>
                 </li>
               </ul>
@@ -164,10 +164,10 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex justify-center">
-                  <ArrowRight className="h-6 w-6 text-theme" />
+                  <ArrowRight className="h-6 w-6 text-[#087830]" />
                 </div>
                 <div className="rounded-xl bg-white p-4 shadow-sm border-2 border-emerald-200">
-                  <div className="text-xs font-semibold text-theme mb-2">
+                  <div className="text-xs font-semibold text-[#087830] mb-2">
                     AI SUMMARY
                   </div>
                   <p className="text-sm text-gray-700 leading-relaxed">
@@ -188,13 +188,13 @@ export default function Home() {
             <div className="order-2 lg:order-1 rounded-2xl border border-gray-200 bg-gradient-to-br from-teal-50 to-emerald-50 p-8">
               <div className="space-y-3">
                 <div className="flex items-center gap-3 rounded-xl bg-white p-4 shadow-sm">
-                  <Search className="h-5 w-5 text-theme" />
+                  <Search className="h-5 w-5 text-[#087830]" />
                   <span className="text-sm font-medium text-gray-700">
                     student attendance mobile system
                   </span>
                 </div>
-                <div className="rounded-xl bg-white p-4 shadow-sm border-l-4 border-theme">
-                  <div className="text-xs font-semibold text-theme mb-1">
+                <div className="rounded-xl bg-white p-4 shadow-sm border-l-4 border-[#087830]">
+                  <div className="text-xs font-semibold text-[#087830] mb-1">
                     HIGHLY RELEVANT
                   </div>
                   <div className="text-sm font-semibold text-gray-900">
@@ -234,15 +234,15 @@ export default function Home() {
               </p>
               <ul className="space-y-3">
                 <li className="flex gap-3 text-gray-700">
-                  <span className="text-theme">✓</span>
+                  <span className="text-[#087830]">✓</span>
                   <span>Understands context and research topics</span>
                 </li>
                 <li className="flex gap-3 text-gray-700">
-                  <span className="text-theme">✓</span>
+                  <span className="text-[#087830]">✓</span>
                   <span>Shows related studies and follow-up works</span>
                 </li>
                 <li className="flex gap-3 text-gray-700">
-                  <span className="text-theme">✓</span>
+                  <span className="text-[#087830]">✓</span>
                   <span>Works with natural questions</span>
                 </li>
               </ul>
@@ -266,13 +266,13 @@ export default function Home() {
 
               <div className="grid gap-8 lg:grid-cols-3">
                 {/* Card 1: Smart Categories */}
-                <div className="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-theme/30 hover:shadow-xl hover:shadow-theme/5 transition-all duration-500 overflow-hidden">
+                <div className="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#087830]/30 hover:shadow-xl hover:shadow-[#087830]/5 transition-all duration-500 overflow-hidden">
                   <div className="h-48 mb-8 relative flex items-center justify-center">
                     <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <div className="relative w-32 h-32 transform group-hover:scale-110 transition-transform duration-500">
                       <div className="absolute top-12 left-0 w-32 h-24 bg-gray-100 border border-gray-200 rounded-lg transform -skew-x-12 translate-x-4"></div>
                       <div className="absolute top-6 left-2 w-32 h-24 bg-gray-50 border border-gray-200 rounded-lg transform -skew-x-12 translate-x-2 backdrop-blur-sm"></div>
-                      <div className="absolute top-0 left-4 w-32 h-24 bg-gradient-to-br from-theme to-emerald-800 rounded-lg transform -skew-x-12 border border-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-900/10">
+                      <div className="absolute top-0 left-4 w-32 h-24 bg-gradient-to-br from-[#087830] to-emerald-800 rounded-lg transform -skew-x-12 border border-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-900/10">
                         <Layers className="text-white/90 w-8 h-8 transform skew-x-12" />
                       </div>
                     </div>
@@ -288,15 +288,15 @@ export default function Home() {
                 </div>
 
                 {/* Card 2: Link Detection */}
-                <div className="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-theme/30 hover:shadow-xl hover:shadow-theme/5 transition-all duration-500 overflow-hidden">
+                <div className="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#087830]/30 hover:shadow-xl hover:shadow-[#087830]/5 transition-all duration-500 overflow-hidden">
                   <div className="h-48 mb-8 relative flex items-center justify-center">
                     <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <div className="relative w-32 h-32 transform rotate-12 scale-90 group-hover:scale-100 transition-transform duration-500">
-                      <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-gray-300 to-theme -translate-y-1/2 transform -rotate-45"></div>
+                      <div className="absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-gray-300 to-[#087830] -translate-y-1/2 transform -rotate-45"></div>
                       <div className="absolute top-0 right-0 w-16 h-16 bg-white border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center transform rotate-12">
                         <div className="w-8 h-2 bg-gray-200 rounded"></div>
                       </div>
-                      <div className="absolute bottom-0 left-0 w-16 h-16 bg-theme shadow-lg shadow-emerald-500/20 rounded-xl flex items-center justify-center transform -rotate-12 z-10">
+                      <div className="absolute bottom-0 left-0 w-16 h-16 bg-[#087830] shadow-lg shadow-emerald-500/20 rounded-xl flex items-center justify-center transform -rotate-12 z-10">
                         <Link className="text-white w-6 h-6" />
                       </div>
                     </div>
@@ -312,16 +312,16 @@ export default function Home() {
                 </div>
 
                 {/* Card 3: Instant Processing */}
-                <div className="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-theme/30 hover:shadow-xl hover:shadow-theme/5 transition-all duration-500 overflow-hidden">
+                <div className="group relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#087830]/30 hover:shadow-xl hover:shadow-[#087830]/5 transition-all duration-500 overflow-hidden">
                   <div className="h-48 mb-8 relative flex items-center justify-center">
                     <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <div className="relative w-full h-24 flex items-center justify-center">
                       <div className="absolute left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gray-200 to-transparent top-2"></div>
                       <div className="absolute left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gray-200 to-transparent bottom-2"></div>
                       <div className="flex gap-3 transform -skew-x-12 group-hover:translate-x-6 transition-transform duration-700 ease-out">
-                        <div className="w-1.5 h-12 bg-theme/10 rounded-full mt-2"></div>
-                        <div className="w-1.5 h-12 bg-theme/30 rounded-full mt-2"></div>
-                        <div className="w-24 h-16 bg-gradient-to-br from-theme to-emerald-700 rounded-lg shadow-lg flex items-center justify-center">
+                        <div className="w-1.5 h-12 bg-[#087830]/10 rounded-full mt-2"></div>
+                        <div className="w-1.5 h-12 bg-[#087830]/30 rounded-full mt-2"></div>
+                        <div className="w-24 h-16 bg-gradient-to-br from-[#087830] to-emerald-700 rounded-lg shadow-lg flex items-center justify-center">
                           <Zap className="text-white w-6 h-6 fill-current" />
                         </div>
                       </div>
@@ -343,7 +343,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-300 bg-theme/10 py-12">
+      <footer className="border-t border-gray-300 bg-[#087830]/10 py-12">
         <div className="mx-auto max-w-6xl px-6">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="flex items-center gap-2">

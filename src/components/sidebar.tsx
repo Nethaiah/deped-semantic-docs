@@ -76,7 +76,7 @@ export default function Sidebar({
 
   // Determine active link background color based on role
   const activeLinkColor =
-    String(role).toLowerCase() === "admin" ? "bg-theme" : "bg-theme";
+    String(role).toLowerCase() === "admin" ? "bg-[#278fb6]" : "bg-[#278fb6]";
 
   // Desktop expanded state
   const isExpanded = isMobile ? isMobileOpen : isDesktopExpanded;

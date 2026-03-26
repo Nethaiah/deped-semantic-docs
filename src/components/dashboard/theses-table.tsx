@@ -42,7 +42,7 @@ export default function ThesesTable({
   initialPage = 1,
   initialFilters = { yearFrom: "", yearTo: "", department: "", college: "", title: "" },
   filterOptions = { departments: [], colleges: [] },
-  accentColor = "var(--theme-color)",
+  accentColor = "#278fb6",
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();

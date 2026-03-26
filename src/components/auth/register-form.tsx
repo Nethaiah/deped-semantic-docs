@@ -226,7 +226,7 @@ export default function RegisterForm() {
                   form.formState.errors.terms
                     ? "border-red-500"
                     : "border-gray-300"
-                } text-theme focus:ring-theme`}
+                } text-[#278fb6] focus:ring-[#278fb6]`}
               />
               <label htmlFor="terms" className="ml-2 text-sm text-gray-600">
                 I agree to the{" "}
@@ -247,7 +247,7 @@ export default function RegisterForm() {
             type="button"
             onClick={form.handleSubmit(onSubmit)}
             disabled={form.formState.isSubmitting}
-            className="w-full cursor-pointer rounded-lg bg-theme px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-theme/90 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-theme/30 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full cursor-pointer rounded-lg bg-[#278fb6] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#278fb6]/90 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#278fb6]/30 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {form.formState.isSubmitting ? (
               <div className="flex items-center justify-center gap-2">
@@ -272,7 +272,7 @@ export default function RegisterForm() {
           Already have an account?{" "}
           <Link
             href="/login"
-            className="font-semibold text-theme hover:text-theme/80"
+            className="font-semibold text-[#278fb6] hover:text-[#278fb6]/80"
           >
             Log in here
           </Link>

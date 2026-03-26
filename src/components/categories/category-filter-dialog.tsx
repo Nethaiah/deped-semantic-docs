@@ -132,7 +132,7 @@ export default function CollegeFilterDialog({
             </Button>
             <Button
               onClick={onApply}
-              className="w-full bg-theme hover:bg-theme/80 cursor-pointer"
+              className="w-full bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer"
             >
               Apply Filters
             </Button>

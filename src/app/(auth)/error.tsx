@@ -41,7 +41,7 @@ export default function AuthError({
         <div className="space-y-4 w-full flex flex-col items-center">
           <button
             onClick={() => reset()}
-            className="w-full cursor-pointer rounded-lg bg-theme px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-theme/90 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-theme/30"
+            className="w-full cursor-pointer rounded-lg bg-[#278fb6] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#278fb6]/90 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#278fb6]/30"
           >
             Try Again
           </button>
@@ -56,7 +56,7 @@ export default function AuthError({
           <div className="pt-4 flex items-center justify-center w-full">
             <Link
               href="/login"
-              className="text-sm font-semibold text-theme hover:text-theme/80 transition-colors"
+              className="text-sm font-semibold text-[#278fb6] hover:text-[#278fb6]/80 transition-colors"
             >
               &larr; Back to Sign In
             </Link>

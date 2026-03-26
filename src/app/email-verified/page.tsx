@@ -14,7 +14,7 @@ export default async function EmailVerifiedPage({ searchParams }: { searchParams
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-200 px-8 py-12 text-center">
         
         {/* Success Icon */}
-        <div className="mx-auto w-20 h-20 bg-green-50 text-theme rounded-full flex items-center justify-center mb-6">
+        <div className="mx-auto w-20 h-20 bg-green-50 text-[#087830] rounded-full flex items-center justify-center mb-6">
           <CheckCircle2 className="w-10 h-10" />
         </div>
 

@@ -15,7 +15,7 @@ export default async function NotFound() {
       <Card className="max-w-md w-full border-0 shadow-lg shadow-gray-200/50 overflow-hidden">
         <CardContent className="p-8 sm:p-10 text-center flex flex-col items-center">
           <div className="h-20 w-20 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
-            <FileQuestion className="h-10 w-10 text-theme" />
+            <FileQuestion className="h-10 w-10 text-[#087830]" />
           </div>
           
           <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-2">
@@ -31,7 +31,7 @@ export default async function NotFound() {
           <div className="w-full flex flex-col gap-3">
             <Link
               href={user ? "/dashboard" : "/"}
-              className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-theme text-white rounded-xl hover:bg-[#065a24] transition-all font-semibold shadow-sm focus:ring-2 focus:ring-theme focus:ring-offset-1"
+              className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#087830] text-white rounded-xl hover:bg-[#065a24] transition-all font-semibold shadow-sm focus:ring-2 focus:ring-[#087830] focus:ring-offset-1"
             >
               {user ? (
                 <>
@@ -49,7 +49,7 @@ export default async function NotFound() {
             {!user && (
               <div className="text-sm font-medium text-gray-500 mt-2">
                 Have an account?{" "}
-                <Link href="/login" className="text-theme hover:text-[#065a24] hover:underline transition-colors">
+                <Link href="/login" className="text-[#087830] hover:text-[#065a24] hover:underline transition-colors">
                   Log in here
                 </Link>
               </div>
