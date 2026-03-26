@@ -126,7 +126,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       {/* Header — renders instantly */}
       <div className="mb-6">
         <div className="mb-4">
-          <Button variant="outline" size="sm" asChild className="cursor-pointer text-[#278fb6] bg-gray-200 hover:bg-gray-300 border-gray-300">
+          <Button variant="outline" size="sm" asChild className="cursor-pointer text-theme bg-gray-200 hover:bg-gray-300 border-gray-300">
           <Link href="/categories">
               <ChevronLeft className="h-4 w-4" />
             Back to Colleges

@@ -36,7 +36,7 @@ export default function CategoryResults({
   currentQuery,
   currentSort,
 }: Props) {
-  const activeColor = "#3a7c94";
+  const activeColor = "var(--theme-color)";
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const hasAny = total > 0;
 

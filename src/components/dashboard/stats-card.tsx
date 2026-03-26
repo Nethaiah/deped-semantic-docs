@@ -58,7 +58,7 @@ function StatCard({ label, value, icon, iconBg, accentLine, badge, sub, decorati
   );
 }
 
-export default function StatsCards({ stats, accentColor = "#278fb6" }: StatsCardsProps) {
+export default function StatsCards({ stats, accentColor = "var(--theme-color)" }: StatsCardsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
       <StatCard

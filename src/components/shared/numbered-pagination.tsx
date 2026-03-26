@@ -156,7 +156,7 @@ export default function NumberedPagination({
                   }}
                   className={
                     isCurrent
-                      ? "bg-[#278fb6] text-white hover:bg-[#278fb6]/90 hover:text-white border-[#278fb6] font-semibold"
+                      ? "bg-theme text-white hover:bg-theme/90 hover:text-white border-theme font-semibold"
                       : isLoading
                       ? "text-slate-400 opacity-50 cursor-not-allowed"
                       : "text-slate-700 hover:bg-slate-50"

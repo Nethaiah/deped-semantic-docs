@@ -161,7 +161,7 @@ export default function LoginForm() {
                   <div className="mt-2 text-right">
                     <Link
                       href="/forgot-password"
-                      className="text-sm font-medium text-[#278fb6] hover:text-[#278fb6]/80"
+                      className="text-sm font-medium text-theme hover:text-theme/80"
                     >
                       Forgot password?
                     </Link>
@@ -176,7 +176,7 @@ export default function LoginForm() {
             type="button"
             onClick={form.handleSubmit(onSubmit)}
             disabled={form.formState.isSubmitting}
-            className="w-full cursor-pointer rounded-lg bg-[#278fb6] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#278fb6]/90 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#278fb6]/30 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full cursor-pointer rounded-lg bg-theme px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-theme/90 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-theme/30 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {form.formState.isSubmitting ? (
               <div className="flex items-center justify-center gap-2">
@@ -201,7 +201,7 @@ export default function LoginForm() {
           Don&apos;t have an account?{" "}
           <Link
             href="/register"
-            className="font-semibold text-[#278fb6] hover:text-[#278fb6]/80"
+            className="font-semibold text-theme hover:text-theme/80"
           >
             Sign up here
           </Link>

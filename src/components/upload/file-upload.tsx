@@ -284,7 +284,7 @@ export default function TableUpload({
               <button
                 type="button"
                 onClick={openFileDialog}
-                className="cursor-pointer text-[#008c8b] underline-offset-4 hover:underline"
+                className="cursor-pointer text-theme underline-offset-4 hover:underline"
               >
                 browse files
               </button>

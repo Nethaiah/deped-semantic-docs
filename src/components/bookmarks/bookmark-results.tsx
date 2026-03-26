@@ -55,7 +55,7 @@ export default function BookmarkResults({
   currentSort,
 }: Props) {
   const activeColor =
-    String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
+    String(role).toLowerCase() === "admin" ? "var(--theme-color)" : "var(--theme-color)";
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const hasAny = total > 0;
 

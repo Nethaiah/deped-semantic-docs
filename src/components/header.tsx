@@ -26,7 +26,7 @@ export default async function Header({ showMobileMenu = false }: HeaderProps = {
   const role = userData?.role || "user";
 
   // Determine header background color based on role
-  const headerBgColor = role === "admin" ? "bg-[#008c8b]" : "bg-[#087830]";
+  const headerBgColor = role === "admin" ? "bg-theme" : "bg-theme";
 
   return (
     <nav
