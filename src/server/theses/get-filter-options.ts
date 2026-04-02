@@ -1,6 +1,7 @@
-"use server";
+"use cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { supabaseStatic } from "@/lib/supabase/static";
+import { cacheLife, cacheTag } from "next/cache";
 
 export type FilterOptions = {
   departments: string[];
@@ -8,10 +9,14 @@ export type FilterOptions = {
 };
 
 /**
- * Fetch unique departments and colleges from the theses table for filter dropdowns
+ * Fetch unique departments and colleges from the theses table for filter dropdowns.
+ * Cached with 'hours' profile — filter options rarely change.
  */
 export async function getThesesFilterOptions(): Promise<FilterOptions> {
-  const supabase = await createClient();
+  cacheTag("filter-options");
+  cacheLife("hours");
+
+  const supabase = supabaseStatic;
 
   // Fetch unique departments
   const { data: deptData } = await supabase

@@ -1,6 +1,5 @@
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
-import { verifySession } from "@/lib/dal";
+import { notFound } from "next/navigation";
 
 import TrackThesisView from "@/components/thesis/track-thesis-view";
 import BackButton from "@/components/thesis/back-button";
@@ -166,11 +165,6 @@ async function ThesisSimilarSection({ thesisId }: { thesisId: string }) {
 
 /* ── Page ── */
 export default async function ViewThesisPage({ params }: Props) {
-  const session = await verifySession();
-  if (!session.isAuth) {
-    redirect("/login");
-  }
-
   const { thesisId } = await params;
 
   return (

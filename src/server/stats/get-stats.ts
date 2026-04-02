@@ -1,3 +1,5 @@
+"use server";
+
 import { verifySession } from "@/lib/dal";
 
 export interface Stats {

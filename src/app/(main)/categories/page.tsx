@@ -1,6 +1,4 @@
 import { Suspense } from "react";
-import { verifySession } from "@/lib/dal";
-import { redirect } from "next/navigation";
 
 import Categories from "@/components/categories/categories";
 import { getAllColleges } from "@/server/categories/actions";
@@ -14,11 +12,6 @@ async function CollegesSection() {
 
 /* ── Page ── */
 export default async function CategoriesPage() {
-  const session = await verifySession();
-  if (!session.isAuth) {
-    redirect('/login');
-  }
-
   return (
     <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
       {/* Header Section — renders instantly */}

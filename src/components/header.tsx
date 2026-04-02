@@ -42,6 +42,7 @@ export default async function Header({ variant = "public" }: HeaderProps) {
               width={32}
               height={32}
               className="object-contain"
+              priority
             />
             <span className="text-base font-bold tracking-tight text-[#f3f3f3]">
               DocuLens
@@ -58,6 +59,7 @@ export default async function Header({ variant = "public" }: HeaderProps) {
               width={28}
               height={28}
               className="object-contain"
+              priority
             />
             <span className="text-base font-bold tracking-tight text-[#f3f3f3]">
               DocuLens

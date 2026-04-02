@@ -1,6 +1,7 @@
-"use server";
+"use cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { supabaseStatic } from "@/lib/supabase/static";
+import { cacheLife, cacheTag } from "next/cache";
 
 // Type for thesis author
 export type ThesisAuthor = {
@@ -29,10 +30,14 @@ export type ThesisData = {
 };
 
 /**
- * Fetches a thesis by its ID along with its authors
+ * Fetches a thesis by its ID along with its authors.
+ * Cached per thesisId — `thesisId` becomes part of the cache key automatically.
  */
 export async function getThesisById(thesisId: string) {
-  const supabase = await createClient();
+  cacheTag("theses", `thesis-${thesisId}`);
+  cacheLife("hours");
+
+  const supabase = supabaseStatic;
 
   // Fetch thesis data
   const { data: thesis, error: thesisError } = await supabase
@@ -86,12 +91,15 @@ export async function getThesisById(thesisId: string) {
 }
 
 /**
- * Fetches similar theses based on keywords or department
- * For now, this returns theses from the same department or with similar keywords
+ * Fetches similar theses based on keywords or department.
+ * Cached per thesisId — returns theses from the same department.
  */
 export async function getSimilarTheses(thesisId: string, limit: number = 3) {
+  cacheTag("theses", `similar-${thesisId}`);
+  cacheLife("hours");
+
   try {
-    const supabase = await createClient();
+    const supabase = supabaseStatic;
 
     // First get the current thesis to find its keywords and department
     const { data: currentThesis, error: currentError } = await supabase

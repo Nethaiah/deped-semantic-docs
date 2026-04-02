@@ -1,10 +1,11 @@
+import { Suspense } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function EmailVerifiedPage({ searchParams }: { searchParams: Promise<{ verified?: string }> }) {
+async function EmailVerifiedContent({ searchParams }: { searchParams: Promise<{ verified?: string }> }) {
   const params = await searchParams;
-  
+
   if (params?.verified !== "true") {
     redirect("/login");
   }
@@ -12,7 +13,7 @@ export default async function EmailVerifiedPage({ searchParams }: { searchParams
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-gray-50">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-200 px-8 py-12 text-center">
-        
+
         {/* Success Icon */}
         <div className="mx-auto w-20 h-20 bg-green-50 text-[#087830] rounded-full flex items-center justify-center mb-6">
           <CheckCircle2 className="w-10 h-10" />
@@ -35,5 +36,25 @@ export default async function EmailVerifiedPage({ searchParams }: { searchParams
         </div>
       </div>
     </div>
+  );
+}
+
+function EmailSkeleton() {
+  return (
+    <div className="flex min-h-screen items-center justify-center p-4 bg-gray-50">
+      <div className="w-full max-w-md bg-white rounded-2xl p-12 text-center">
+        <Skeleton className="h-20 w-20 rounded-full mx-auto mb-6" />
+        <Skeleton className="h-8 w-48 mx-auto mb-4 rounded" />
+        <Skeleton className="h-16 w-full rounded" />
+      </div>
+    </div>
+  );
+}
+
+export default function EmailVerifiedPage({ searchParams }: { searchParams: Promise<{ verified?: string }> }) {
+  return (
+    <Suspense fallback={<EmailSkeleton />}>
+      <EmailVerifiedContent searchParams={searchParams} />
+    </Suspense>
   );
 }

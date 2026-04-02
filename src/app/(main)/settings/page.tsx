@@ -1,14 +1,27 @@
+import { Suspense } from "react";
 import Settings from "@/components/settings/settings";
-import { verifySession } from "@/lib/dal";
-import { redirect } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function SettingsPage() {
-  const session = await verifySession();
-  if (!session.isAuth) {
-    redirect('/login');
-  }
+function SettingsContent() {
+  return <Settings />;
+}
 
-  const provider = session.user.app_metadata.provider || "email";
+function SettingsSkeleton() {
+  return (
+    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
+      <div className="max-w-2xl mx-auto space-y-6">
+        <Skeleton className="w-48 h-8 rounded" />
+        <Skeleton className="w-full h-64 rounded-xl" />
+        <Skeleton className="w-full h-48 rounded-xl" />
+      </div>
+    </div>
+  );
+}
 
-  return <Settings provider={provider} />;
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={<SettingsSkeleton />}>
+      <SettingsContent />
+    </Suspense>
+  );
 }

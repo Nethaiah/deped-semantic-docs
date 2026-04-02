@@ -1,6 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
-import { PageTransition } from "@/components/page-transition";
 
 export default function AuthLayout({
   children,
@@ -24,10 +24,13 @@ export default function AuthLayout({
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-16">
         {/* Logo & App Name */}
         <div className="hidden sm:flex items-center gap-3 mb-2">
-          <img
+          <Image
             src="/Logo.png"
             alt="Doculens Logo"
-            className="w-10 h-10 object-contain invert"
+            width={40}
+            height={40}
+            className="object-contain invert"
+            priority
           />
           <span className="text-xl font-bold text-gray-900">Doculens</span>
         </div>
@@ -35,9 +38,7 @@ export default function AuthLayout({
           Process Smarter. Extract Faster. Understand More.
         </p>
 
-        <PageTransition>
-          {children}
-        </PageTransition>
+        {children}
       </div>
     </div>
   );

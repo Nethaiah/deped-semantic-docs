@@ -1,13 +1,14 @@
-import UploadForm from "@/components/upload/upload-file"
+import { Suspense } from "react";
+import UploadForm from "@/components/upload/upload-file";
 import { getCurrentUserRole } from "@/lib/dal";
 import { redirect } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function Page() {
+async function UploadContent() {
   const userRole = await getCurrentUserRole();
   if (!userRole?.isAdmin) {
     redirect("/dashboard");
   }
-
 
   return (
     <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
@@ -23,6 +24,26 @@ export default async function Page() {
       <div className="bg-white rounded-lg p-5 lg:p-6 shadow-sm">
         <UploadForm />
       </div>
-    </div>  
-  )
+    </div>
+  );
+}
+
+function UploadSkeleton() {
+  return (
+    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
+      <div className="mb-6 lg:mb-8">
+        <Skeleton className="w-64 h-8 rounded mb-2" />
+        <Skeleton className="w-96 h-4 rounded" />
+      </div>
+      <Skeleton className="w-full h-96 rounded-lg" />
+    </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<UploadSkeleton />}>
+      <UploadContent />
+    </Suspense>
+  );
 }

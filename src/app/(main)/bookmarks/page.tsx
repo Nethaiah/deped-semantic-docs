@@ -1,6 +1,4 @@
 import { Suspense } from "react";
-import { verifySession } from "@/lib/dal";
-import { redirect } from "next/navigation";
 import type { SearchParams } from "nuqs/server";
 import {
   bookmarkSearchParamsCache,
@@ -49,11 +47,6 @@ async function ResultsSection({
 
 /* ── Page ── */
 export default async function BookmarksPage({ searchParams }: Props) {
-  const session = await verifySession();
-  if (!session.isAuth) {
-    redirect("/login");
-  }
-
   const { page, q, sort } = await bookmarkSearchParamsCache.parse(searchParams);
   const pageSize = 10;
 

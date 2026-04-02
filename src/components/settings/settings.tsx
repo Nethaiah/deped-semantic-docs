@@ -1,5 +1,3 @@
-// --- START OF FILE settings.tsx ---
-
 "use client";
 
 import { Settings2, User, Lock, Loader2 } from "lucide-react";
@@ -258,7 +256,7 @@ function PasswordForm({ setOpen, theme }: { setOpen: (open: boolean) => void; th
   );
 }
 
-export default function Settings({ provider }: { provider: string }) {
+export default function Settings() {
   const { theme } = useTheme();
   const [profileOpen, setProfileOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
@@ -303,10 +301,8 @@ export default function Settings({ provider }: { provider: string }) {
           }
         />
         
-        {/* Only show Password Change if the provider is email */}
-        {provider === "email" && (
-          <SettingItem
-            icon={Lock}
+        <SettingItem
+          icon={Lock}
             title="Password"
             description="Change your password"
             action={
@@ -328,7 +324,6 @@ export default function Settings({ provider }: { provider: string }) {
               </Dialog>
             }
           />
-        )}
       </SettingsSection>
     </div>
   );

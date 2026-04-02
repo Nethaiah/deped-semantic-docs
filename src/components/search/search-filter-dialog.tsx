@@ -7,6 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -115,6 +116,9 @@ export default function SearchFilterDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Search Filters</DialogTitle>
+          <DialogDescription className="sr-only">
+            Refine your search results using the available filters.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 ">
@@ -142,7 +146,13 @@ export default function SearchFilterDialog({
                   searchMode: checked ? "rag" : "keyword",
                 })
               }
-              className={`data-[state=checked]:${theme.primaryBgClass} cursor-pointer`}
+              className="cursor-pointer data-[state=unchecked]:bg-slate-300 shadow-sm"
+              style={{
+                ...(localValues.searchMode === "rag" && {
+                  backgroundColor: theme.primary,
+                  borderColor: theme.primary,
+                }),
+              }}
             />
           </div>
 

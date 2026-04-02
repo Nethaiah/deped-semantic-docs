@@ -1,7 +1,5 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { verifySession } from "@/lib/dal";
-import { redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -94,11 +92,6 @@ async function ResultsSection({
 
 /* ── Page ── */
 export default async function CategoryPage({ params, searchParams }: Props) {
-  const session = await verifySession();
-  if (!session.isAuth) {
-    redirect("/login");
-  }
-
   const { categoryName } = await params;
   const collegeCode = decodeURIComponent(categoryName);
   const collegeName = COLLEGE_FULL_NAMES[collegeCode] || collegeCode;

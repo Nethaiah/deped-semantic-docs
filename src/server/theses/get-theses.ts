@@ -1,6 +1,7 @@
-"use server";
+"use cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { supabaseStatic } from "@/lib/supabase/static";
+import { cacheLife, cacheTag } from "next/cache";
 
 type ThesesFilters = {
   yearFrom?: number;
@@ -24,7 +25,10 @@ export async function getTheses(
   limit: number = 10,
   filters: ThesesFilters = {}
 ) {
-  const supabase = await createClient();
+  cacheTag("theses");
+  cacheLife("minutes");
+
+  const supabase = supabaseStatic;
 
   const offset = (page - 1) * limit;
 

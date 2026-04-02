@@ -8,6 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -51,6 +52,9 @@ export default function CollegeFilterDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Filter Thesis Papers</DialogTitle>
+          <DialogDescription className="sr-only">
+            Filter the thesis papers by specifying year and department.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">

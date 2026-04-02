@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { getCurrentUserRole } from "@/lib/dal";
 import { redirect } from "next/navigation";
 import { columns, UserRecord } from "@/components/user-management/columns";
 import { UserDataTable } from "@/components/user-management/data-table";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // ── Dummy user data ──────────────────────────────────────────────────────────
 const dummyUsers: UserRecord[] = [
@@ -115,7 +117,7 @@ const dummyUsers: UserRecord[] = [
   },
 ];
 
-export default async function UserManagementPage() {
+async function UserManagementContent() {
   const userRole = await getCurrentUserRole();
   if (!userRole?.isAdmin) {
     redirect("/dashboard");
@@ -184,5 +186,30 @@ export default async function UserManagementPage() {
       {/* Data Table */}
       <UserDataTable columns={columns} data={dummyUsers} />
     </div>
+  );
+}
+
+function UserManagementSkeleton() {
+  return (
+    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
+      <div className="mb-6">
+        <Skeleton className="w-48 h-8 rounded mb-1" />
+        <Skeleton className="w-72 h-4 rounded" />
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-20 rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="w-full h-96 rounded-xl" />
+    </div>
+  );
+}
+
+export default function UserManagementPage() {
+  return (
+    <Suspense fallback={<UserManagementSkeleton />}>
+      <UserManagementContent />
+    </Suspense>
   );
 }

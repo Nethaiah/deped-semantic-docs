@@ -1,5 +1,11 @@
+import { Suspense } from "react";
 import Header from "@/components/header";
-import { PageTransition } from "@/components/page-transition";
+
+function HeaderSkeleton() {
+  return (
+    <nav className="fixed top-0 z-[1220] w-full h-12 bg-[#087830] border-b border-gray-200" />
+  );
+}
 
 export default function PublicLayout({
   children,
@@ -8,11 +14,11 @@ export default function PublicLayout({
 }) {
   return (
     <>
-      <Header />
+      <Suspense fallback={<HeaderSkeleton />}>
+        <Header />
+      </Suspense>
       <main>
-        <PageTransition>
-          {children}
-        </PageTransition>
+        {children}
       </main>
     </>
   );
