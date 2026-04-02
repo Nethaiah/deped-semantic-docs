@@ -94,22 +94,23 @@ async function StatsSection() {
 }
 
 async function ThesesSection({
-  page,
-  filters,
+  searchParams,
 }: {
-  page: number;
-  filters: { yearFrom?: string; yearTo?: string; department?: string; college?: string; title?: string };
+  searchParams: Promise<SearchParams>;
 }) {
+  const { page, yearFrom, yearTo, department, college, title } =
+    await thesesFilterParamsCache.parse(searchParams);
+
   const userRole = await getCurrentUserRole();
   const theme = getThemeForRole(userRole?.role || "user");
 
   const [theses, filterOptions] = await Promise.all([
     getTheses(page, 10, {
-      yearFrom: filters.yearFrom ? parseInt(filters.yearFrom) : undefined,
-      yearTo: filters.yearTo ? parseInt(filters.yearTo) : undefined,
-      department: filters.department || undefined,
-      college: filters.college || undefined,
-      title: filters.title || undefined,
+      yearFrom: yearFrom ? parseInt(yearFrom) : undefined,
+      yearTo: yearTo ? parseInt(yearTo) : undefined,
+      department: department || undefined,
+      college: college || undefined,
+      title: title || undefined,
     }),
     getThesesFilterOptions(),
   ]);
@@ -120,11 +121,11 @@ async function ThesesSection({
       initialTotalPages={theses?.totalPages}
       initialPage={page}
       initialFilters={{
-        yearFrom: filters.yearFrom || "",
-        yearTo: filters.yearTo || "",
-        department: filters.department || "",
-        college: filters.college || "",
-        title: filters.title || "",
+        yearFrom: yearFrom || "",
+        yearTo: yearTo || "",
+        department: department || "",
+        college: college || "",
+        title: title || "",
       }}
       filterOptions={filterOptions}
       accentColor={theme.primary}
@@ -132,6 +133,7 @@ async function ThesesSection({
   );
 }
 
+// ... Activity and Recent Sections ...
 async function ActivitySection() {
   const userRole = await getCurrentUserRole();
   const theme = getThemeForRole(userRole?.role || "user");
@@ -148,10 +150,7 @@ async function RecentSection() {
 
 /* ── Page ── */
 
-export default async function DocumentsPage({ searchParams }: Props) {
-  const { page, yearFrom, yearTo, department, college, title } =
-    await thesesFilterParamsCache.parse(searchParams);
-
+export default function DocumentsPage({ searchParams }: Props) {
   return (
     <div className="min-h-screen bg-muted/30 p-4 sm:p-6 lg:p-8 space-y-6">
       {/* ── Hero Header ── */}
@@ -169,16 +168,7 @@ export default async function DocumentsPage({ searchParams }: Props) {
         {/* Theses Table — takes flexible max space */}
         <div className="w-full xl:flex-1 min-w-0">
           <Suspense fallback={<ThesesTableSkeleton />}>
-            <ThesesSection
-              page={page}
-              filters={{
-                yearFrom: yearFrom || undefined,
-                yearTo: yearTo || undefined,
-                department: department || undefined,
-                college: college || undefined,
-                title: title || undefined,
-              }}
-            />
+            <ThesesSection searchParams={searchParams} />
           </Suspense>
         </div>
 

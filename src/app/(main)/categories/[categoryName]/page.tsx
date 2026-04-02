@@ -24,11 +24,12 @@ type Props = {
 /* ── Async data-fetching section (only the results need server data) ── */
 async function ResultsSection({
   collegeCode,
-  sp,
+  searchParams,
 }: {
   collegeCode: string;
-  sp: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const sp = await searchParams;
   const pageParam = Array.isArray(sp.page) ? sp.page[0] : sp.page;
   const page = Math.max(1, parseInt(pageParam || "1", 10) || 1);
   const pageSize = 10;
@@ -96,20 +97,6 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const collegeCode = decodeURIComponent(categoryName);
   const collegeName = COLLEGE_FULL_NAMES[collegeCode] || collegeCode;
   const departments = getDepartmentsForCollege(collegeCode);
-  const sp = await searchParams;
-
-  // Extract initial values for controls
-  const qParam = Array.isArray(sp.q) ? sp.q[0] : sp.q;
-  const yearFrom = Array.isArray(sp.yearFrom) ? sp.yearFrom[0] : sp.yearFrom;
-  const yearTo = Array.isArray(sp.yearTo) ? sp.yearTo[0] : sp.yearTo;
-  const department = Array.isArray(sp.department)
-    ? sp.department[0]
-    : sp.department;
-  const sortParam = Array.isArray(sp.sort) ? sp.sort[0] : sp.sort;
-  const validSorts = ["year_desc", "year_asc", "title_asc", "title_desc"];
-  const initialSort = validSorts.includes(sortParam || "")
-    ? sortParam!
-    : "year_desc";
 
   return (
     <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
@@ -129,22 +116,17 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         <p className="text-sm text-gray-600">{collegeName}</p>
       </div>
 
-      {/* Controls — render instantly (no data fetch needed) */}
-      <CategoryControls
-        collegeCode={collegeCode}
-        departments={departments}
-        initialQuery={qParam || ""}
-        initialFilters={{
-          yearFrom: yearFrom || "",
-          yearTo: yearTo || "",
-          department: department || "",
-        }}
-        initialSort={initialSort}
-      />
+      {/* Controls — wraps useSearchParams in Suspense to preserve static shell */}
+      <Suspense fallback={<div className="h-10 mb-6 bg-gray-100 rounded-lg animate-pulse w-full"></div>}>
+        <CategoryControls
+          collegeCode={collegeCode}
+          departments={departments}
+        />
+      </Suspense>
 
       {/* Results — streams in after data fetch */}
-      <Suspense key={JSON.stringify(sp)} fallback={<CategoryResultsSkeleton />}>
-        <ResultsSection collegeCode={collegeCode} sp={sp} />
+      <Suspense fallback={<CategoryResultsSkeleton />}>
+        <ResultsSection collegeCode={collegeCode} searchParams={searchParams} />
       </Suspense>
     </div>
   );

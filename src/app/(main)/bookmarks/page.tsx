@@ -16,21 +16,18 @@ type Props = {
 
 /* ── Async data-fetching section (only results need server data) ── */
 async function ResultsSection({
-  page,
-  pageSize,
-  q,
-  sort,
+  searchParams,
 }: {
-  page: number;
-  pageSize: number;
-  q: string;
-  sort: BookmarkSortOption;
+  searchParams: Promise<SearchParams>;
 }) {
+  const { page, q, sort } = await bookmarkSearchParamsCache.parse(searchParams);
+  const pageSize = 10;
+
   const { data: theses, total } = await getBookmarkedThesesPaginated(
     page,
     pageSize,
     q || undefined,
-    sort
+    sort as BookmarkSortOption
   );
 
   return (
@@ -40,19 +37,16 @@ async function ResultsSection({
       page={page}
       pageSize={pageSize}
       currentQuery={q || ""}
-      currentSort={sort}
+      currentSort={sort as BookmarkSortOption}
     />
   );
 }
 
 /* ── Page ── */
-export default async function BookmarksPage({ searchParams }: Props) {
-  const { page, q, sort } = await bookmarkSearchParamsCache.parse(searchParams);
-  const pageSize = 10;
-
+export default function BookmarksPage({ searchParams }: Props) {
   return (
     <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
-      {/* Header — renders instantly */}
+      {/* Header — renders instantly (Part of Static Shell) */}
       <div className="mb-6">
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
           Bookmarked Theses
@@ -62,20 +56,14 @@ export default async function BookmarksPage({ searchParams }: Props) {
         </p>
       </div>
 
-      {/* Controls — render instantly (no data fetch needed) */}
-      <BookmarkControls
-        initialQuery={q || ""}
-        initialSort={sort as string}
-      />
+      {/* Controls — wraps useSearchParams in Suspense to preserve static shell */}
+      <Suspense fallback={<div className="h-10 mb-6 bg-gray-100 rounded-lg animate-pulse w-full"></div>}>
+        <BookmarkControls />
+      </Suspense>
 
       {/* Results — streams in after data fetch */}
-      <Suspense key={JSON.stringify({ page, q, sort })} fallback={<BookmarkResultsSkeleton />}>
-        <ResultsSection
-          page={page}
-          pageSize={pageSize}
-          q={q || ""}
-          sort={sort as BookmarkSortOption}
-        />
+      <Suspense fallback={<BookmarkResultsSkeleton />}>
+        <ResultsSection searchParams={searchParams} />
       </Suspense>
     </div>
   );
