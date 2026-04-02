@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUserRole } from "@/lib/dal";
 import { redirect } from "next/navigation";
 import { columns, UserRecord } from "@/components/user-management/columns";
 import { UserDataTable } from "@/components/user-management/data-table";
@@ -116,24 +116,8 @@ const dummyUsers: UserRecord[] = [
 ];
 
 export default async function UserManagementPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  // Only admins can access this page
-  const { data: userData } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (userData?.role !== "admin") {
+  const userRole = await getCurrentUserRole();
+  if (!userRole?.isAdmin) {
     redirect("/dashboard");
   }
 

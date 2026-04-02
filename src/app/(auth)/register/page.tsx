@@ -1,11 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 import { redirect } from "next/navigation";
 import RegisterForm from "@/components/auth/register-form";
 
 export default async function RegisterPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user) {
+  const { isAuth } = await verifySession();
+  if (isAuth) {
     redirect("/dashboard");
   }
   return <RegisterForm />;

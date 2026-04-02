@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 import LoginForm from "@/components/auth/login-form";
 import { redirect } from "next/navigation";
 
@@ -9,9 +9,8 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
     throw new Error(decodeURIComponent(params.auth_error));
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user) {
+  const { isAuth } = await verifySession();
+  if (isAuth) {
     redirect("/dashboard");
   }
   return <LoginForm />;

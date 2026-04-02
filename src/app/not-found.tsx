@@ -1,14 +1,10 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 import { FileQuestion, Home, LayoutDashboard, ArrowLeft } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default async function NotFound() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await verifySession();
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-50/50 p-4 sm:p-6 lg:p-8">

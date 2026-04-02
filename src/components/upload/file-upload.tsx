@@ -41,6 +41,7 @@ import {
 } from "lucide-react";
 import { toAbsoluteUrl } from "@/lib/helpers";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/components/theme-context";
 
 interface FileUploadItem extends FileWithPreview {
   progress: number;
@@ -71,6 +72,7 @@ export default function TableUpload({
   disableDefaultFiles = true,
   onClear,
 }: TableUploadProps) {
+  const { theme } = useTheme();
   // Create default files using FileMetadata type
   const defaultFiles: FileMetadata[] = disableDefaultFiles
     ? []
@@ -284,7 +286,8 @@ export default function TableUpload({
               <button
                 type="button"
                 onClick={openFileDialog}
-                className="cursor-pointer text-[#008c8b] underline-offset-4 hover:underline"
+                className="cursor-pointer underline-offset-4 hover:underline"
+                style={{ color: theme.primary }}
               >
                 browse files
               </button>

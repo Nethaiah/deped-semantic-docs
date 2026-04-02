@@ -1,9 +1,9 @@
 import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import type { SearchParams } from "nuqs/server";
 import { thesesFilterParamsCache } from "@/lib/search-params";
 import { getThemeForRole } from "@/lib/theme-config";
+import { getCurrentUserRole } from "@/lib/dal";
 import { Separator } from "@/components/ui/separator";
 
 // Data fetchers
@@ -90,24 +90,15 @@ async function RecentSection({ accentColor }: { accentColor: string }) {
 /* ── Page ── */
 
 export default async function DocumentsPage({ searchParams }: Props) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
+  const userRole = await getCurrentUserRole();
+  if (!userRole) {
     redirect("/login");
   }
 
-  const { data: userData } = await supabase
-    .from("users")
-    .select("role, full_name")
-    .eq("id", user.id)
-    .single();
-
-  const role = userData?.role || "user";
-  const displayName = userData?.full_name || user.user_metadata.full_name;
+  const role = userRole.role;
+  const displayName = userRole.fullName;
   const theme = getThemeForRole(role);
-  const isAdmin = role === "admin";
+  const isAdmin = userRole.isAdmin;
 
   const { page, yearFrom, yearTo, department, college, title } =
     await thesesFilterParamsCache.parse(searchParams);

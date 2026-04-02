@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 import { redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
@@ -94,11 +94,8 @@ async function ResultsSection({
 
 /* ── Page ── */
 export default async function CategoryPage({ params, searchParams }: Props) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
+  const session = await verifySession();
+  if (!session.isAuth) {
     redirect("/login");
   }
 
@@ -126,7 +123,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       {/* Header — renders instantly */}
       <div className="mb-6">
         <div className="mb-4">
-          <Button variant="outline" size="sm" asChild className="cursor-pointer text-[#278fb6] bg-gray-200 hover:bg-gray-300 border-gray-300">
+          <Button variant="outline" size="sm" asChild className="cursor-pointer text-gray-700 bg-gray-200 hover:bg-gray-300 border-gray-300">
           <Link href="/categories">
               <ChevronLeft className="h-4 w-4" />
             Back to Colleges

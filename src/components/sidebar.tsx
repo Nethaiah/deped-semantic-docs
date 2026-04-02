@@ -14,6 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
+import { useTheme } from "./theme-context";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -40,17 +41,11 @@ interface SidebarProps {
   children?: React.ReactNode;
 }
 
-type UserRoleProps = {
-  role: string;
-};
-
-export default function Sidebar({
-  children,
-  role,
-}: SidebarProps & UserRoleProps) {
+export default function Sidebar({ children }: SidebarProps) {
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const { isOpen: isMobileOpen, close: closeMobileSidebar } = useSidebar();
+  const { role, theme } = useTheme();
   const pathname = usePathname();
 
   // Detect screen size
@@ -74,15 +69,13 @@ export default function Sidebar({
     }
   };
 
-  // Determine active link background color based on role
-  const activeLinkColor =
-    String(role).toLowerCase() === "admin" ? "bg-[#278fb6]" : "bg-[#278fb6]";
+  const isAdmin = String(role).toLowerCase() === "admin";
 
   // Desktop expanded state
   const isExpanded = isMobile ? isMobileOpen : isDesktopExpanded;
 
   return (
-    <TooltipProvider delayDuration={0}>
+    <TooltipProvider delayDuration={300}>
       <div className="flex h-screen">
         {/* Backdrop for mobile overlay */}
         {isMobile && isMobileOpen && (
@@ -134,45 +127,49 @@ export default function Sidebar({
           <ul className="space-y-2">
             {menuItems.map(({ title, icon: Icon, path }) => {
               const isActive = pathname.startsWith(path);
+              const linkContent = (
+                <Link
+                  href={path}
+                  onClick={handleLinkClick}
+                  className={`
+                    w-full flex items-center ${
+                      isExpanded ? "justify-start" : "justify-center"
+                    }
+                    gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
+                    ${
+                      isActive
+                        ? `${theme.primaryBgClass} text-white shadow-md`
+                        : "text-gray-700 hover:bg-gray-100"
+                    }
+                  `}
+                >
+                  <Icon className="w-[18px] h-[18px] flex-shrink-0" />
+                  {isExpanded && (
+                    <span className="text-sm font-medium whitespace-nowrap">
+                      {title}
+                    </span>
+                  )}
+                </Link>
+              );
+
               return (
                 <li key={title}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href={path}
-                        onClick={handleLinkClick}
-                        className={`
-                          w-full flex items-center ${
-                            isExpanded ? "justify-start" : "justify-center"
-                          }
-                          gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
-                          ${
-                            isActive
-                              ? `${activeLinkColor} text-white shadow-md`
-                              : "text-gray-700 hover:bg-gray-100"
-                          }
-                        `}
-                      >
-                        <Icon className="w-[18px] h-[18px] flex-shrink-0" />
-                        {isExpanded && (
-                          <span className="text-sm font-medium whitespace-nowrap">
-                            {title}
-                          </span>
-                        )}
-                      </Link>
-                    </TooltipTrigger>
-                    {!isExpanded && (
+                  {isExpanded ? (
+                    linkContent
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
                       <TooltipContent side="right" sideOffset={16}>
                         {title}
                       </TooltipContent>
-                    )}
-                  </Tooltip>
+                    </Tooltip>
+                  )}
                 </li>
               );
             })}
 
             {/* Admin Section */}
-            {String(role).toLowerCase() === "admin" && (
+            {isAdmin && (
               <li className="pt-4 mt-4">
                 <Separator className="mb-4" />
                 {isExpanded && (
@@ -184,39 +181,43 @@ export default function Sidebar({
                 <ul className="space-y-2">
                   {adminMenuItems.map(({ title, icon: Icon, path }) => {
                     const isActive = pathname.startsWith(path);
+                    const linkContent = (
+                      <Link
+                        href={path}
+                        onClick={handleLinkClick}
+                        className={`
+                          w-full flex items-center ${
+                            isExpanded ? "justify-start" : "justify-center"
+                          }
+                          gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
+                          ${
+                            isActive
+                              ? `${theme.primaryBgClass} text-white shadow-md`
+                              : "text-gray-700 hover:bg-gray-100"
+                          }
+                        `}
+                      >
+                        <Icon className="w-[18px] h-[18px] flex-shrink-0" />
+                        {isExpanded && (
+                          <span className="text-sm font-medium whitespace-nowrap">
+                            {title}
+                          </span>
+                        )}
+                      </Link>
+                    );
+
                     return (
                       <li key={title}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Link
-                              href={path}
-                              onClick={handleLinkClick}
-                              className={`
-                                w-full flex items-center ${
-                                  isExpanded ? "justify-start" : "justify-center"
-                                }
-                                gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
-                                ${
-                                  isActive
-                                    ? `${activeLinkColor} text-white shadow-md`
-                                    : "text-gray-700 hover:bg-gray-100"
-                                }
-                              `}
-                            >
-                              <Icon className="w-[18px] h-[18px] flex-shrink-0" />
-                              {isExpanded && (
-                                <span className="text-sm font-medium whitespace-nowrap">
-                                  {title}
-                                </span>
-                              )}
-                            </Link>
-                          </TooltipTrigger>
-                          {!isExpanded && (
+                        {isExpanded ? (
+                          linkContent
+                        ) : (
+                          <Tooltip>
+                            <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
                             <TooltipContent side="right" sideOffset={16}>
                               {title}
                             </TooltipContent>
-                          )}
-                        </Tooltip>
+                          </Tooltip>
+                        )}
                       </li>
                     );
                   })}

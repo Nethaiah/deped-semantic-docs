@@ -1,23 +1,10 @@
 import UploadForm from "@/components/upload/upload-file"
-
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUserRole } from "@/lib/dal";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const supabase = await createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    redirect('/login');
-  }
-
-  const { data: userData } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (userData?.role !== "admin") {
+  const userRole = await getCurrentUserRole();
+  if (!userRole?.isAdmin) {
     redirect("/dashboard");
   }
 

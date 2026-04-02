@@ -1,7 +1,8 @@
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
 import { SidebarProvider } from "@/components/sidebar-context";
-import { createClient } from "@/lib/supabase/server";
+import { ThemeProvider } from "@/components/theme-context";
+import { verifySession, getCurrentUserRole } from "@/lib/dal";
 import { redirect } from "next/navigation";
 
 export default async function MainLayout({
@@ -9,27 +10,20 @@ export default async function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
+  const session = await verifySession();
+  if (!session.isAuth) {
     redirect("/login");
   }
 
-  const { data: userData } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  const role = userData?.role || "user";
+  const userRole = await getCurrentUserRole();
+  const role = userRole?.role || "user";
 
   return (
-    <SidebarProvider>
-      <Header variant="main" />
-      <Sidebar role={role}>{children}</Sidebar>
-    </SidebarProvider>
+    <ThemeProvider role={role}>
+      <SidebarProvider>
+        <Header variant="main" />
+        <Sidebar>{children}</Sidebar>
+      </SidebarProvider>
+    </ThemeProvider>
   );
 }

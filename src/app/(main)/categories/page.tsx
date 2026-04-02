@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 import { redirect } from "next/navigation";
 
 import Categories from "@/components/categories/categories";
@@ -14,9 +14,8 @@ async function CollegesSection() {
 
 /* ── Page ── */
 export default async function CategoriesPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+  const session = await verifySession();
+  if (!session.isAuth) {
     redirect('/login');
   }
 

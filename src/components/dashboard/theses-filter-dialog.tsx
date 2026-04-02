@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTheme } from "@/components/theme-context";
 
 // College to Department mapping
 const COLLEGE_DEPARTMENTS: Record<string, string[]> = {
@@ -67,6 +68,7 @@ export default function ThesesFilterDialog({
   onReset,
   colleges = [],
 }: ThesesFilterDialogProps) {
+  const { theme } = useTheme();
   // Get departments based on selected college
   const availableDepartments = values.college
     ? COLLEGE_DEPARTMENTS[values.college] || []
@@ -215,7 +217,7 @@ export default function ThesesFilterDialog({
             </Button>
             <Button
               onClick={onApply}
-              className="w-full bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer"
+              className={`w-full ${theme.primaryBgClass} ${theme.primaryHoverBgClass} cursor-pointer`}
             >
               Apply Filters
             </Button>

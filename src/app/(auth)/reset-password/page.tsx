@@ -1,16 +1,14 @@
 import ResetPasswordForm from "@/components/auth/reset-password";
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 import { redirect } from "next/navigation";
 
 export default async function ResetPasswordPage() {
-  const supabase = await createClient();
-  
   // Check if user has a valid session (from password reset link)
-  const { data: { user } } = await supabase.auth.getUser();
+  const { isAuth } = await verifySession();
   
   // If no user, redirect to forgot-password page
   // User needs to click the reset link in their email first
-  if (!user) {
+  if (!isAuth) {
     redirect("/forgot-password");
   }
   

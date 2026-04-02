@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { UserStatus } from "./columns";
+import { useTheme } from "@/components/theme-context";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -50,12 +51,11 @@ const STATUS_TABS: { label: string; value: UserStatus | "all" }[] = [
 
 const STATUS_COUNTS_COLORS: Record<
   UserStatus | "all",
-  { bg: string; text: string; activeBg: string; activeText: string }
+  { bg: string; text: string; activeBg?: string; activeText: string }
 > = {
   all: {
     bg: "bg-gray-100",
     text: "text-gray-600",
-    activeBg: "bg-[#008c8b]",
     activeText: "text-white",
   },
   pending: {
@@ -82,6 +82,7 @@ export function UserDataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const { theme } = useTheme();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -141,7 +142,7 @@ export function UserDataTable<TData, TValue>({
               className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 cursor-pointer border
                 ${
                   isActive
-                    ? `${colors.activeBg} ${colors.activeText} border-transparent shadow-sm`
+                    ? `${tab.value === "all" ? theme.primaryBgClass : colors.activeBg} ${colors.activeText} border-transparent shadow-sm`
                     : `bg-white ${colors.text} border-gray-200 hover:border-gray-300 hover:bg-gray-50`
                 }`}
             >
@@ -169,7 +170,7 @@ export function UserDataTable<TData, TValue>({
             placeholder="Search by name, email, student no..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-9 bg-white border-gray-200 focus:border-[#008c8b] focus:ring-[#008c8b]/20 text-sm"
+            className="pl-9 bg-white border-gray-200 focus:border-gray-400 focus:ring-gray-400/20 text-sm"
           />
         </div>
 
@@ -243,8 +244,8 @@ export function UserDataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                   className={`
                     border-b border-gray-100 transition-colors duration-100
-                    hover:bg-[#008c8b]/5
-                    data-[state=selected]:bg-[#008c8b]/10
+                    hover:bg-gray-50
+                    data-[state=selected]:bg-gray-100
                     ${idx % 2 === 0 ? "bg-white" : "bg-gray-50/50"}
                   `}
                 >
@@ -279,7 +280,7 @@ export function UserDataTable<TData, TValue>({
         <p className="text-sm text-gray-500">
           {table.getFilteredSelectedRowModel().rows.length > 0 ? (
             <>
-              <span className="font-semibold text-[#008c8b]">
+              <span className="font-semibold" style={{ color: theme.primary }}>
                 {table.getFilteredSelectedRowModel().rows.length}
               </span>{" "}
               of{" "}
@@ -342,7 +343,7 @@ export function UserDataTable<TData, TValue>({
                     className={`h-8 w-8 p-0 text-xs
                       ${
                         page === current
-                          ? "bg-[#008c8b] hover:bg-[#007a78] border-[#008c8b] text-white"
+                          ? `${theme.primaryBgClass} ${theme.primaryHoverBgClass} border-transparent text-white`
                           : "border-gray-200 text-gray-600 hover:border-gray-300"
                       }`}
                   >

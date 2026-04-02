@@ -1,16 +1,14 @@
 import Settings from "@/components/settings/settings";
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 import { redirect } from "next/navigation";
 
 export default async function SettingsPage() {
-  const supabase = await createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+  const session = await verifySession();
+  if (!session.isAuth) {
     redirect('/login');
   }
 
-  const provider = user.app_metadata.provider || "email";
+  const provider = session.user.app_metadata.provider || "email";
 
   return <Settings provider={provider} />;
 }

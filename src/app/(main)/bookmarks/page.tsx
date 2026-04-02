@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { verifySession } from "@/lib/dal";
 import { redirect } from "next/navigation";
 import type { SearchParams } from "nuqs/server";
 import {
@@ -18,13 +18,11 @@ type Props = {
 
 /* ── Async data-fetching section (only results need server data) ── */
 async function ResultsSection({
-  role,
   page,
   pageSize,
   q,
   sort,
 }: {
-  role: string;
   page: number;
   pageSize: number;
   q: string;
@@ -39,7 +37,6 @@ async function ResultsSection({
 
   return (
     <BookmarkResults
-      role={role}
       theses={theses}
       total={total || 0}
       page={page}
@@ -52,22 +49,10 @@ async function ResultsSection({
 
 /* ── Page ── */
 export default async function BookmarksPage({ searchParams }: Props) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
+  const session = await verifySession();
+  if (!session.isAuth) {
     redirect("/login");
   }
-
-  const { data: userData } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  const role = userData?.role || "user";
 
   const { page, q, sort } = await bookmarkSearchParamsCache.parse(searchParams);
   const pageSize = 10;
@@ -93,7 +78,6 @@ export default async function BookmarksPage({ searchParams }: Props) {
       {/* Results — streams in after data fetch */}
       <Suspense key={JSON.stringify({ page, q, sort })} fallback={<BookmarkResultsSkeleton />}>
         <ResultsSection
-          role={role}
           page={page}
           pageSize={pageSize}
           q={q || ""}

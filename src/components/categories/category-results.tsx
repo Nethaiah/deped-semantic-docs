@@ -12,6 +12,7 @@ import NumberedPagination from "@/components/shared/numbered-pagination";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CategoryResultsSkeleton } from "@/components/categories/skeleton";
+import { useTheme } from "@/components/theme-context";
 
 type Props = {
   theses: CollegeThesis[];
@@ -36,7 +37,8 @@ export default function CategoryResults({
   currentQuery,
   currentSort,
 }: Props) {
-  const activeColor = "#3a7c94";
+  const { theme } = useTheme();
+  const activeColor = theme.primary;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const hasAny = total > 0;
 
