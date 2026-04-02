@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/components/theme-context";
 import { verifySession, getCurrentUserRole } from "@/lib/dal";
 import { redirect } from "next/navigation";
 
+import { PageTransition } from "@/components/page-transition";
+
 export default async function MainLayout({
   children,
 }: {
@@ -22,7 +24,11 @@ export default async function MainLayout({
     <ThemeProvider role={role}>
       <SidebarProvider>
         <Header variant="main" />
-        <Sidebar>{children}</Sidebar>
+        <Sidebar>
+          <PageTransition>
+            {children}
+          </PageTransition>
+        </Sidebar>
       </SidebarProvider>
     </ThemeProvider>
   );

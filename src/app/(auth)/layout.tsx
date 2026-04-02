@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { PageTransition } from "@/components/page-transition";
 
 export default function AuthLayout({
   children,
@@ -34,7 +35,9 @@ export default function AuthLayout({
           Process Smarter. Extract Faster. Understand More.
         </p>
 
-        {children}
+        <PageTransition>
+          {children}
+        </PageTransition>
       </div>
     </div>
   );

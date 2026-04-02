@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 /* ─── Full View Thesis Skeleton (3-column grid layout) ─── */
 export function ViewThesisSkeleton() {
   return (
-    <div className="p-5 lg:p-8">
+    <div className="p-5 lg:p-8 w-full">
       {/* Back Button */}
       <div className="mb-4">
         <Skeleton className="w-20 h-7 rounded-sm" />

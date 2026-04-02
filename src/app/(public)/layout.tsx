@@ -1,4 +1,5 @@
 import Header from "@/components/header";
+import { PageTransition } from "@/components/page-transition";
 
 export default function PublicLayout({
   children,
@@ -8,7 +9,11 @@ export default function PublicLayout({
   return (
     <>
       <Header />
-      <main>{children}</main>
+      <main>
+        <PageTransition>
+          {children}
+        </PageTransition>
+      </main>
     </>
   );
 }

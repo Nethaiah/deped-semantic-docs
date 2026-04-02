@@ -3,7 +3,7 @@ import { Separator } from "@/components/ui/separator";
 
 export default function Loading() {
   return (
-    <div className="space-y-8 p-5 lg:p-6">
+    <div className="space-y-8 p-6 lg:p-8 w-full">
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
