@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginSchema } from "@/lib/zodSchema";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { login } from "@/server/auth/login";
 import { createClient } from "@/lib/supabase/client";
@@ -43,6 +43,8 @@ export default function LoginForm() {
     };
   }, [searchParams, router]);
 
+  const [isPending, startTransition] = useTransition();
+
   async function onSubmit(values: LoginSchema) {
     form.clearErrors();
     const result = await login({
@@ -60,7 +62,9 @@ export default function LoginForm() {
       duration: 3000,
       position: "bottom-right",
     });
-    router.replace("/dashboard");
+    startTransition(() => {
+      router.replace("/dashboard");
+    });
   }
 
   return (
@@ -175,10 +179,10 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={form.handleSubmit(onSubmit)}
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || isPending}
             className="w-full cursor-pointer rounded-lg bg-[#278fb6] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#278fb6]/90 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#278fb6]/30 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {form.formState.isSubmitting ? (
+            {form.formState.isSubmitting || isPending ? (
               <div className="flex items-center justify-center gap-2">
                 <Spinner className="size-4" />
                 Signing in...

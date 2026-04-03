@@ -9,6 +9,7 @@ import {
 } from "@/lib/zodSchema";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { resetPasswordForEmail } from "@/server/auth/forgot-password";
 import { Mail } from "lucide-react";
@@ -17,6 +18,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/
 
 export default function ForgotPasswordForm() {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<ForgotPasswordSchema>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -39,7 +41,9 @@ export default function ForgotPasswordForm() {
         duration: 5000,
         position: "bottom-right",
       });
-      router.push("/login");
+      startTransition(() => {
+        router.push("/login");
+      });
     }
   }
 
@@ -99,10 +103,10 @@ export default function ForgotPasswordForm() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || isPending}
             className="w-full cursor-pointer rounded-lg bg-[#278fb6] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#278fb6]/90 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#278fb6]/30 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {form.formState.isSubmitting ? (
+            {form.formState.isSubmitting || isPending ? (
               <div className="flex items-center justify-center gap-2">
                 <Spinner className="size-4" />
                 Sending...
