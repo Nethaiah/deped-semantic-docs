@@ -30,6 +30,7 @@ async function ResultsSection({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
+
   const pageParam = Array.isArray(sp.page) ? sp.page[0] : sp.page;
   const page = Math.max(1, parseInt(pageParam || "1", 10) || 1);
   const pageSize = 10;
@@ -91,8 +92,16 @@ async function ResultsSection({
   );
 }
 
-/* ── Page ── */
+// Generate static params so the route segment and header are prebuilt into the static shell
+export async function generateStaticParams() {
+  return Object.keys(COLLEGE_FULL_NAMES).map((collegeCode) => ({
+    categoryName: collegeCode,
+  }));
+}
+
+/* ── Page — fully static shell, everything dynamic is in Suspense ── */
 export default async function CategoryPage({ params, searchParams }: Props) {
+  // Awaiting params here is SAFE because generateStaticParams prebuilds it!
   const { categoryName } = await params;
   const collegeCode = decodeURIComponent(categoryName);
   const collegeName = COLLEGE_FULL_NAMES[collegeCode] || collegeCode;
@@ -100,15 +109,15 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   return (
     <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
-      {/* Header — renders instantly */}
+      {/* Header — rendered directly into static shell (no skeleton needed) */}
       <div className="mb-6">
         <div className="mb-4">
           <Button variant="outline" size="sm" asChild className="cursor-pointer text-gray-700 bg-gray-200 hover:bg-gray-300 border-gray-300">
-          <Link href="/categories">
+            <Link href="/categories">
               <ChevronLeft className="h-4 w-4" />
-            Back to Colleges
-          </Link>
-        </Button>
+              Back to Colleges
+            </Link>
+          </Button>
         </div>
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
           {collegeCode}
@@ -116,7 +125,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         <p className="text-sm text-gray-600">{collegeName}</p>
       </div>
 
-      {/* Controls — wraps useSearchParams in Suspense to preserve static shell */}
+      {/* Controls — streams in to isolate useSearchParams on client */}
       <Suspense fallback={<div className="h-10 mb-6 bg-gray-100 rounded-lg animate-pulse w-full"></div>}>
         <CategoryControls
           collegeCode={collegeCode}
@@ -124,7 +133,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         />
       </Suspense>
 
-      {/* Results — streams in after data fetch */}
+      {/* Results — streams in after DB fetch */}
       <Suspense fallback={<CategoryResultsSkeleton />}>
         <ResultsSection collegeCode={collegeCode} searchParams={searchParams} />
       </Suspense>

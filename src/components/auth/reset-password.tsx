@@ -21,7 +21,6 @@ export default function ResetPasswordForm() {
   const [userName, setUserName] = useState<string>("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const supabase = createClient();
 
   const form = useForm<ResetPasswordSchema>({
     resolver: zodResolver(resetPasswordSchema),
@@ -33,6 +32,7 @@ export default function ResetPasswordForm() {
 
   useEffect(() => {
     const checkAuth = async () => {
+      const supabase = createClient();
       try {
         const {
           data: { user },
@@ -64,9 +64,10 @@ export default function ResetPasswordForm() {
     };
 
     checkAuth();
-  }, [router, supabase]);
+  }, [router]);
 
   async function onSubmit(values: ResetPasswordSchema) {
+    const supabase = createClient();
     form.clearErrors();
     const result = await updatePassword(
       values.newPassword,

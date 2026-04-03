@@ -37,14 +37,16 @@ async function AuthenticatedShell({
   );
 }
 
+import { Spinner } from "@/components/ui/spinner";
+
 /* ── Skeleton fallback for the layout while auth resolves ── */
 function LayoutSkeleton() {
   return (
-    <div className="min-h-screen bg-muted/30">
-      {/* Header placeholder */}
-      <div className="fixed top-0 z-[1220] w-full h-12 bg-muted border-b border-gray-200" />
-      {/* Content area placeholder */}
-      <div className="pt-12" />
+    <div className="min-h-screen bg-muted/30 flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4 text-muted-foreground">
+        <Spinner className="size-8 text-[#278fb6]" />
+        <p className="text-sm font-medium">Validating session...</p>
+      </div>
     </div>
   );
 }
