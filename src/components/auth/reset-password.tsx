@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { resetPasswordSchema, type ResetPasswordSchema } from "@/lib/zodSchema";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Spinner } from "@/components/ui/spinner";
 import { updatePassword } from "@/server/auth/reset-password";
@@ -21,7 +21,7 @@ export default function ResetPasswordForm() {
   const [userName, setUserName] = useState<string>("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const supabase = createClient();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<ResetPasswordSchema>({
     resolver: zodResolver(resetPasswordSchema),
@@ -33,6 +33,7 @@ export default function ResetPasswordForm() {
 
   useEffect(() => {
     const checkAuth = async () => {
+      const supabase = createClient();
       try {
         const {
           data: { user },
@@ -44,7 +45,9 @@ export default function ResetPasswordForm() {
             "Session expired. Please request a new password reset link.",
             { duration: 5000, position: "bottom-right" }
           );
-          router.replace("/forgot-password");
+          startTransition(() => {
+            router.replace("/forgot-password");
+          });
           return;
         }
 
@@ -59,14 +62,17 @@ export default function ResetPasswordForm() {
           duration: 5000,
           position: "bottom-right",
         });
-        router.replace("/forgot-password");
+        startTransition(() => {
+          router.replace("/forgot-password");
+        });
       }
     };
 
     checkAuth();
-  }, [router, supabase]);
+  }, [router]);
 
   async function onSubmit(values: ResetPasswordSchema) {
+    const supabase = createClient();
     form.clearErrors();
     const result = await updatePassword(
       values.newPassword,
@@ -84,7 +90,9 @@ export default function ResetPasswordForm() {
         position: "bottom-right",
       });
       await supabase.auth.signOut();
-      router.replace("/login");
+      startTransition(() => {
+        router.replace("/login");
+      });
     }
   }
 
@@ -236,10 +244,10 @@ export default function ResetPasswordForm() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || isPending}
             className="w-full cursor-pointer rounded-lg bg-[#278fb6] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#278fb6]/90 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#278fb6]/30 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {form.formState.isSubmitting ? (
+            {form.formState.isSubmitting || isPending ? (
               <div className="flex items-center justify-center gap-2">
                 <Spinner className="size-4" />
                 Updating...

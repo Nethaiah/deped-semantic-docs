@@ -1,4 +1,4 @@
-import Header from "@/components/header";
+import PublicHeader from "@/components/public-header";
 
 export default function PublicLayout({
   children,
@@ -7,8 +7,10 @@ export default function PublicLayout({
 }) {
   return (
     <>
-      <Header />
-      <main>{children}</main>
+      <PublicHeader />
+      <main>
+        {children}
+      </main>
     </>
   );
 }

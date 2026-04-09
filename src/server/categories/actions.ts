@@ -1,6 +1,5 @@
-"use server";
-
-import { verifySession } from "@/lib/dal";
+import { supabaseStatic } from "@/lib/supabase/static";
+import { cacheLife, cacheTag } from "next/cache";
 import { COLLEGE_FULL_NAMES } from "./constants";
 
 export type CollegeWithCount = {
@@ -23,15 +22,16 @@ export type CollegeThesis = {
 };
 
 /**
- * Get all colleges with their thesis counts
+ * Get all colleges with their thesis counts.
+ * Cached with 'hours' profile — college structure rarely changes.
  */
 export async function getAllColleges(): Promise<CollegeWithCount[]> {
-  try {
-    const { isAuth, user, supabase } = await verifySession();
+  "use cache";
+  cacheTag("colleges");
+  cacheLife("hours");
 
-    if (!isAuth || !user) {
-      return [];
-    }
+  try {
+    const supabase = supabaseStatic;
 
     // Get counts for each college
     const colleges: CollegeWithCount[] = [];
@@ -65,6 +65,10 @@ export type CollegeFilters = {
   department?: string;
 };
 
+/**
+ * Get paginated theses for a specific college with filters and sorting.
+ * Cached with 'minutes' profile — thesis lists may change more frequently.
+ */
 export async function getThesesByCollegePaginated(
   collegeCode: string,
   page: number,
@@ -72,12 +76,12 @@ export async function getThesesByCollegePaginated(
   filters: CollegeFilters = {},
   sort: "year_desc" | "year_asc" | "title_asc" | "title_desc" = "year_desc"
 ): Promise<{ data: CollegeThesis[]; total: number; error: string | null }> {
-  try {
-    const { isAuth, user, supabase } = await verifySession();
+  "use cache";
+  cacheTag("theses", `college-${collegeCode}`);
+  cacheLife("minutes");
 
-    if (!isAuth || !user) {
-      return { data: [], total: 0, error: "Unauthorized" };
-    }
+  try {
+    const supabase = supabaseStatic;
 
     const from = Math.max(0, (page - 1) * pageSize);
     const to = from + pageSize - 1;

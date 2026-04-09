@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Loader2, AlertCircle, MessageSquare, FileText, Sparkles } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTheme } from "@/components/theme-context";
 
 type Props = {
   abstract?: string;
@@ -22,6 +23,7 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
   const [conversationHistory, setConversationHistory] = useState<
     Array<{ question: string; answer: string }>
   >([]);
+  const { theme } = useTheme();
 
   const hasAbstract = abstract && abstract.trim().length > 0;
   const hasSummary = summary && summary.trim().length > 0;
@@ -208,12 +210,16 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
             }}
             disabled={isLoading}
             placeholder="e.g., What methodology was used?"
-            className="flex-1 w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none disabled:bg-slate-100 disabled:cursor-not-allowed text-sm"
+            className="flex-1 w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 disabled:bg-slate-100 disabled:cursor-not-allowed text-sm transition-colors"
+            style={{ 
+              '--tw-ring-color': theme.primary,
+              borderColor: question ? theme.primary : undefined 
+            } as React.CSSProperties}
           />
           <button
             onClick={handleAskQuestion}
             disabled={isLoading || !question.trim()}
-            className="w-full sm:w-auto justify-center bg-slate-700 text-white font-semibold py-2 px-6 rounded-lg hover:bg-slate-800 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center gap-2"
+            className={`w-full sm:w-auto justify-center ${theme.primaryBgClass} text-white font-semibold py-2 px-6 rounded-lg ${theme.primaryHoverBgClass} transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed flex items-center gap-2`}
           >
             {isLoading ? (
               <>

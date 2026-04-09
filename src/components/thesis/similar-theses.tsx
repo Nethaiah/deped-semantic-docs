@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Calendar, ArrowRight, Building } from "lucide-react";
+import { useTheme } from "@/components/theme-context";
 
 type SimilarThesis = {
   thesisId: string;
@@ -17,6 +20,7 @@ type Props = {
 };
 
 export default function SimilarTheses({ similar }: Props) {
+  const { theme } = useTheme();
   if (!similar || similar.length === 0) return null;
 
   // Format authors for display
@@ -42,7 +46,7 @@ export default function SimilarTheses({ similar }: Props) {
               <div className="flex-1 min-w-0">
                 {/* Year and Department Badge */}
                 <div className="flex justify-between items-center mb-1">
-                  <p className="font-bold text-sm text-[#278fb6]">
+                  <p className="font-bold text-sm" style={{ color: theme.primary }}>
                     {thesis.year}
                   </p>
                 </div>
@@ -67,7 +71,8 @@ export default function SimilarTheses({ similar }: Props) {
               
               {/* Hover Arrow */}
               <ArrowRight 
-                className="w-5 h-5 group-hover:translate-x-1 transition-transform flex-shrink-0 mt-1 text-[#278fb6]" 
+                className="w-5 h-5 group-hover:translate-x-1 transition-transform flex-shrink-0 mt-1" 
+                style={{ color: theme.primary }}
               />
             </div>
           </Link>

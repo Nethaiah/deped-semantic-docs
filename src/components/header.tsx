@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { verifySession, getCurrentUserRole } from "@/lib/dal";
+import { getThemeForRole } from "@/lib/theme-config";
 import UserMenu from "./user-menu";
 import NotificationDropdown from "./notification-dropdown";
 import MobileMenuButton from "./mobile-header";
@@ -11,25 +12,17 @@ interface HeaderProps {
 }
 
 export default async function Header({ variant = "public" }: HeaderProps) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const isAuthenticated = !!user;
+  const session = await verifySession();
+  const isAuthenticated = session.isAuth;
+  const user = session.user;
 
   const isMain = variant === "main";
 
-  // Get role on the server to avoid client flash
-  const { data: userData } = await supabase
-    .from("users")
-    .select("role, full_name")
-    .eq("id", user?.id)
-    .single();
-
-  const role = userData?.role || "user";
-
-  // Determine header background color based on role
-  const headerBgColor = role === "admin" ? "bg-[#008c8b]" : "bg-[#087830]";
+  // Cached — won't trigger a second DB call if layout already called it
+  const userRole = await getCurrentUserRole();
+  const role = userRole?.role || "user";
+  const theme = getThemeForRole(role);
+  const headerBgColor = isMain ? theme.primaryBgClass : "bg-[#087830]";
 
   return (
     <nav
@@ -49,6 +42,7 @@ export default async function Header({ variant = "public" }: HeaderProps) {
               width={32}
               height={32}
               className="object-contain"
+              priority
             />
             <span className="text-base font-bold tracking-tight text-[#f3f3f3]">
               DocuLens
@@ -65,6 +59,7 @@ export default async function Header({ variant = "public" }: HeaderProps) {
               width={28}
               height={28}
               className="object-contain"
+              priority
             />
             <span className="text-base font-bold tracking-tight text-[#f3f3f3]">
               DocuLens
@@ -78,9 +73,9 @@ export default async function Header({ variant = "public" }: HeaderProps) {
             <>
               {/* <NotificationDropdown /> */}
               <UserMenu
-                name={userData?.full_name}
-                email={user.user_metadata.email}
-                image={user.user_metadata.avatar_url}
+                name={userRole?.fullName}
+                email={user!.user_metadata.email}
+                image={user!.user_metadata.avatar_url}
               />
             </>
           ) : isAuthenticated ? (

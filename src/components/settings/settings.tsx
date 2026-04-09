@@ -1,5 +1,3 @@
-// --- START OF FILE settings.tsx ---
-
 "use client";
 
 import { Settings2, User, Lock, Loader2 } from "lucide-react";
@@ -35,6 +33,8 @@ import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@/components/theme-context";
+import type { ThemeColors } from "@/lib/theme-config";
 
 const SettingsSection = ({
   title,
@@ -81,7 +81,7 @@ const SettingItem = ({
   </div>
 );
 
-function ProfileForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+function ProfileForm({ setOpen, theme }: { setOpen: (open: boolean) => void; theme: ThemeColors }) {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter(); // Import router to refresh data
   const form = useForm<ProfileSchema>({
@@ -163,7 +163,7 @@ function ProfileForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="bg-[#278fb6]"
+          className={theme.primaryBgClass}
         >
           {form.formState.isSubmitting && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -175,7 +175,7 @@ function ProfileForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   );
 }
 
-function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
+function PasswordForm({ setOpen, theme }: { setOpen: (open: boolean) => void; theme: ThemeColors }) {
   const form = useForm<PasswordSchema>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
@@ -244,7 +244,7 @@ function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="bg-[#278fb6]"
+          className={theme.primaryBgClass}
         >
           {form.formState.isSubmitting && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -256,7 +256,8 @@ function PasswordForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   );
 }
 
-export default function Settings({ provider }: { provider: string }) {
+export default function Settings() {
+  const { theme } = useTheme();
   const [profileOpen, setProfileOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
 
@@ -294,16 +295,14 @@ export default function Settings({ provider }: { provider: string }) {
                     done.
                   </DialogDescription>
                 </DialogHeader>
-                <ProfileForm setOpen={setProfileOpen} />
+                <ProfileForm setOpen={setProfileOpen} theme={theme} />
               </DialogContent>
             </Dialog>
           }
         />
         
-        {/* Only show Password Change if the provider is email */}
-        {provider === "email" && (
-          <SettingItem
-            icon={Lock}
+        <SettingItem
+          icon={Lock}
             title="Password"
             description="Change your password"
             action={
@@ -320,12 +319,11 @@ export default function Settings({ provider }: { provider: string }) {
                       Enter your current password and a new password.
                     </DialogDescription>
                   </DialogHeader>
-                  <PasswordForm setOpen={setPasswordOpen} />
+                  <PasswordForm setOpen={setPasswordOpen} theme={theme} />
                 </DialogContent>
               </Dialog>
             }
           />
-        )}
       </SettingsSection>
     </div>
   );

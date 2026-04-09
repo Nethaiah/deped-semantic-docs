@@ -7,6 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -19,6 +20,7 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
+import { useTheme } from "@/components/theme-context";
 
 export type SearchMode = "rag" | "keyword";
 
@@ -68,6 +70,7 @@ export default function SearchFilterDialog({
   onApply,
   onReset,
 }: SearchFilterDialogProps) {
+  const { theme } = useTheme();
   // Local state to track pending changes
   const [localValues, setLocalValues] = useState<SearchFilterValues>(values);
 
@@ -113,6 +116,9 @@ export default function SearchFilterDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Search Filters</DialogTitle>
+          <DialogDescription className="sr-only">
+            Refine your search results using the available filters.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 ">
@@ -140,7 +146,13 @@ export default function SearchFilterDialog({
                   searchMode: checked ? "rag" : "keyword",
                 })
               }
-              className="data-[state=checked]:bg-[#278fb6] cursor-pointer"
+              className="cursor-pointer data-[state=unchecked]:bg-slate-300 shadow-sm"
+              style={{
+                ...(localValues.searchMode === "rag" && {
+                  backgroundColor: theme.primary,
+                  borderColor: theme.primary,
+                }),
+              }}
             />
           </div>
 
@@ -281,7 +293,7 @@ export default function SearchFilterDialog({
           {filtersDisabled && (
             <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
               <svg
-                className="w-5 h-5 text-[#278fb6] mt-0.5 flex-shrink-0"
+                className={`w-5 h-5 ${theme.primaryTextClass} mt-0.5 flex-shrink-0`}
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -311,7 +323,7 @@ export default function SearchFilterDialog({
             </Button>
             <Button
               onClick={handleApply}
-              className="w-full bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer"
+              className={`w-full ${theme.primaryBgClass} ${theme.primaryHoverBgClass} cursor-pointer`}
             >
               Apply Filters
             </Button>

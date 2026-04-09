@@ -37,20 +37,22 @@ type UserMenuProps = {
 export default function UserMenu({ name, email, image }: UserMenuProps) {
   const supabase = createClient();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   async function handleSignOut() {
+    setIsLoggingOut(true);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
         toast.error("Logout failed");
+        setIsLoggingOut(false);
       } else {
-        // Clear any local state
-        // Force a full page reload to ensure all components re-render
-        window.location.href = "/";
         toast.success("Logged out successfully");
+        window.location.href = "/login";
       }
     } catch (error) {
       toast.error("Logout failed");
+      setIsLoggingOut(false);
     }
   }
 
@@ -134,9 +136,10 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleSignOut}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600 cursor-pointer"
+              disabled={isLoggingOut}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600 cursor-pointer disabled:opacity-50"
             >
-              Logout
+              {isLoggingOut ? "Logging out..." : "Logout"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

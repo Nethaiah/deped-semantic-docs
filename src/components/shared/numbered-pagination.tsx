@@ -9,6 +9,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { useTheme } from "@/components/theme-context";
 
 type PaginationItemType = number | "...";
 
@@ -82,6 +83,7 @@ export default function NumberedPagination({
   isLoading = false,
   siblings = 3,
 }: NumberedPaginationProps) {
+  const { theme } = useTheme();
   // Don't show pagination if only 1 page or no pages
   if (totalPages <= 1) {
     return null;
@@ -156,7 +158,7 @@ export default function NumberedPagination({
                   }}
                   className={
                     isCurrent
-                      ? "bg-[#278fb6] text-white hover:bg-[#278fb6]/90 hover:text-white border-[#278fb6] font-semibold"
+                      ? `${theme.primaryBgClass} text-white ${theme.primaryHoverBgClass} hover:text-white border-transparent font-semibold`
                       : isLoading
                       ? "text-slate-400 opacity-50 cursor-not-allowed"
                       : "text-slate-700 hover:bg-slate-50"

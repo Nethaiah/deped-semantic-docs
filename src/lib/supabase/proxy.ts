@@ -28,13 +28,38 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getUser()
   const user = data?.user
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/auth')
+  // Ensure user.amr exists and contains 'recovery'
+  const isRecoverySession = (user as any)?.amr?.some((amr: any) => amr.method === 'recovery')
+
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || 
+                      request.nextUrl.pathname.startsWith('/register') || 
+                      request.nextUrl.pathname.startsWith('/forgot-password');
+  const isResetRoute = request.nextUrl.pathname.startsWith('/reset-password');
+
   const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard') || 
-                           request.nextUrl.pathname.startsWith('/manage-document') || 
-                           request.nextUrl.pathname.startsWith('/upload');
-  
-  const isAdminRoute = request.nextUrl.pathname.startsWith('/manage-document') || 
+                           request.nextUrl.pathname.startsWith('/search') ||
+                           request.nextUrl.pathname.startsWith('/view') ||
+                           request.nextUrl.pathname.startsWith('/bookmarks') ||
+                           request.nextUrl.pathname.startsWith('/settings') ||
+                           request.nextUrl.pathname.startsWith('/categories') ||
+                           request.nextUrl.pathname.startsWith('/user-management') || 
+                           request.nextUrl.pathname.startsWith('/upload');  
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/user-management') || 
                        request.nextUrl.pathname.startsWith('/upload');
+
+  // Authenticated user trying to visit auth pages → instant redirect to dashboard
+  if (user && isAuthRoute) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
+  }
+
+  // Normal authenticated user trying to visit reset-password → redirect to dashboard
+  if (user && isResetRoute && !isRecoverySession) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
+  }
 
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone()

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterSchema } from "@/lib/zodSchema";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { register } from "@/server/auth/register";
 import { User, Mail, Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
@@ -36,6 +36,7 @@ export default function RegisterForm() {
   });
 
   // Listen for cross-tab email verification
+  const [isPending, startTransition] = useTransition();
   useEffect(() => {
     if (dialogState !== "verify") return;
 
@@ -45,8 +46,10 @@ export default function RegisterForm() {
         setDialogState("redirecting");
         // Small delay so the user sees the "Redirecting" state
         setTimeout(() => {
-          router.replace("/dashboard");
-          router.refresh();
+          startTransition(() => {
+            router.replace("/dashboard");
+            router.refresh();
+          });
         }, 1500);
       }
     });

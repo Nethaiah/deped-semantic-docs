@@ -1,16 +1,15 @@
+import { Suspense } from "react";
 import Settings from "@/components/settings/settings";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import Loading from "./loading";
 
-export default async function SettingsPage() {
-  const supabase = await createClient();
+function SettingsContent() {
+  return <Settings />;
+}
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    redirect('/login');
-  }
-
-  const provider = user.app_metadata.provider || "email";
-
-  return <Settings provider={provider} />;
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <SettingsContent />
+    </Suspense>
+  );
 }

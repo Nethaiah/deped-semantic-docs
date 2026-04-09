@@ -1,6 +1,4 @@
 import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 
 import Categories from "@/components/categories/categories";
 import { getAllColleges } from "@/server/categories/actions";
@@ -14,14 +12,8 @@ async function CollegesSection() {
 
 /* ── Page ── */
 export default async function CategoriesPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    redirect('/login');
-  }
-
   return (
-    <div className="p-5 lg:p-8 bg-gray-50">
+    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
       {/* Header Section — renders instantly */}
       <div className="mb-8">
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">

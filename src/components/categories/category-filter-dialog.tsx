@@ -8,6 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTheme } from "@/components/theme-context";
 
 export type CollegeFilterFormValues = {
   yearFrom: string;
@@ -44,11 +46,15 @@ export default function CollegeFilterDialog({
   onReset,
   departments,
 }: CollegeFilterDialogProps) {
+  const { theme } = useTheme();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Filter Thesis Papers</DialogTitle>
+          <DialogDescription className="sr-only">
+            Filter the thesis papers by specifying year and department.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -132,7 +138,7 @@ export default function CollegeFilterDialog({
             </Button>
             <Button
               onClick={onApply}
-              className="w-full bg-[#278fb6] hover:bg-[#278fb6]/80 cursor-pointer"
+              className={`w-full ${theme.primaryBgClass} ${theme.primaryHoverBgClass} cursor-pointer`}
             >
               Apply Filters
             </Button>

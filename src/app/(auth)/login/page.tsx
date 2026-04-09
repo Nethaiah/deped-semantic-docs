@@ -1,18 +1,15 @@
-import { createClient } from "@/lib/supabase/server";
+import { Suspense } from "react";
 import LoginForm from "@/components/auth/login-form";
-import { redirect } from "next/navigation";
 
-export default async function Login({ searchParams }: { searchParams: Promise<{ auth_error?: string }> }) {
-  const params = await searchParams;
-  
-  if (params?.auth_error) {
-    throw new Error(decodeURIComponent(params.auth_error));
-  }
+// Auth redirect for already-authenticated users is handled by the proxy (middleware).
+// Suspense is required because LoginForm uses useSearchParams() internally,
+// which Next.js 16 requires to be inside a Suspense boundary with cacheComponents.
+// Using null fallback so there's zero visible loading flash.
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user) {
-    redirect("/dashboard");
-  }
-  return <LoginForm />;
+export default function Login() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  );
 }

@@ -17,6 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useTheme } from "@/components/theme-context";
 
 type Props = {
   sourcePath?: string;
@@ -29,6 +30,7 @@ export default function ThesisActions({
   thesisId, 
   initialBookmarked = false 
 }: Props) {
+  const { theme } = useTheme();
   const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
   const [isPending, startTransition] = useTransition();
   const [showShareDialog, setShowShareDialog] = useState(false);
@@ -77,7 +79,8 @@ export default function ThesisActions({
         <button 
           onClick={handleBookmarkToggle}
           disabled={isPending}
-          className="w-full mb-2 text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-4 rounded-md flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`w-full mb-2 text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 ${!isBookmarked ? "text-slate-700" : ""} font-medium py-2.5 px-4 rounded-md flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+          style={isBookmarked ? { color: theme.primary } : undefined}
         >
           <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`} /> 
           {isBookmarked ? "Bookmarked" : "Bookmark"}
@@ -118,7 +121,7 @@ export default function ThesisActions({
             <AlertDialogAction 
               onClick={handleConfirmUnbookmark} 
               disabled={isPending} 
-              className="bg-[#278fb6] hover:bg-[#278fb6] focus:ring-[#278fb6] cursor-pointer"
+              className={`${theme.primaryBgClass} ${theme.primaryHoverBgClass} focus:ring-gray-400 cursor-pointer`}
             >
               {isPending ? "Removing..." : "Remove Bookmark"}
             </AlertDialogAction>

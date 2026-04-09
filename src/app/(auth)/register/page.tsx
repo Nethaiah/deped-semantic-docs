@@ -1,13 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import RegisterForm from "@/components/auth/register-form";
 
-export default async function RegisterPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user) {
-    redirect("/dashboard");
-  }
+// Auth redirect for already-authenticated users is handled by the proxy (middleware).
+// This page just renders the form directly — no Suspense needed, no auth check.
+
+export default function RegisterPage() {
   return <RegisterForm />;
 }
-

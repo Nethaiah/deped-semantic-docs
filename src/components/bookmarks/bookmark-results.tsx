@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import ThesisActionButtons from "@/components/shared/thesis-action-buttons";
 import NumberedPagination from "@/components/shared/numbered-pagination";
 import { BookmarkResultsSkeleton } from "@/components/bookmarks/skeleton";
+import { useTheme } from "@/components/theme-context";
 
 type BookmarkedThesis = {
   id: string;
@@ -36,7 +37,6 @@ type BookmarkedThesis = {
 };
 
 type Props = {
-  role: string;
   theses: BookmarkedThesis[];
   total: number;
   page: number;
@@ -46,7 +46,6 @@ type Props = {
 };
 
 export default function BookmarkResults({
-  role,
   theses,
   total,
   page,
@@ -54,8 +53,8 @@ export default function BookmarkResults({
   currentQuery,
   currentSort,
 }: Props) {
-  const activeColor =
-    String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
+  const { theme } = useTheme();
+  const activeColor = theme.primary;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const hasAny = total > 0;
 

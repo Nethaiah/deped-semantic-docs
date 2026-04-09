@@ -1,14 +1,12 @@
+import { Suspense } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import { FileQuestion, Home, LayoutDashboard, ArrowLeft } from "lucide-react";
+import { verifySession } from "@/lib/dal";
+import { FileQuestion, Home, LayoutDashboard } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function NotFound() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+async function NotFoundContent() {
+  const { user } = await verifySession();
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-50/50 p-4 sm:p-6 lg:p-8">
@@ -17,7 +15,7 @@ export default async function NotFound() {
           <div className="h-20 w-20 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
             <FileQuestion className="h-10 w-10 text-[#087830]" />
           </div>
-          
+
           <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-2">
             404
           </h1>
@@ -58,5 +56,26 @@ export default async function NotFound() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function NotFoundSkeleton() {
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-50/50 p-4">
+      <div className="max-w-md w-full bg-white rounded-xl p-10 text-center">
+        <Skeleton className="h-20 w-20 rounded-full mx-auto mb-6" />
+        <Skeleton className="h-12 w-24 mx-auto mb-2 rounded" />
+        <Skeleton className="h-8 w-48 mx-auto mb-3 rounded" />
+        <Skeleton className="h-12 w-full rounded-xl" />
+      </div>
+    </div>
+  );
+}
+
+export default function NotFound() {
+  return (
+    <Suspense fallback={<NotFoundSkeleton />}>
+      <NotFoundContent />
+    </Suspense>
   );
 }

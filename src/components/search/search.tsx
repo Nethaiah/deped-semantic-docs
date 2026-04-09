@@ -29,12 +29,10 @@ import {
 } from "@/components/ui/select";
 import { useQueryStates, debounce } from "nuqs";
 import { searchPageParams, type SearchSortOption } from "@/lib/search-params";
+import { useTheme } from "@/components/theme-context";
 
-type Role = {
-  role: string;
-};
-
-export default function Search({ role }: Role) {
+export default function Search() {
+  const { theme } = useTheme();
   // URL-synced state using nuqs
   const [urlState, setUrlState] = useQueryStates(searchPageParams, {
     history: "push",
@@ -119,8 +117,7 @@ export default function Search({ role }: Role) {
 
   // Note: Filters are now synced via nuqs URL params, no need for sessionStorage
 
-  const activeColor =
-    String(role).toLowerCase() === "admin" ? "#008c8b" : "#3a7c94";
+  const activeColor = theme.primary;
 
   // Handle search
   const handleSearch = async () => {
@@ -326,7 +323,7 @@ export default function Search({ role }: Role) {
           <Button
             onClick={handleSearch}
             disabled={isLoading || !searchQuery?.trim()}
-            className="h-10 w-10 p-0 sm:w-auto sm:px-4 cursor-pointer bg-[#278fb6] hover:bg-[#278fb6]/80 shrink-0 text-white"
+            className={`h-10 w-10 p-0 sm:w-auto sm:px-4 cursor-pointer ${theme.primaryBgClass} ${theme.primaryHoverBgClass} shrink-0 text-white`}
             style={{ opacity: isLoading || !searchQuery?.trim() ? 0.5 : 1 }}
           >
             {isLoading ? (
