@@ -154,7 +154,7 @@ async function ThesisPDFSection({ thesisId }: { thesisId: string }) {
   if (!thesis) return null;
 
   return (
-    <DocumentPDFViewer sourcePath={thesis.sourcePath} title={thesis.title} />
+    <DocumentPDFViewer sourcePath={thesis.sourcePath} thesisId={thesis.thesisId} title={thesis.title} />
   );
 }
 

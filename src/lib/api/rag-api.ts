@@ -3,9 +3,40 @@
  * 
  * This service handles all communication with the FastAPI RAG backend.
  * It provides methods for semantic search and document Q&A functionality.
+ * 
+ * Protected endpoints send the current Supabase session JWT as a
+ * Bearer token so the backend can verify the caller is authenticated.
  */
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_RAG_API_URL || 'http://localhost:8000/api/v1';
+
+// ============================================================================
+// AUTH HELPERS
+// ============================================================================
+
+/**
+ * Build request headers with the current user's Supabase JWT.
+ *
+ * Uses a dynamic import so that server components (which only reference
+ * static helpers like getProxyPdfUrl) never load the browser Supabase client.
+ */
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+  try {
+    const { createClient } = await import('@/lib/supabase/client');
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session?.access_token) {
+      headers['Authorization'] = `Bearer ${session.access_token}`;
+    }
+  } catch {
+    // Non-browser context or session unavailable — proceed without token.
+  }
+
+  return headers;
+}
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -66,11 +97,10 @@ export class RAGApiService {
    */
   static async search(request: SearchRequest): Promise<SearchResponse> {
     try {
+      const headers = await getAuthHeaders();
       const response = await fetch(`${API_BASE_URL}/search`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify(request),
       });
 
@@ -106,11 +136,10 @@ export class RAGApiService {
    */
   static async documentQA(request: DocumentQARequest): Promise<DocumentQAResponse> {
     try {
+      const headers = await getAuthHeaders();
       const response = await fetch(`${API_BASE_URL}/thesis/qa`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify(request),
       });
 
@@ -160,6 +189,15 @@ export class RAGApiService {
    */
   static getBaseUrl(): string {
     return API_BASE_URL;
+  }
+
+  /**
+   * Build the proxy URL for viewing/downloading a thesis PDF.
+   * The backend fetches the PDF from cloud storage server-side,
+   * avoiding CORS issues on restricted networks.
+   */
+  static getProxyPdfUrl(thesisId: string): string {
+    return `${API_BASE_URL}/thesis/${thesisId}/pdf`;
   }
 }
 

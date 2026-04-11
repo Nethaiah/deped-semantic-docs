@@ -7,6 +7,7 @@ import { toggleBookmark } from "@/server/bookmarks/toggle-bookmark";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import ShareDialog from "@/components/shared/share-dialog";
+import { RAGApiService } from "@/lib/api/rag-api";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -95,7 +96,7 @@ export default function ThesisActions({
         
         {sourcePath && (
           <Link
-            href={sourcePath} 
+            href={RAGApiService.getProxyPdfUrl(thesisId)} 
             target="_blank" 
             rel="noopener noreferrer"
             className="w-full text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-4 rounded-md flex items-center gap-3 transition-colors"

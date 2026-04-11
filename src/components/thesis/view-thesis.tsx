@@ -66,7 +66,8 @@ export default async function ViewThesis({ thesisId }: Props) {
         {/* Right Sidebar - PDF Viewer & Similar Theses */}
         <div className="col-span-13 lg:col-span-4 space-y-6">
           <DocumentPDFViewer 
-            sourcePath={thesis.sourcePath} 
+            sourcePath={thesis.sourcePath}
+            thesisId={thesis.thesisId}
             title={thesis.title} 
           />
           <SimilarTheses similar={similar} />
