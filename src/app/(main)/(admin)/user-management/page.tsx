@@ -1,6 +1,4 @@
 import { Suspense } from "react";
-import { getCurrentUserRole } from "@/lib/dal";
-import { redirect } from "next/navigation";
 import { columns, UserRecord } from "@/components/user-management/columns";
 import { UserDataTable } from "@/components/user-management/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -117,34 +115,25 @@ const dummyUsers: UserRecord[] = [
   },
 ];
 
-async function UserManagementContent() {
-  const userRole = await getCurrentUserRole();
-  if (!userRole?.isAdmin) {
-    redirect("/dashboard");
-  }
+// ── Async data section (will use real DB later) ──────────────────────────────
 
-  const pending = dummyUsers.filter((u) => u.status === "pending").length;
-  const approved = dummyUsers.filter((u) => u.status === "approved").length;
-  const rejected = dummyUsers.filter((u) => u.status === "rejected").length;
+async function UserManagementData() {
+  // When real data is needed, fetch it here:
+  // const users = await getUsers();
+  const users = dummyUsers;
+
+  const pending = users.filter((u) => u.status === "pending").length;
+  const approved = users.filter((u) => u.status === "approved").length;
+  const rejected = users.filter((u) => u.status === "rejected").length;
 
   return (
-    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
-      {/* Page Header — renders instantly */}
-      <div className="mb-6">
-        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
-          User Management
-        </h1>
-        <p className="text-sm text-gray-600">
-          Manage and approve student access to DocuLens.
-        </p>
-      </div>
-
+    <>
       {/* Quick stat cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         {[
           {
             label: "Total Users",
-            value: dummyUsers.length,
+            value: users.length,
             colorText: "text-gray-800",
             colorBg: "bg-white",
             border: "border-gray-200",
@@ -184,32 +173,52 @@ async function UserManagementContent() {
       </div>
 
       {/* Data Table */}
-      <UserDataTable columns={columns} data={dummyUsers} />
-    </div>
+      <UserDataTable columns={columns} data={users} />
+    </>
   );
 }
 
-function UserManagementSkeleton() {
+// ── Skeleton for data section ───────────────────────────────────────────────
+
+function DataSkeleton() {
   return (
-    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
-      <div className="mb-6">
-        <Skeleton className="w-48 h-8 rounded mb-1" />
-        <Skeleton className="w-72 h-4 rounded" />
-      </div>
+    <>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-20 rounded-xl" />
+          <div key={i} className="rounded-xl border border-gray-200 bg-white px-4 py-3">
+            <Skeleton className="h-3 w-16 mb-2 rounded" />
+            <Skeleton className="h-8 w-10 rounded" />
+          </div>
         ))}
       </div>
       <Skeleton className="w-full h-96 rounded-xl" />
-    </div>
+    </>
   );
 }
 
+/**
+ * User Management page — admin guard handled by `(admin)/layout.tsx`.
+ *
+ * Static header renders instantly (synchronous default export).
+ * Stats + table stream in via Suspense.
+ */
 export default function UserManagementPage() {
   return (
-    <Suspense fallback={<UserManagementSkeleton />}>
-      <UserManagementContent />
-    </Suspense>
+    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
+      {/* Page Header — static, renders instantly */}
+      <div className="mb-6">
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
+          User Management
+        </h1>
+        <p className="text-sm text-gray-600">
+          Manage and approve student access to DocuLens.
+        </p>
+      </div>
+
+      {/* Dynamic content — streams in */}
+      <Suspense fallback={<DataSkeleton />}>
+        <UserManagementData />
+      </Suspense>
+    </div>
   );
 }

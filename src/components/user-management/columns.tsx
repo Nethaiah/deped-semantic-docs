@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useTheme } from "@/components/theme-context";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,27 +72,52 @@ function RoleCell({ row }: { row: { original: UserRecord } }) {
   );
 }
 
+function ThemedCheckbox({
+  checked,
+  onCheckedChange,
+  ariaLabel,
+}: {
+  checked: boolean | "indeterminate";
+  onCheckedChange: (value: boolean | "indeterminate") => void;
+  ariaLabel: string;
+}) {
+  const { theme } = useTheme();
+  const isChecked = checked === true || checked === "indeterminate";
+  
+  return (
+    <Checkbox
+      checked={checked}
+      onCheckedChange={onCheckedChange}
+      aria-label={ariaLabel}
+      className={isChecked ? "border-transparent" : "border-gray-300"}
+      style={
+        isChecked
+          ? { backgroundColor: theme.primary, borderColor: theme.primary }
+          : undefined
+      }
+    />
+  );
+}
+
 export const columns: ColumnDef<UserRecord>[] = [
   // ── Row Selection ────────────────────────────────────────────────────────────
   {
     id: "select",
     header: ({ table }) => (
-      <Checkbox
+      <ThemedCheckbox
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value: boolean | "indeterminate") => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="border-gray-300"
+        ariaLabel="Select all"
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
+      <ThemedCheckbox
         checked={row.getIsSelected()}
         onCheckedChange={(value: boolean | "indeterminate") => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="border-gray-300"
+        ariaLabel="Select row"
       />
     ),
     enableSorting: false,

@@ -15,6 +15,7 @@ import {
   getSimilarTheses,
 } from "@/server/theses/get-thesis-data";
 import { checkBookmark } from "@/server/bookmarks/check-bookmark";
+import { getCurrentUserRole } from "@/lib/dal";
 
 type Props = {
   params: Promise<{ thesisId: string }>;
@@ -108,6 +109,8 @@ function SimilarSkeleton() {
 async function ThesisSidebar({ thesisId }: { thesisId: string }) {
   const { data: thesis, error } = await getThesisById(thesisId);
   const { bookmarked } = await checkBookmark(thesisId);
+  const userRole = await getCurrentUserRole();
+  const isAdmin = userRole?.isAdmin ?? false;
 
   if (error || !thesis) {
     return (
@@ -129,6 +132,7 @@ async function ThesisSidebar({ thesisId }: { thesisId: string }) {
         sourcePath={thesis.sourcePath}
         thesisId={thesis.thesisId}
         initialBookmarked={bookmarked}
+        isAdmin={isAdmin}
       />
     </div>
   );
