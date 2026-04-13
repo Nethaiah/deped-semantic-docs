@@ -199,5 +199,217 @@ export class RAGApiService {
   static getProxyPdfUrl(thesisId: string): string {
     return `${API_BASE_URL}/thesis/${thesisId}/pdf`;
   }
+
+  /**
+   * Build the proxy URL that triggers a file-save dialog instead of
+   * displaying the PDF inline in the browser.
+   */
+  static getDownloadPdfUrl(thesisId: string): string {
+    return `${API_BASE_URL}/thesis/${thesisId}/pdf?download=true`;
+  }
 }
 
+export interface UploadResponse {
+  id: string;
+  status: string;
+  message: string;
+}
+
+export interface PendingThesisItem {
+  id: string;
+  title: string;
+  authors: string[];
+  year: number | null;
+  college: string | null;
+  department: string | null;
+  status: string;
+  status_message: string | null;
+  original_filename: string;
+  file_size_bytes: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PendingThesesListResponse {
+  items: PendingThesisItem[];
+  count: number;
+}
+
+export interface ExtractedPage {
+  page_number: number;
+  text: string;
+  has_table: boolean;
+  has_figure: boolean;
+  has_equation: boolean;
+}
+
+export interface ReviewData {
+  id: string;
+  title: string;
+  authors: string[];
+  year: number | null;
+  college: string | null;
+  department: string | null;
+  advisor: string | null;
+  status: string;
+  original_filename: string;
+  r2_url: string;
+  pdf_proxy_url: string;
+  extracted_text: string | null;
+  extracted_metadata: Record<string, unknown> | null;
+  extracted_pages: ExtractedPage[] | null;
+  summary: string | null;
+  keywords: string[];
+  abstract: string | null;
+  created_at: string;
+}
+
+export interface ApprovePayload {
+  title?: string;
+  authors?: string[];
+  year?: number;
+  college?: string;
+  department?: string;
+  advisor?: string;
+  keywords?: string[];
+  abstract?: string;
+  summary?: string;
+  review_notes?: string;
+}
+
+export interface RejectPayload {
+  reason?: string;
+}
+
+// ============================================================================
+// UPLOAD API SERVICE
+// ============================================================================
+
+export class UploadApiService {
+  /**
+   * Upload a thesis PDF (file only — metadata is extracted by AI).
+   * Uses multipart/form-data.
+   */
+  static async uploadThesis(file: File): Promise<UploadResponse> {
+    const headers = await getAuthHeaders();
+    // Remove Content-Type so the browser sets multipart boundary
+    delete headers['Content-Type'];
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_BASE_URL}/upload`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || `Upload failed: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * List all pending thesis uploads.
+   */
+  static async listUploads(status?: string): Promise<PendingThesesListResponse> {
+    const headers = await getAuthHeaders();
+    const params = status ? `?status=${encodeURIComponent(status)}` : '';
+    const response = await fetch(`${API_BASE_URL}/uploads${params}`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || `Failed to list uploads: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get full review data for side-by-side comparison.
+   */
+  static async getUploadReview(uploadId: string): Promise<ReviewData> {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${API_BASE_URL}/uploads/${uploadId}/review`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || `Failed to get review: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Approve a processed thesis upload.
+   */
+  static async approveUpload(uploadId: string, payload: ApprovePayload): Promise<{ thesis_id: string; message: string }> {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${API_BASE_URL}/uploads/${uploadId}/approve`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || `Approval failed: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Reject a thesis upload.
+   */
+  static async rejectUpload(uploadId: string, payload: RejectPayload): Promise<{ message: string }> {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${API_BASE_URL}/uploads/${uploadId}/reject`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || `Rejection failed: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Retry processing a failed upload.
+   */
+  static async retryUpload(uploadId: string): Promise<{ message: string }> {
+    const headers = await getAuthHeaders();
+    const response = await fetch(`${API_BASE_URL}/uploads/${uploadId}/retry`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({}),
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.detail || `Retry failed: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get the proxy URL for a pending upload's PDF.
+   */
+  static getPendingPdfUrl(uploadId: string): string {
+    return `${API_BASE_URL}/uploads/${uploadId}/pdf`;
+  }
+}
