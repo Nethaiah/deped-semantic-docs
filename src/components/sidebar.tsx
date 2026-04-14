@@ -12,6 +12,7 @@ import {
   PanelLeft,
   Upload,
   Users,
+  Archive,
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 import { useTheme } from "./theme-context";
@@ -35,6 +36,7 @@ const menuItems = [
 const adminMenuItems = [
   { title: "User Management", icon: Users, path: "/user-management" },
   { title: "Upload", icon: Upload, path: "/upload" },
+  { title: "Archive", icon: Archive, path: "/archive" },
 ];
 
 interface SidebarProps {

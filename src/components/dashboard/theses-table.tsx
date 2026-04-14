@@ -18,6 +18,7 @@ import {
 import ThesesFilterDialog from "@/components/dashboard/theses-filter-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import NumberedPagination from "@/components/shared/numbered-pagination";
+import { TruncatedText } from "@/components/ui/truncated-text";
 import type { Thesis } from "@/server/theses/get-theses";
 import type { FilterOptions } from "@/server/theses/get-filter-options";
 
@@ -214,15 +215,10 @@ export default function ThesesTable({
                   <TableCell className="py-4 px-4 text-md text-slate-900 max-w-[300px] align-top">
                     <Link
                       href={`/view/${thesis.id}`}
-                      className="block hover:opacity-80 transition-opacity"
+                      className="block hover:opacity-80 transition-opacity text-left text-slate-900"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <div
-                        className="truncate"
-                        title={thesis.title}
-                      >
-                        <span className="text-slate-900">{thesis.title}</span>
-                      </div>
+                      <TruncatedText text={thesis.title} className="truncate" />
                     </Link>
                   </TableCell>
 
@@ -285,9 +281,10 @@ export default function ThesesTable({
                   </div>
                 </div>
 
-                <h3 className="font-semibold text-slate-800 mb-3 line-clamp-2 leading-tight">
-                  {thesis.title}
-                </h3>
+                <TruncatedText
+                  text={thesis.title}
+                  className="font-semibold text-slate-800 mb-3 line-clamp-2 leading-tight text-left"
+                />
 
                 <div className="space-y-2 text-sm text-slate-500">
                   <div className="flex items-start gap-2">

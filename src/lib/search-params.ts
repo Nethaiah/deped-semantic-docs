@@ -64,3 +64,24 @@ export const searchPageParams = {
 };
 
 export const searchPageParamsCache = createSearchParamsCache(searchPageParams);
+
+// Archive page params
+export const archiveSortOptions = [
+  "archived_desc",
+  "archived_asc",
+  "title_asc",
+  "title_desc",
+  "year_desc",
+  "year_asc",
+] as const;
+
+export type ArchiveSortOption = (typeof archiveSortOptions)[number];
+
+export const archiveSearchParams = {
+  page: parseAsInteger.withDefault(1),
+  q: parseAsString.withDefault(""),
+  sort: parseAsStringLiteral(archiveSortOptions).withDefault("archived_desc"),
+  college: parseAsString.withDefault(""),
+};
+
+export const archiveSearchParamsCache = createSearchParamsCache(archiveSearchParams);

@@ -13,7 +13,16 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Search, SlidersHorizontal, ChevronLeft, ChevronRight, Users } from "lucide-react";
+import {
+  Search,
+  SlidersHorizontal,
+  ChevronLeft,
+  ChevronRight,
+  Users,
+  Check,
+  X,
+} from "lucide-react";
+import { toast } from "sonner";
 
 import {
   Table,
@@ -33,8 +42,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { UserStatus } from "./columns";
+import { BatchActionBar } from "@/components/ui/batch-action-bar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { UserStatus, UserRecord } from "./columns";
 import { useTheme } from "@/components/theme-context";
 
 interface DataTableProps<TData, TValue> {
@@ -90,6 +117,10 @@ export function UserDataTable<TData, TValue>({
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [activeStatus, setActiveStatus] = React.useState<UserStatus | "all">("all");
 
+  // Batch action state
+  const [batchApproveOpen, setBatchApproveOpen] = React.useState(false);
+  const [batchRejectOpen, setBatchRejectOpen] = React.useState(false);
+
   // Filter data by status tab
   const filteredByStatus = React.useMemo(() => {
     if (activeStatus === "all") return data;
@@ -125,46 +156,40 @@ export function UserDataTable<TData, TValue>({
     globalFilterFn: "includesString",
   });
 
-  return (
-    <div className="space-y-4">
-      {/* ── Status Filter Tabs ── */}
-      <div className="flex flex-wrap gap-2">
-        {STATUS_TABS.map((tab) => {
-          const isActive = activeStatus === tab.value;
-          const colors = STATUS_COUNTS_COLORS[tab.value];
-          return (
-            <button
-              key={tab.value}
-              onClick={() => {
-                setActiveStatus(tab.value);
-                setRowSelection({});
-              }}
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 cursor-pointer border
-                ${
-                  isActive
-                    ? `${tab.value === "all" ? theme.primaryBgClass : colors.activeBg} ${colors.activeText} border-transparent shadow-sm`
-                    : `bg-white ${colors.text} border-gray-200 hover:border-gray-300 hover:bg-gray-50`
-                }`}
-            >
-              {tab.label}
-              <span
-                className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-semibold
-                  ${
-                    isActive
-                      ? "bg-white/20 text-white"
-                      : `${colors.bg} ${colors.text}`
-                  }`}
-              >
-                {counts[tab.value]}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+  // ── Batch action helpers ──
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const selectedCount = selectedRows.length;
 
-      {/* ── Toolbar: Search + Column Visibility ── */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-sm">
+  const getSelectedUsers = (): UserRecord[] =>
+    selectedRows.map((row) => row.original as UserRecord);
+
+  const handleBatchApprove = () => {
+    const users = getSelectedUsers();
+    // TODO: Replace with real server action when user management backend is implemented
+    console.log("Batch approve:", users.map((u) => u.id));
+    toast.success(`${users.length} ${users.length === 1 ? "user" : "users"} approved`, {
+      description: "Status updated successfully.",
+    });
+    setRowSelection({});
+    setBatchApproveOpen(false);
+  };
+
+  const handleBatchReject = () => {
+    const users = getSelectedUsers();
+    // TODO: Replace with real server action when user management backend is implemented
+    console.log("Batch reject:", users.map((u) => u.id));
+    toast.success(`${users.length} ${users.length === 1 ? "user" : "users"} rejected`, {
+      description: "Status updated successfully.",
+    });
+    setRowSelection({});
+    setBatchRejectOpen(false);
+  };
+
+  return (
+    <div className="w-full">
+      {/* ── Toolbar: Search + Focus + Status Filter + Column Visibility ── */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+        <div className="relative flex-1 max-w-sm w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Search by name, email, student no..."
@@ -174,45 +199,96 @@ export function UserDataTable<TData, TValue>({
           />
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Status Filter */}
+          <Select
+            value={activeStatus}
+            onValueChange={(val) => {
+              setActiveStatus(val as typeof activeStatus);
+              setRowSelection({});
+            }}
+          >
+            <SelectTrigger
               size="sm"
-              className="ml-auto gap-2 border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-900"
+              className="w-[160px] border-gray-200 text-xs"
             >
-              <SlidersHorizontal className="h-4 w-4" />
-              Columns
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-44">
-            <DropdownMenuLabel className="text-xs text-gray-500">
-              Toggle Columns
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {table
-              .getAllColumns()
-              .filter((col) => col.getCanHide())
-              .map((col) => (
-                <DropdownMenuCheckboxItem
-                  key={col.id}
-                  className="capitalize text-sm cursor-pointer"
-                  checked={col.getIsVisible()}
-                  onCheckedChange={(value) => col.toggleVisibility(!!value)}
-                >
-                  {col.id === "studentNumber"
-                    ? "Student No."
-                    : col.id === "college"
-                    ? "College / Dept."
-                    : col.id}
-                </DropdownMenuCheckboxItem>
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_TABS.map((tab) => (
+                <SelectItem key={tab.value} value={tab.value}>
+                  {tab.label} ({counts[tab.value]})
+                </SelectItem>
               ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </SelectContent>
+          </Select>
+
+          {/* Column Visibility */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-900"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Columns
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-44">
+              <DropdownMenuLabel className="text-xs text-gray-500">
+                Toggle Columns
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {table
+                .getAllColumns()
+                .filter((col) => col.getCanHide())
+                .map((col) => (
+                  <DropdownMenuCheckboxItem
+                    key={col.id}
+                    className="capitalize text-sm cursor-pointer"
+                    checked={col.getIsVisible()}
+                    onCheckedChange={(value) => col.toggleVisibility(!!value)}
+                  >
+                    {col.id === "studentNumber"
+                      ? "Student No."
+                      : col.id === "college"
+                      ? "College / Dept."
+                      : col.id}
+                  </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
+      {/* ── Batch Action Bar ── */}
+      <BatchActionBar
+        selectedCount={selectedCount}
+        onDeselectAll={() => setRowSelection({})}
+      >
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setBatchApproveOpen(true)}
+          className="gap-2 text-xs border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300 hover:text-green-800"
+        >
+          <Check className="h-3.5 w-3.5" />
+          Approve ({selectedCount})
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setBatchRejectOpen(true)}
+          className="gap-2 text-xs border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 hover:text-red-700"
+        >
+          <X className="h-3.5 w-3.5" />
+          Reject ({selectedCount})
+        </Button>
+      </BatchActionBar>
+
       {/* ── Table ── */}
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm mb-4">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -278,10 +354,10 @@ export function UserDataTable<TData, TValue>({
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-1">
         {/* Selected count */}
         <p className="text-sm text-gray-500">
-          {table.getFilteredSelectedRowModel().rows.length > 0 ? (
+          {selectedCount > 0 ? (
             <>
               <span className="font-semibold" style={{ color: theme.primary }}>
-                {table.getFilteredSelectedRowModel().rows.length}
+                {selectedCount}
               </span>{" "}
               of{" "}
               <span className="font-medium">
@@ -374,6 +450,56 @@ export function UserDataTable<TData, TValue>({
           </div>
         </div>
       </div>
+
+      {/* ── Batch Approve Confirmation ── */}
+      <AlertDialog open={batchApproveOpen} onOpenChange={setBatchApproveOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Approve {selectedCount} {selectedCount === 1 ? "User" : "Users"}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to approve{" "}
+              <span className="font-semibold text-gray-900">
+                {selectedCount} {selectedCount === 1 ? "user" : "users"}
+              </span>
+              ? They will be granted access to DocuLens.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBatchApprove}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              Approve {selectedCount}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ── Batch Reject Confirmation ── */}
+      <AlertDialog open={batchRejectOpen} onOpenChange={setBatchRejectOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reject {selectedCount} {selectedCount === 1 ? "User" : "Users"}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to reject{" "}
+              <span className="font-semibold text-gray-900">
+                {selectedCount} {selectedCount === 1 ? "user" : "users"}
+              </span>
+              ? Their access requests will be denied.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBatchReject}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Reject {selectedCount}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
