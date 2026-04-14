@@ -43,9 +43,14 @@ export async function updateSession(request: NextRequest) {
                            request.nextUrl.pathname.startsWith('/settings') ||
                            request.nextUrl.pathname.startsWith('/categories') ||
                            request.nextUrl.pathname.startsWith('/user-management') || 
-                           request.nextUrl.pathname.startsWith('/upload');  
+                           request.nextUrl.pathname.startsWith('/upload') ||
+                           request.nextUrl.pathname.startsWith('/archive') || 
+                           request.nextUrl.pathname.startsWith('/review');
   const isAdminRoute = request.nextUrl.pathname.startsWith('/user-management') || 
-                       request.nextUrl.pathname.startsWith('/upload');
+                       request.nextUrl.pathname.startsWith('/upload') ||
+                       request.nextUrl.pathname.startsWith('/archive') || 
+                       request.nextUrl.pathname.startsWith('/review');
+
 
   // Authenticated user trying to visit auth pages → instant redirect to dashboard
   if (user && isAuthRoute) {

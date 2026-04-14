@@ -285,7 +285,10 @@ export default function TableUpload({
               Drop files here or{" "}
               <button
                 type="button"
-                onClick={openFileDialog}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openFileDialog();
+                }}
                 className="cursor-pointer underline-offset-4 hover:underline"
                 style={{ color: theme.primary }}
               >
