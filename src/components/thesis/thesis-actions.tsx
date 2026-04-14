@@ -39,6 +39,7 @@ export default function ThesisActions({
   const router = useRouter();
   const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
   const [isPending, startTransition] = useTransition();
+  const [pendingAction, setPendingAction] = useState<"bookmark" | "archive" | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showUnbookmarkDialog, setShowUnbookmarkDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
@@ -52,6 +53,7 @@ export default function ThesisActions({
   };
 
   const performBookmarkToggle = () => {
+    setPendingAction("bookmark");
     startTransition(async () => {
       const result = await toggleBookmark(thesisId);
       
@@ -67,6 +69,7 @@ export default function ThesisActions({
           { duration: 5000, position: "bottom-right" }
         );
       }
+      setPendingAction(null);
     });
   };
 
@@ -81,6 +84,7 @@ export default function ThesisActions({
 
   const handleConfirmArchive = () => {
     setShowArchiveDialog(false);
+    setPendingAction("archive");
     startTransition(async () => {
       const result = await archiveThesis(thesisId, "Archived by admin from thesis view");
       if (result.success) {
@@ -88,12 +92,13 @@ export default function ThesisActions({
           description: "This thesis has been moved to the archive.",
           duration: 5000,
         });
-        router.push("/archive");
+        router.back();
       } else {
         toast.error("Archive Failed", {
           description: result.error || "An unexpected error occurred.",
           duration: 5000,
         });
+        setPendingAction(null);
       }
     });
   };
@@ -108,21 +113,25 @@ export default function ThesisActions({
           className={`w-full mb-2 text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 ${!isBookmarked ? "text-slate-700" : ""} font-medium py-2.5 px-4 rounded-md flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
           style={isBookmarked ? { color: theme.primary } : undefined}
         >
-          <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`} /> 
-          {isBookmarked ? "Bookmarked" : "Bookmark"}
+          <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""} ${pendingAction === "bookmark" ? "animate-pulse" : ""}`} /> 
+          {pendingAction === "bookmark"
+            ? (isBookmarked ? "Removing…" : "Bookmarking…")
+            : (isBookmarked ? "Bookmarked" : "Bookmark")}
         </button>
         
         <button 
-          onClick={handleShare} 
-          className="w-full mb-2 text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-4 rounded-md flex items-center gap-3 transition-colors"
+          onClick={handleShare}
+          disabled={isPending}
+          className="w-full mb-2 text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-4 rounded-md flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Share2 className="h-4 w-4" /> Share
         </button>
         
         {sourcePath && (
           <a
-            href={RAGApiService.getDownloadPdfUrl(thesisId)} 
-            className="w-full text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-4 rounded-md flex items-center gap-3 transition-colors"
+            href={RAGApiService.getDownloadPdfUrl(thesisId)}
+            className={`w-full text-left bg-slate-100 border border-gray-200 cursor-pointer hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-4 rounded-md flex items-center gap-3 transition-colors ${isPending ? "pointer-events-none opacity-50" : ""}`}
+            aria-disabled={isPending}
           >
             <FileDown className="h-4 w-4" /> Download PDF
           </a>
@@ -134,7 +143,8 @@ export default function ThesisActions({
             disabled={isPending}
             className="w-full mt-2 text-left bg-red-50 border border-red-200 cursor-pointer hover:bg-red-100 text-red-700 font-medium py-2.5 px-4 rounded-md flex items-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Archive className="h-4 w-4" /> Archive Thesis
+            <Archive className={`h-4 w-4 ${pendingAction === "archive" ? "animate-pulse" : ""}`} />
+            {pendingAction === "archive" ? "Archiving…" : "Archive Thesis"}
           </button>
         )}
       </CardContent>

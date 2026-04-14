@@ -125,28 +125,84 @@ export async function getArchivedThesesPaginated(
   }
 }
 
+export type ArchiveStats = {
+  totalArchived: number;
+  archivedThisMonth: number;
+  topCollege: string | null;
+};
+
 /**
- * Get total count of archived theses for stat cards.
- * Cached with 'hours' — same rationale as above.
+ * Get aggregate stats for the archive page stat cards.
+ * Returns total count, archived-this-month count, and the top college.
+ * Cached with 'hours' — archive data rarely changes.
  */
-export async function getArchivedThesesCount(): Promise<number> {
+export async function getArchiveStats(): Promise<ArchiveStats> {
   "use cache";
   cacheTag("archived-theses");
   cacheLife("hours");
 
+  const empty: ArchiveStats = {
+    totalArchived: 0,
+    archivedThisMonth: 0,
+    topCollege: null,
+  };
+
   try {
-    const { count, error } = await supabaseStatic
+    const supabase = supabaseStatic;
+
+    // 1. Total archived count
+    const { count: totalCount, error: countErr } = await supabase
       .from("archived_theses")
       .select("*", { count: "exact", head: true });
 
-    if (error) {
-      console.error("Error counting archived theses:", error);
-      return 0;
+    if (countErr) {
+      console.error("Error counting archived theses:", countErr);
+      return empty;
     }
 
-    return count || 0;
+    // 2. Archived this month
+    const now = new Date();
+    const firstOfMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01T00:00:00`;
+
+    const { count: monthCount, error: monthErr } = await supabase
+      .from("archived_theses")
+      .select("*", { count: "exact", head: true })
+      .gte("archived_at", firstOfMonth);
+
+    if (monthErr) {
+      console.error("Error counting monthly archived:", monthErr);
+    }
+
+    // 3. Top college — fetch all college values and count client-side
+    //    (Supabase JS doesn't support GROUP BY, so we select the column)
+    const { data: collegeRows, error: collegeErr } = await supabase
+      .from("archived_theses")
+      .select("college");
+
+    let topCollege: string | null = null;
+
+    if (!collegeErr && collegeRows && collegeRows.length > 0) {
+      const counts: Record<string, number> = {};
+      for (const row of collegeRows) {
+        const c = row.college;
+        if (c) {
+          counts[c] = (counts[c] || 0) + 1;
+        }
+      }
+      const entries = Object.entries(counts);
+      if (entries.length > 0) {
+        entries.sort((a, b) => b[1] - a[1]);
+        topCollege = entries[0][0];
+      }
+    }
+
+    return {
+      totalArchived: totalCount || 0,
+      archivedThisMonth: monthCount || 0,
+      topCollege,
+    };
   } catch (error) {
-    console.error("Error in getArchivedThesesCount:", error);
-    return 0;
+    console.error("Error in getArchiveStats:", error);
+    return empty;
   }
 }

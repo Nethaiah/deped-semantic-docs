@@ -19,8 +19,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Archive,
+  RotateCcw,
+  Trash2,
 } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useTransition } from "react";
+import { toast } from "sonner";
 
 import {
   Table,
@@ -47,8 +51,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { BatchActionBar } from "@/components/ui/batch-action-bar";
 import { useTheme } from "@/components/theme-context";
 import type { ArchiveSortOption } from "@/lib/search-params";
+import type { ArchivedThesisRecord } from "@/server/archive/actions";
+import {
+  batchRestoreTheses,
+  batchDeleteArchivedThesesPermanently,
+} from "@/server/archive/mutations";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -98,6 +118,12 @@ export function ArchiveDataTable<TData, TValue>({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [searchValue, setSearchValue] = React.useState(currentQuery);
+
+  // Batch action state
+  const [isPending, startTransition] = useTransition();
+  const [pendingAction, setPendingAction] = React.useState<"restore" | "delete" | null>(null);
+  const [batchRestoreOpen, setBatchRestoreOpen] = React.useState(false);
+  const [batchDeleteOpen, setBatchDeleteOpen] = React.useState(false);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -153,10 +179,61 @@ export function ArchiveDataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
   });
 
+  // ── Batch action helpers ──
+  const selectedRows = table.getFilteredSelectedRowModel().rows;
+  const selectedCount = selectedRows.length;
+
+  const getSelectedIds = (): string[] =>
+    selectedRows.map(
+      (row) => (row.original as ArchivedThesisRecord).id
+    );
+
+  const handleBatchRestore = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setBatchRestoreOpen(false);
+    setPendingAction("restore");
+    const ids = getSelectedIds();
+    startTransition(async () => {
+      const result = await batchRestoreTheses(ids);
+      if (result.success) {
+        toast.success(`${result.completed} ${result.completed === 1 ? "thesis" : "theses"} restored`, {
+          description: "Moved back to the active repository.",
+        });
+      } else {
+        toast.error("Batch restore partially failed", {
+          description: result.error || "Some items could not be restored.",
+        });
+      }
+      setPendingAction(null);
+      setRowSelection({});
+      router.refresh();
+    });
+  };
+
+  const handleBatchDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setBatchDeleteOpen(false);
+    setPendingAction("delete");
+    const ids = getSelectedIds();
+    startTransition(async () => {
+      const result = await batchDeleteArchivedThesesPermanently(ids);
+      if (result.success) {
+        toast.success(`${result.completed} ${result.completed === 1 ? "thesis" : "theses"} permanently deleted`);
+      } else {
+        toast.error("Batch delete partially failed", {
+          description: result.error || "Some items could not be deleted.",
+        });
+      }
+      setPendingAction(null);
+      setRowSelection({});
+      router.refresh();
+    });
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="w-full">
       {/* ── Toolbar: Search + Sort + College Filter + Column Visibility ── */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
         {/* Search */}
         <div className="relative flex-1 max-w-sm w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -258,8 +335,54 @@ export function ArchiveDataTable<TData, TValue>({
         </div>
       </div>
 
+      {/* ── Batch Action Bar ── */}
+      <BatchActionBar
+        selectedCount={selectedCount}
+        onDeselectAll={() => setRowSelection({})}
+        isProcessing={isPending}
+      >
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setBatchRestoreOpen(true)}
+          disabled={isPending}
+          className="gap-2 text-xs border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300 hover:text-green-800"
+        >
+          {pendingAction === "restore" ? (
+            <>
+              <RotateCcw className="h-3.5 w-3.5 animate-spin" />
+              Restoring…
+            </>
+          ) : (
+            <>
+              <RotateCcw className="h-3.5 w-3.5" />
+              Restore ({selectedCount})
+            </>
+          )}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setBatchDeleteOpen(true)}
+          disabled={isPending}
+          className="gap-2 text-xs border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 hover:text-red-700"
+        >
+          {pendingAction === "delete" ? (
+            <>
+              <Trash2 className="h-3.5 w-3.5 animate-pulse" />
+              Deleting…
+            </>
+          ) : (
+            <>
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete ({selectedCount})
+            </>
+          )}
+        </Button>
+      </BatchActionBar>
+
       {/* ── Table ── */}
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm mb-4">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -330,13 +453,13 @@ export function ArchiveDataTable<TData, TValue>({
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-1">
         {/* Selected / total count */}
         <p className="text-sm text-gray-500">
-          {table.getFilteredSelectedRowModel().rows.length > 0 ? (
+          {selectedCount > 0 ? (
             <>
               <span
                 className="font-semibold"
                 style={{ color: theme.primary }}
               >
-                {table.getFilteredSelectedRowModel().rows.length}
+                {selectedCount}
               </span>{" "}
               of <span className="font-medium">{total}</span> row(s)
               selected
@@ -430,6 +553,60 @@ export function ArchiveDataTable<TData, TValue>({
           </div>
         </div>
       </div>
+
+      {/* ── Batch Restore Confirmation ── */}
+      <AlertDialog open={batchRestoreOpen} onOpenChange={setBatchRestoreOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Restore {selectedCount} {selectedCount === 1 ? "Thesis" : "Theses"}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to restore{" "}
+              <span className="font-semibold text-gray-900">
+                {selectedCount} archived {selectedCount === 1 ? "thesis" : "theses"}
+              </span>
+              ? They will be moved back to the active repository and become
+              searchable again.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBatchRestore}
+              disabled={isPending}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              {isPending ? "Restoring…" : `Restore ${selectedCount}`}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* ── Batch Delete Confirmation ── */}
+      <AlertDialog open={batchDeleteOpen} onOpenChange={setBatchDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Permanently Delete {selectedCount} {selectedCount === 1 ? "Thesis" : "Theses"}</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action is{" "}
+              <span className="font-semibold text-red-600">irreversible</span>.{" "}
+              <span className="font-semibold text-gray-900">
+                {selectedCount} {selectedCount === 1 ? "thesis" : "theses"}
+              </span>{" "}
+              and all associated data will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBatchDelete}
+              disabled={isPending}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isPending ? "Deleting…" : `Delete ${selectedCount} Permanently`}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import ThesisActions from "@/components/thesis/thesis-actions";
 import ThesisAbstract from "@/components/thesis/thesis-abstract";
 import DocumentPDFViewer from "@/components/thesis/pdf-viewer/pdf-viewer";
 import SimilarTheses from "@/components/thesis/similar-theses";
+import ThesisEngagement from "@/components/thesis/thesis-engagement";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import {
@@ -134,6 +135,7 @@ async function ThesisSidebar({ thesisId }: { thesisId: string }) {
         initialBookmarked={bookmarked}
         isAdmin={isAdmin}
       />
+      <ThesisEngagement thesisId={thesis.thesisId} />
     </div>
   );
 }

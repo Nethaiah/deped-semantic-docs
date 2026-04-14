@@ -1,6 +1,7 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { useState, useEffect } from "react";
+import { ColumnDef, type Table } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -53,23 +54,34 @@ function formatDate(dateStr: string): string {
   });
 }
 
+// ── Select-all header (extracted to avoid state reads during render) ────────
+
+function SelectAllHeader({ table }: { table: Table<ArchivedThesisRecord> }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const checked = mounted
+    ? table.getIsAllPageRowsSelected() ||
+      (table.getIsSomePageRowsSelected() && "indeterminate")
+    : false;
+
+  return (
+    <ThemedCheckbox
+      checked={checked}
+      onCheckedChange={(value: boolean | "indeterminate") =>
+        table.toggleAllPageRowsSelected(!!value)
+      }
+      ariaLabel="Select all"
+    />
+  );
+}
+
 // ── Column Definitions ──────────────────────────────────────────────────────
 
 export const archiveColumns: ColumnDef<ArchivedThesisRecord>[] = [
   {
     id: "select",
-    header: ({ table }) => (
-      <ThemedCheckbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value: boolean | "indeterminate") =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        ariaLabel="Select all"
-      />
-    ),
+    header: ({ table }) => <SelectAllHeader table={table} />,
     cell: ({ row }) => (
       <ThemedCheckbox
         checked={row.getIsSelected()}

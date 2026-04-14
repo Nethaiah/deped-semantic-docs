@@ -1,10 +1,11 @@
 import { Suspense } from "react";
+import { Archive, CalendarClock, GraduationCap } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { archiveColumns } from "@/components/archive/columns";
 import { ArchiveDataTable } from "@/components/archive/data-table";
 import {
   getArchivedThesesPaginated,
-  getArchivedThesesCount,
+  getArchiveStats,
   type ArchiveFilters,
 } from "@/server/archive/actions";
 import type { ArchiveSortOption } from "@/server/archive/actions";
@@ -49,9 +50,9 @@ async function ArchiveContent({ searchParams }: Props) {
   };
 
   // Fetch data in parallel (both leverage `use cache` inside)
-  const [{ data: archivedTheses, total }, totalArchived] = await Promise.all([
+  const [{ data: archivedTheses, total }, stats] = await Promise.all([
     getArchivedThesesPaginated(page, pageSize, filters, sort),
-    getArchivedThesesCount(),
+    getArchiveStats(),
   ]);
 
   // Extract unique colleges for filter dropdown
@@ -63,26 +64,38 @@ async function ArchiveContent({ searchParams }: Props) {
     ),
   ].sort();
 
+  // Current month name for the stat card label
+  const monthLabel = new Date().toLocaleDateString("en-US", { month: "long" });
+
   return (
     <>
       {/* Stat cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
         <div className="rounded-xl border border-gray-200 bg-white px-4 py-3">
-          <p className="text-xs font-medium text-gray-500">Total Archived</p>
-          <p className="text-2xl font-bold mt-0.5 text-gray-800">
-            {totalArchived}
+          <div className="flex items-center gap-2 mb-1">
+            <Archive className="h-3.5 w-3.5 text-gray-400" />
+            <p className="text-xs font-medium text-gray-500">Total Archived</p>
+          </div>
+          <p className="text-2xl font-bold text-gray-800">
+            {stats.totalArchived}
           </p>
         </div>
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-          <p className="text-xs font-medium text-gray-500">Current Page</p>
-          <p className="text-2xl font-bold mt-0.5 text-amber-700">
-            {archivedTheses.length}
+          <div className="flex items-center gap-2 mb-1">
+            <CalendarClock className="h-3.5 w-3.5 text-amber-500" />
+            <p className="text-xs font-medium text-gray-500">Archived in {monthLabel}</p>
+          </div>
+          <p className="text-2xl font-bold text-amber-700">
+            {stats.archivedThisMonth}
           </p>
         </div>
         <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
-          <p className="text-xs font-medium text-gray-500">Total Pages</p>
-          <p className="text-2xl font-bold mt-0.5 text-blue-700">
-            {Math.max(1, Math.ceil(total / pageSize))}
+          <div className="flex items-center gap-2 mb-1">
+            <GraduationCap className="h-3.5 w-3.5 text-blue-500" />
+            <p className="text-xs font-medium text-gray-500">Top College</p>
+          </div>
+          <p className="text-lg font-bold text-blue-700 truncate" title={stats.topCollege || undefined}>
+            {stats.topCollege || "—"}
           </p>
         </div>
       </div>

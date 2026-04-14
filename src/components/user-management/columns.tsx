@@ -1,8 +1,8 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, type Table } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal, Check, X, Copy, ShieldCheck, User } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -99,20 +99,33 @@ function ThemedCheckbox({
   );
 }
 
+// ── Select-all header (extracted to avoid state reads during render) ────────
+
+function SelectAllHeader({ table }: { table: Table<UserRecord> }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const checked = mounted
+    ? table.getIsAllPageRowsSelected() ||
+      (table.getIsSomePageRowsSelected() && "indeterminate")
+    : false;
+
+  return (
+    <ThemedCheckbox
+      checked={checked}
+      onCheckedChange={(value: boolean | "indeterminate") =>
+        table.toggleAllPageRowsSelected(!!value)
+      }
+      ariaLabel="Select all"
+    />
+  );
+}
+
 export const columns: ColumnDef<UserRecord>[] = [
   // ── Row Selection ────────────────────────────────────────────────────────────
   {
     id: "select",
-    header: ({ table }) => (
-      <ThemedCheckbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value: boolean | "indeterminate") => table.toggleAllPageRowsSelected(!!value)}
-        ariaLabel="Select all"
-      />
-    ),
+    header: ({ table }) => <SelectAllHeader table={table} />,
     cell: ({ row }) => (
       <ThemedCheckbox
         checked={row.getIsSelected()}

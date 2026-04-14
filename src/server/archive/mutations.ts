@@ -232,3 +232,97 @@ export async function deleteArchivedThesisPermanently(
     };
   }
 }
+
+// ── Batch Operations ──────────────────────────────────────────────────────────
+
+type BatchResult = {
+  success: boolean;
+  completed: number;
+  failed: number;
+  error: string | null;
+};
+
+/**
+ * Batch-restore multiple archived theses.
+ * Delegates to the single `restoreThesis` for each ID so the full
+ * copy-back logic (authors, cache tags) is preserved.
+ */
+export async function batchRestoreTheses(
+  archiveIds: string[]
+): Promise<BatchResult> {
+  const session = await verifySession();
+  if (!session.isAuth) {
+    return { success: false, completed: 0, failed: archiveIds.length, error: "Unauthorized" };
+  }
+
+  const role = await getCurrentUserRole();
+  if (!role?.isAdmin) {
+    return { success: false, completed: 0, failed: archiveIds.length, error: "Forbidden: Admin access required" };
+  }
+
+  let completed = 0;
+  let failed = 0;
+
+  for (const id of archiveIds) {
+    const result = await restoreThesis(id);
+    if (result.success) {
+      completed++;
+    } else {
+      failed++;
+    }
+  }
+
+  return {
+    success: failed === 0,
+    completed,
+    failed,
+    error: failed > 0 ? `${failed} of ${archiveIds.length} failed to restore` : null,
+  };
+}
+
+/**
+ * Batch-delete multiple archived theses permanently.
+ * Uses a single `.in()` query for efficiency since permanent deletes
+ * are simple row deletions with no cascading copy logic.
+ */
+export async function batchDeleteArchivedThesesPermanently(
+  archiveIds: string[]
+): Promise<BatchResult> {
+  try {
+    const session = await verifySession();
+    if (!session.isAuth) {
+      return { success: false, completed: 0, failed: archiveIds.length, error: "Unauthorized" };
+    }
+
+    const role = await getCurrentUserRole();
+    if (!role?.isAdmin) {
+      return { success: false, completed: 0, failed: archiveIds.length, error: "Forbidden: Admin access required" };
+    }
+
+    const { error } = await session.supabase
+      .from("archived_theses")
+      .delete()
+      .in("id", archiveIds);
+
+    if (error) {
+      return { success: false, completed: 0, failed: archiveIds.length, error: error.message };
+    }
+
+    updateTag("archived-theses");
+
+    return {
+      success: true,
+      completed: archiveIds.length,
+      failed: 0,
+      error: null,
+    };
+  } catch (error) {
+    console.error("Error batch-deleting archived theses:", error);
+    return {
+      success: false,
+      completed: 0,
+      failed: archiveIds.length,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}

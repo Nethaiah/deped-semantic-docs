@@ -8,6 +8,7 @@ import remarkGfm from "remark-gfm";
 import { Loader2, AlertCircle, MessageSquare, FileText, Sparkles } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "@/components/theme-context";
+import { logThesisInteraction } from "@/server/theses/log-interaction";
 
 type Props = {
   abstract?: string;
@@ -54,6 +55,11 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
         ...prev,
         { question: currentQuestion, answer: result.answer },
       ]);
+
+      // Log the interaction (fire-and-forget — don't block UI)
+      logThesisInteraction(thesisId, currentQuestion).catch((err) =>
+        console.error("Failed to log interaction:", err)
+      );
     } catch (err) {
       console.error("Thesis Q&A error:", err);
       setError(
