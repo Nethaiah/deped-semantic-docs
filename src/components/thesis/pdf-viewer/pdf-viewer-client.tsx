@@ -81,9 +81,20 @@ function PDFInstance({ file, title, initialScale = 1, onMaximize, onClose, isMod
   const [scale, setScale] = useState<number>(initialScale);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [containerWidth, setContainerWidth] = useState<number>(0);
+  const [documentKey] = useState(() => `${file}-${Date.now()}`);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const pdfDocRef = useRef<any>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pdfDocRef.current) {
+        pdfDocRef.current.destroy().catch(() => {});
+        pdfDocRef.current = null;
+      }
+    };
+  }, []);
 
   // Measure Width
   useEffect(() => {
@@ -251,8 +262,12 @@ function PDFInstance({ file, title, initialScale = 1, onMaximize, onClose, isMod
       <div className="flex-1 overflow-hidden p-0 bg-gray-50 relative">
         <div ref={containerRef} className="absolute inset-0 overflow-y-auto overflow-x-hidden p-4">
            <Document
+              key={documentKey}
               file={file}
-              onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+              onLoadSuccess={(pdf) => {
+                pdfDocRef.current = pdf;
+                setNumPages(pdf.numPages);
+              }}
               loading={
                 <div className="flex flex-col items-center justify-center mt-20 text-gray-400 gap-2">
                    <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
