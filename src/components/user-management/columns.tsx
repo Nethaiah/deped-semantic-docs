@@ -1,12 +1,13 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, type Table } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal, Check, X, Copy, ShieldCheck, User } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useTheme } from "@/components/theme-context";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,27 +72,65 @@ function RoleCell({ row }: { row: { original: UserRecord } }) {
   );
 }
 
+function ThemedCheckbox({
+  checked,
+  onCheckedChange,
+  ariaLabel,
+}: {
+  checked: boolean | "indeterminate";
+  onCheckedChange: (value: boolean | "indeterminate") => void;
+  ariaLabel: string;
+}) {
+  const { theme } = useTheme();
+  const isChecked = checked === true || checked === "indeterminate";
+  
+  return (
+    <Checkbox
+      checked={checked}
+      onCheckedChange={onCheckedChange}
+      aria-label={ariaLabel}
+      className={isChecked ? "border-transparent" : "border-gray-300"}
+      style={
+        isChecked
+          ? { backgroundColor: theme.primary, borderColor: theme.primary }
+          : undefined
+      }
+    />
+  );
+}
+
+// ── Select-all header (extracted to avoid state reads during render) ────────
+
+function SelectAllHeader({ table }: { table: Table<UserRecord> }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const checked = mounted
+    ? table.getIsAllPageRowsSelected() ||
+      (table.getIsSomePageRowsSelected() && "indeterminate")
+    : false;
+
+  return (
+    <ThemedCheckbox
+      checked={checked}
+      onCheckedChange={(value: boolean | "indeterminate") =>
+        table.toggleAllPageRowsSelected(!!value)
+      }
+      ariaLabel="Select all"
+    />
+  );
+}
+
 export const columns: ColumnDef<UserRecord>[] = [
   // ── Row Selection ────────────────────────────────────────────────────────────
   {
     id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value: boolean | "indeterminate") => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="border-gray-300"
-      />
-    ),
+    header: ({ table }) => <SelectAllHeader table={table} />,
     cell: ({ row }) => (
-      <Checkbox
+      <ThemedCheckbox
         checked={row.getIsSelected()}
         onCheckedChange={(value: boolean | "indeterminate") => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="border-gray-300"
+        ariaLabel="Select row"
       />
     ),
     enableSorting: false,

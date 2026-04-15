@@ -6,7 +6,6 @@ import { SidebarProvider } from "@/components/sidebar-context";
 import { ThemeProvider } from "@/components/theme-context";
 import { verifySession, getCurrentUserRole } from "@/lib/dal";
 import { redirect } from "next/navigation";
-import { PageTransition } from "@/components/page-transition";
 
 /* ── Skeleton fallback for the layout while auth resolves ── */
 function LayoutSkeleton() {
@@ -39,9 +38,7 @@ async function AuthenticatedShell({
       <SidebarProvider>
         <MainHeader />
         <Sidebar>
-          <PageTransition>
-            {children}
-          </PageTransition>
+          {children}
         </Sidebar>
       </SidebarProvider>
     </ThemeProvider>

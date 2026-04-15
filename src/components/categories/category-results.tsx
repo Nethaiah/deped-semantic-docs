@@ -13,6 +13,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CategoryResultsSkeleton } from "@/components/categories/skeleton";
 import { useTheme } from "@/components/theme-context";
+import { TruncatedText } from "@/components/ui/truncated-text";
 
 type Props = {
   theses: CollegeThesis[];
@@ -108,12 +109,11 @@ export default function CategoryResults({
                       href={`/view/${thesis.thesis_id}`}
                       className="block group"
                     >
-                      <h3
-                        className="text-sm sm:text-base lg:text-lg font-semibold mb-1 group-hover:underline line-clamp-2"
+                      <TruncatedText 
+                        text={thesis.title} 
+                        className="text-sm sm:text-base lg:text-lg font-semibold mb-1 group-hover:underline line-clamp-2 text-left"
                         style={{ color: activeColor }}
-                      >
-                        {thesis.title}
-                      </h3>
+                      />
                     </Link>
 
                     {/* Authors */}

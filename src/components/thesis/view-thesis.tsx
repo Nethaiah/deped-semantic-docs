@@ -9,6 +9,7 @@ import SimilarTheses from "./similar-theses";
 import DocumentPDFViewer from "@/components/thesis/pdf-viewer/pdf-viewer";
 import BackButton from "@/components/thesis/back-button";
 import { checkBookmark } from "@/server/bookmarks/check-bookmark";
+import { getCurrentUserRole } from "@/lib/dal";
 
 type Props = {
   thesisId: string;
@@ -18,6 +19,8 @@ export default async function ViewThesis({ thesisId }: Props) {
   const { data: thesis, error } = await getThesisById(thesisId);
   const similar = await getSimilarTheses(thesisId, 3);
   const { bookmarked } = await checkBookmark(thesisId);
+  const userRole = await getCurrentUserRole();
+  const isAdmin = userRole?.isAdmin ?? false;
 
   if (error || !thesis) {
     return (
@@ -51,6 +54,7 @@ export default async function ViewThesis({ thesisId }: Props) {
             sourcePath={thesis.sourcePath}
             thesisId={thesis.thesisId}
             initialBookmarked={bookmarked}
+            isAdmin={isAdmin}
           />
         </div>
 
