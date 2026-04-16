@@ -28,13 +28,9 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getUser()
   const user = data?.user
 
-  // Ensure user.amr exists and contains 'recovery'
-  const isRecoverySession = (user as any)?.amr?.some((amr: any) => amr.method === 'recovery')
-
   const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || 
                       request.nextUrl.pathname.startsWith('/register') || 
                       request.nextUrl.pathname.startsWith('/forgot-password');
-  const isResetRoute = request.nextUrl.pathname.startsWith('/reset-password');
 
   const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard') || 
                            request.nextUrl.pathname.startsWith('/search') ||
@@ -51,16 +47,10 @@ export async function updateSession(request: NextRequest) {
                        request.nextUrl.pathname.startsWith('/archive') || 
                        request.nextUrl.pathname.startsWith('/review');
 
-
   // Authenticated user trying to visit auth pages → instant redirect to dashboard
+  // But NOT reset-password — that route needs to be accessible after recovery code exchange.
+  // The reset-password page component handles its own session validation.
   if (user && isAuthRoute) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
-  }
-
-  // Normal authenticated user trying to visit reset-password → redirect to dashboard
-  if (user && isResetRoute && !isRecoverySession) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)

@@ -52,7 +52,7 @@ export async function resetPasswordForEmail(email: string) {
 		// Send reset password email
 		const supabase = await createClient();
 		const { error: resetError } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-			redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/auth/callback?type=recovery&next=/reset-password`,
+			redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/auth/confirm?type=recovery&next=/reset-password`,
 		});
 
 		if (resetError) {
