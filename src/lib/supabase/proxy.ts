@@ -62,17 +62,24 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  if (user && isAdminRoute) {
-    // Check if the user is an admin
+  // Combined status + role check (single DB query for protected routes)
+  if (user && isProtectedRoute) {
     const { data: userData } = await supabase
       .from("users")
-      .select("role")
+      .select("role, status")
       .eq("id", user.id)
       .single();
 
-    if (userData?.role !== "admin") {
-      // Instead of an actual forbidden page or redirecting to one, the user wants us to 
-      // "just use the Not found too (For security)". So we rewrite the URL to a non-existent path.
+    // Block unapproved users from all protected routes
+    if (userData && userData.status !== "approved") {
+      await supabase.auth.signOut();
+      const url = request.nextUrl.clone();
+      url.pathname = '/login';
+      return NextResponse.redirect(url);
+    }
+
+    // Block non-admin users from admin routes
+    if (isAdminRoute && userData?.role !== "admin") {
       const url = request.nextUrl.clone();
       url.pathname = '/404-not-found-dummy-path-to-force-404';
       return NextResponse.rewrite(url);

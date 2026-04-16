@@ -111,9 +111,6 @@ export function ArchiveDataTable<TData, TValue>({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] =
-    React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -160,23 +157,45 @@ export function ArchiveDataTable<TData, TValue>({
     return () => clearTimeout(timeout);
   }, [searchValue, currentQuery, updateParams]);
 
+
+  // Compute current sorting state for React Table headers from URL param
+  const sortState = React.useMemo(() => {
+    if (!currentSort) return [];
+    const isDesc = currentSort.endsWith("_desc");
+    let id = currentSort.replace(/_(asc|desc)$/, "");
+    if (id === "archived") id = "archived_at"; // map back to column id
+    return [{ id, desc: isDesc }];
+  }, [currentSort]);
+
+  // Handle header sorting clicks
+  const handleSortingChange = React.useCallback((updater: unknown) => {
+    const newSorting = typeof updater === "function" ? (updater as (old: typeof sortState) => typeof sortState)(sortState) : updater as typeof sortState;
+    if (newSorting && newSorting.length > 0) {
+      const { id, desc } = newSorting[0];
+      let sortId = id;
+      if (sortId === "archived_at") sortId = "archived";
+      const newSortStr = `${sortId}_${desc ? "desc" : "asc"}`;
+      updateParams({ sort: newSortStr, page: "1" });
+    } else {
+      updateParams({ sort: "archived_desc", page: "1" });
+    }
+  }, [sortState, updateParams]);
+
   const table = useReactTable({
     data,
     columns,
     state: {
-      sorting,
-      columnFilters,
+      sorting: sortState,
       columnVisibility,
       rowSelection,
     },
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
+    manualSorting: true,
+    manualFiltering: true,
+    manualPagination: true,
+    onSortingChange: handleSortingChange,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   // ── Batch action helpers ──

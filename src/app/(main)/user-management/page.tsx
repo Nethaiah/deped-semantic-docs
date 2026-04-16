@@ -1,130 +1,53 @@
 import { Suspense } from "react";
-import { columns, UserRecord } from "@/components/user-management/columns";
+import { columns } from "@/components/user-management/columns";
 import { UserDataTable } from "@/components/user-management/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getUsersPaginated, getUserStats } from "@/server/user-management/get-users";
 
-// ── Dummy user data ──────────────────────────────────────────────────────────
-const dummyUsers: UserRecord[] = [
-  {
-    id: "1",
-    studentNumber: "211-1392",
-    username: "jdelacruiz",
-    email: "jdelacruiz@lu.edu.ph",
-    role: "user",
-    college: "College of Engineering",
-    status: "pending",
-  },
-  {
-    id: "2",
-    studentNumber: "211-0847",
-    username: "mreyes",
-    email: "mreyes@lu.edu.ph",
-    role: "user",
-    college: "College of Business",
-    status: "approved",
-  },
-  {
-    id: "3",
-    studentNumber: "211-2034",
-    username: "kpascual",
-    email: "kpascual@lu.edu.ph",
-    role: "user",
-    college: "College of Education",
-    status: "approved",
-  },
-  {
-    id: "4",
-    studentNumber: "211-0391",
-    username: "asantos",
-    email: "asantos@lu.edu.ph",
-    role: "admin",
-    college: "College of Information Technology",
-    status: "approved",
-  },
-  {
-    id: "5",
-    studentNumber: "211-1755",
-    username: "rferrer",
-    email: "rferrer@lu.edu.ph",
-    role: "user",
-    college: "College of Arts & Sciences",
-    status: "pending",
-  },
-  {
-    id: "6",
-    studentNumber: "211-2211",
-    username: "cbautista",
-    email: "cbautista@lu.edu.ph",
-    role: "user",
-    college: "College of Nursing",
-    status: "rejected",
-  },
-  {
-    id: "7",
-    studentNumber: "211-3301",
-    username: "evillanueva",
-    email: "evillanueva@lu.edu.ph",
-    role: "user",
-    college: "College of Engineering",
-    status: "pending",
-  },
-  {
-    id: "8",
-    studentNumber: "211-0172",
-    username: "ncarpio",
-    email: "ncarpio@lu.edu.ph",
-    role: "user",
-    college: "College of Business",
-    status: "approved",
-  },
-  {
-    id: "9",
-    studentNumber: "211-4489",
-    username: "tmagno",
-    email: "tmagno@lu.edu.ph",
-    role: "user",
-    college: "College of Education",
-    status: "rejected",
-  },
-  {
-    id: "10",
-    studentNumber: "211-5602",
-    username: "prizon",
-    email: "prizon@lu.edu.ph",
-    role: "user",
-    college: "College of Information Technology",
-    status: "pending",
-  },
-  {
-    id: "11",
-    studentNumber: "211-6714",
-    username: "lsalazar",
-    email: "lsalazar@lu.edu.ph",
-    role: "user",
-    college: "College of Arts & Sciences",
-    status: "approved",
-  },
-  {
-    id: "12",
-    studentNumber: "211-7823",
-    username: "dmendoza",
-    email: "dmendoza@lu.edu.ph",
-    role: "user",
-    college: "College of Nursing",
-    status: "pending",
-  },
-];
+// ── Types ────────────────────────────────────────────────────────────────────
 
-// ── Async data section (will use real DB later) ──────────────────────────────
+type Props = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-async function UserManagementData() {
-  // When real data is needed, fetch it here:
-  // const users = await getUsers();
-  const users = dummyUsers;
+// ── Async data section (fetches real data from Supabase) ─────────────────────
 
-  const pending = users.filter((u) => u.status === "pending").length;
-  const approved = users.filter((u) => u.status === "approved").length;
-  const rejected = users.filter((u) => u.status === "rejected").length;
+async function UserManagementData({ searchParams }: Props) {
+  // Parse search params
+  const sp = await searchParams;
+
+  const pageParam = Array.isArray(sp.page) ? sp.page[0] : sp.page;
+  const page = Math.max(1, parseInt(pageParam || "1", 10) || 1);
+  const pageSize = 10;
+
+  const query = Array.isArray(sp.q) ? sp.q[0] : sp.q;
+  const statusParam = Array.isArray(sp.status) ? sp.status[0] : sp.status;
+  const sortParam = Array.isArray(sp.sort) ? sp.sort[0] : sp.sort;
+
+  const validStatuses = ["all", "pending", "approved", "rejected"];
+  const status = validStatuses.includes(statusParam || "")
+    ? statusParam
+    : "all";
+
+  const validSorts = [
+    "created_at_desc",
+    "created_at_asc",
+    "full_name_asc",
+    "full_name_desc",
+    "email_asc",
+    "email_desc",
+    "student_id_asc",
+    "student_id_desc",
+    "status_asc",
+    "status_desc",
+  ];
+  const sort = validSorts.includes(sortParam || "") ? sortParam : "created_at_desc";
+
+  // Fetch data in parallel
+  const [{ data: users, total }, stats] = await Promise.all([
+    getUsersPaginated(page, pageSize, query, status, sort),
+    getUserStats(),
+  ]);
 
   return (
     <>
@@ -133,28 +56,28 @@ async function UserManagementData() {
         {[
           {
             label: "Total Users",
-            value: users.length,
+            value: stats.total,
             colorText: "text-gray-800",
             colorBg: "bg-white",
             border: "border-gray-200",
           },
           {
             label: "Pending",
-            value: pending,
+            value: stats.pending,
             colorText: "text-yellow-700",
             colorBg: "bg-yellow-50",
             border: "border-yellow-200",
           },
           {
             label: "Approved",
-            value: approved,
+            value: stats.approved,
             colorText: "text-green-700",
             colorBg: "bg-green-50",
             border: "border-green-200",
           },
           {
             label: "Rejected",
-            value: rejected,
+            value: stats.rejected,
             colorText: "text-red-700",
             colorBg: "bg-red-50",
             border: "border-red-200",
@@ -173,7 +96,17 @@ async function UserManagementData() {
       </div>
 
       {/* Data Table */}
-      <UserDataTable columns={columns} data={users} />
+      <UserDataTable 
+        columns={columns} 
+        data={users} 
+        total={total}
+        page={page}
+        pageSize={pageSize}
+        currentQuery={query || ""}
+        currentStatus={status || "all"}
+        currentSort={sort || "created_at_desc"}
+        stats={stats}
+      />
     </>
   );
 }
@@ -197,12 +130,12 @@ function DataSkeleton() {
 }
 
 /**
- * User Management page — admin guard handled by `(admin)/layout.tsx`.
+ * User Management page — admin guard handled by proxy middleware.
  *
  * Static header renders instantly (synchronous default export).
- * Stats + table stream in via Suspense.
+ * Stats + table stream in via Suspense with cached data.
  */
-export default function UserManagementPage() {
+export default function UserManagementPage({ searchParams }: Props) {
   return (
     <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
       {/* Page Header — static, renders instantly */}
@@ -217,7 +150,7 @@ export default function UserManagementPage() {
 
       {/* Dynamic content — streams in */}
       <Suspense fallback={<DataSkeleton />}>
-        <UserManagementData />
+        <UserManagementData searchParams={searchParams} />
       </Suspense>
     </div>
   );

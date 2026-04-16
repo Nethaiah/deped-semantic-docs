@@ -85,3 +85,31 @@ export const archiveSearchParams = {
 };
 
 export const archiveSearchParamsCache = createSearchParamsCache(archiveSearchParams);
+
+// User Management params
+export const userSortOptions = [
+  "created_at_desc",
+  "created_at_asc",
+  "full_name_asc",
+  "full_name_desc",
+  "email_asc",
+  "email_desc",
+  "student_id_asc",
+  "student_id_desc",
+  "status_asc",
+  "status_desc",
+] as const;
+
+export type UserSortOption = (typeof userSortOptions)[number];
+
+export const userStatusOptions = ["all", "pending", "approved", "rejected"] as const;
+export type UserStatusOption = (typeof userStatusOptions)[number];
+
+export const userSearchParams = {
+  page: parseAsInteger.withDefault(1),
+  q: parseAsString.withDefault(""),
+  status: parseAsStringLiteral(userStatusOptions).withDefault("all"),
+  sort: parseAsStringLiteral(userSortOptions).withDefault("created_at_desc"),
+};
+
+export const userSearchParamsCache = createSearchParamsCache(userSearchParams);
