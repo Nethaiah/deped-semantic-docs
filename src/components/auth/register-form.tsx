@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { register } from "@/server/auth/register";
-import { User, Mail, Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { User, Hash, Mail, Lock, Eye, EyeOff, CheckCircle2, Clock } from "lucide-react";
 import TermsDialog from "@/components/auth/terms-dialog";
 import PrivacyDialog from "@/components/auth/privacy-dialog";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -28,6 +28,7 @@ export default function RegisterForm() {
   const form = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      studentId: "",
       fullName: "",
       email: "",
       password: "",
@@ -63,6 +64,7 @@ export default function RegisterForm() {
     form.setValue("terms", !!values.terms);
     form.clearErrors();
     const result = await register({
+      studentId: values.studentId,
       name: values.fullName,
       email: values.email,
       password: values.password,
@@ -72,7 +74,7 @@ export default function RegisterForm() {
       return;
     }
     setRegisteredEmail(values.email);
-    form.reset({ fullName: "", email: "", password: "", terms: false });
+    form.reset({ studentId: "", fullName: "", email: "", password: "", terms: false });
     setDialogState("verify");
   }
 
@@ -85,13 +87,52 @@ export default function RegisterForm() {
             Create your account
           </h2>
           <p className="text-gray-500 text-sm">
-            Get started with Doculens today
+            Get started with DocuLens today
           </p>
         </div>
 
         {/* Form */}
         <div className="space-y-5">
           <FieldGroup>
+            {/* Student ID */}
+            <Controller
+              name="studentId"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="studentId" className="font-semibold text-gray-700">
+                    Student ID
+                  </FieldLabel>
+                  <InputGroup>
+                    <InputGroupAddon align="inline-start">
+                      <InputGroupText>
+                        <Hash className="h-4 w-4 text-gray-400" />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <InputGroupInput
+                      id="studentId"
+                      type="text"
+                      placeholder="000-0000"
+                      {...field}
+                      aria-invalid={fieldState.invalid}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          form.handleSubmit(onSubmit)();
+                        }
+                      }}
+                      className="py-2.5 text-sm"
+                    />
+                  </InputGroup>
+                  <p className="mt-1 text-xs text-gray-400">
+                    Format: 000-0000 (e.g. 211-3920)
+                  </p>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
             {/* Full Name */}
             <Controller
               name="fullName"
@@ -308,6 +349,15 @@ export default function RegisterForm() {
                 <p className="font-medium">Keep this tab open!</p>
                 <p className="text-xs text-amber-600 mt-0.5">
                   You&apos;ll be automatically redirected once verified.
+                </p>
+              </div>
+              <div className="bg-blue-50 border border-blue-200 text-blue-800 text-sm px-4 py-3 rounded-lg text-center mt-2">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <Clock className="w-4 h-4" />
+                  <p className="font-medium">Admin Approval Required</p>
+                </div>
+                <p className="text-xs text-blue-600">
+                  After verifying your email, an admin will review and approve your account before you can log in.
                 </p>
               </div>
             </>

@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { LogOutIcon, SettingsIcon, UserPenIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { LogOutIcon, SettingsIcon, Bell, Info, Loader2, X, ChevronLeft } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,6 +29,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { createClient } from "@/lib/supabase/client";
+import { markNotificationsAsRead } from "@/server/auth/mark-notifications-read";
 
 type UserMenuProps = {
   name?: string | null;
@@ -34,10 +37,31 @@ type UserMenuProps = {
   image?: string | null;
 };
 
+export type NotificationRecord = {
+  id: string;
+  target_role: string;
+  type: string;
+  title: string;
+  message: string;
+  link: string;
+  created_at: string;
+};
+
 export default function UserMenu({ name, email, image }: UserMenuProps) {
   const supabase = createClient();
+  const router = useRouter();
+
+  // Menu State
+  const [isOpen, setIsOpen] = useState(false);
+  const [view, setView] = useState<"menu" | "notifications">("menu");
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Notifications State
+  const [notifications, setNotifications] = useState<NotificationRecord[]>([]);
+  const [lastReadTimestamp, setLastReadTimestamp] = useState<Date>(new Date("2000-01-01"));
+  const [role, setRole] = useState<string>("user");
+  const [loadingNotifs, setLoadingNotifs] = useState(true);
 
   async function handleSignOut() {
     setIsLoggingOut(true);
@@ -56,17 +80,107 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
     }
   }
 
+  // Effect: Fetch and Subscribe to Notifications
+  useEffect(() => {
+    let subscription: ReturnType<typeof supabase.channel>;
+
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: userData } = await supabase
+        .from("users")
+        .select("role, notifications_last_read_at")
+        .eq("id", user.id)
+        .single();
+
+      const userRole = userData?.role || "user";
+      setRole(userRole);
+
+      if (userData?.notifications_last_read_at) {
+        setLastReadTimestamp(new Date(userData.notifications_last_read_at));
+      }
+
+      // Fetch last 20 notifications targeted to this role or 'all'
+      const { data: initialNotifs } = await supabase
+        .from("notifications")
+        .select("*")
+        .in("target_role", [userRole, "all"])
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      if (initialNotifs) {
+        setNotifications(initialNotifs as NotificationRecord[]);
+      }
+      setLoadingNotifs(false);
+
+      // Subscribe to real-time inserts
+      subscription = supabase
+        .channel("public:notifications")
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "notifications" },
+          (payload) => {
+            const newNotif = payload.new as NotificationRecord;
+            if (newNotif.target_role === userRole || newNotif.target_role === "all") {
+              setNotifications((prev) => [newNotif, ...prev].slice(0, 20));
+            }
+          }
+        )
+        .subscribe();
+    };
+
+    init();
+
+    return () => {
+      if (subscription) {
+        supabase.removeChannel(subscription);
+      }
+    };
+  }, [supabase]);
+
+  // Calculate unread count
+  const unreadCount = useMemo(() => {
+    return notifications.filter((n) => new Date(n.created_at) > lastReadTimestamp).length;
+  }, [notifications, lastReadTimestamp]);
+
+  // Handle Dropdown Open Change
+  const handleOpenChange = useCallback((open: boolean) => {
+    setIsOpen(open);
+    if (!open) {
+      // Reset view to main menu when closing
+      setTimeout(() => setView("menu"), 300);
+    }
+  }, []);
+
+  const openNotifications = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setView("notifications");
+    
+    if (unreadCount > 0) {
+      await markNotificationsAsRead();
+      setLastReadTimestamp(new Date());
+    }
+  };
+
+  const handleNotificationClick = (link: string | null) => {
+    setIsOpen(false);
+    if (link) {
+      router.push(link);
+    }
+  };
+
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={isOpen} onOpenChange={handleOpenChange}>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="h-auto p-0 hover:bg-transparent  cursor-pointer"
+            className="relative h-auto p-0 hover:bg-transparent cursor-pointer"
           >
             <Avatar className="size-10">
               {image && <AvatarImage src={image} alt={name || ""} />}
-              <AvatarFallback className="text-md bg-gray-100">
+              <AvatarFallback className="text-md bg-gray-100 text-gray-800">
                 {(name || email || "User")
                   .split(" ")
                   .map((n: string) => n[0])
@@ -75,49 +189,121 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
                   .substring(0, 2)}
               </AvatarFallback>
             </Avatar>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-sm ring-1 ring-white">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
           </Button>
         </DropdownMenuTrigger>
+
         <DropdownMenuContent
-          className="w-70 py-2 px-4 z-[1500]"
+          className="w-80 p-0 z-[1500] max-h-[500px] flex flex-col overflow-hidden"
           align="end"
           sideOffset={8}
         >
-          <DropdownMenuLabel className="flex min-w-0 flex-col">
-            <span className="text-foreground truncate text-sm font-medium">
-              {name || email || "User"}
-            </span>
-            <span className="text-muted-foreground truncate text-sm font-normal">
-              {email}
-            </span>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem asChild>
-              <Link
-                href="/settings"
-                className="flex items-center cursor-pointer"
+          {view === "menu" ? (
+            <div className="py-2 px-1">
+              <DropdownMenuLabel className="flex min-w-0 flex-col px-3 py-2">
+                <span className="text-foreground truncate text-sm font-medium">
+                  {name || email || "User"}
+                </span>
+                <span className="text-muted-foreground truncate text-sm font-normal">
+                  {email}
+                </span>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings" className="flex items-center cursor-pointer px-3 py-2.5">
+                    <SettingsIcon size={16} className="opacity-60 mr-2" aria-hidden="true" />
+                    <span>Settings</span>
+                  </Link>
+                </DropdownMenuItem>
+                
+                {/* Notifications Menu Item */}
+                <DropdownMenuItem 
+                  onClick={openNotifications}
+                  className="flex items-center justify-between cursor-pointer px-3 py-2.5"
+                >
+                  <div className="flex items-center">
+                    <Bell size={16} className="opacity-60 mr-2" aria-hidden="true" />
+                    <span>Notifications</span>
+                  </div>
+                  {unreadCount > 0 && (
+                    <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      {unreadCount > 99 ? "99+" : unreadCount} new
+                    </span>
+                  )}
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => setShowLogoutDialog(true)}
+                className="text-red-600 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white group cursor-pointer px-3 py-2.5"
               >
-                <SettingsIcon
-                  size={16}
-                  className="opacity-60 mr-2"
-                  aria-hidden="true"
-                />
-                <span>Settings</span>
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => setShowLogoutDialog(true)}
-            className="text-red-600 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white group cursor-pointer"
-          >
-            <LogOutIcon
-              size={16}
-              className="opacity-60 mr-2 group-hover:opacity-100"
-              aria-hidden="true"
-            />
-            <span>Logout</span>
-          </DropdownMenuItem>
+                <LogOutIcon size={16} className="opacity-60 mr-2 group-hover:opacity-100" aria-hidden="true" />
+                <span>Logout</span>
+              </DropdownMenuItem>
+            </div>
+          ) : (
+            <div className="flex flex-col h-full bg-white">
+              <div className="flex items-center justify-between border-b px-2 py-2 sticky top-0 bg-white z-10">
+                <Button variant="ghost" size="sm" onClick={(e) => { e.preventDefault(); setView("menu"); }} className="h-8 w-8 p-0 cursor-pointer text-muted-foreground hover:text-foreground">
+                  <ChevronLeft className="h-5 w-5" />
+                </Button>
+                <h4 className="font-semibold text-sm">Notifications</h4>
+                <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="h-8 w-8 p-0 cursor-pointer text-muted-foreground hover:text-foreground">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+
+              <div className="overflow-y-auto max-h-[350px]">
+                {loadingNotifs ? (
+                  <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                    <Loader2 className="h-6 w-6 animate-spin mb-2" />
+                    <p className="text-xs">Loading notifications...</p>
+                  </div>
+                ) : notifications.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
+                    <Bell className="h-8 w-8 mb-2 opacity-20" />
+                    <p className="text-sm font-medium">All caught up!</p>
+                    <p className="text-xs opacity-70">No new notifications here.</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col">
+                    {notifications.map((notif) => {
+                      const isUnread = new Date(notif.created_at) > lastReadTimestamp;
+                      return (
+                        <div
+                          key={notif.id}
+                          onClick={() => handleNotificationClick(notif.link)}
+                          className={`flex items-start gap-3 border-b p-4 cursor-pointer transition-colors duration-150 ${
+                            isUnread ? "bg-blue-50/40" : "hover:bg-gray-50"
+                          }`}
+                        >
+                          <div className="mt-0.5 shrink-0 bg-blue-100 text-blue-700 rounded-full p-1.5">
+                            <Info className="h-3.5 w-3.5" />
+                          </div>
+                          <div className="flex-1 space-y-1 w-full overflow-hidden">
+                            <p className="text-sm font-medium leading-tight truncate">
+                              {notif.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground line-clamp-2">
+                              {notif.message}
+                            </p>
+                            <p className="text-[10px] text-gray-400 font-medium pt-1">
+                              {formatDistanceToNow(new Date(notif.created_at), { addSuffix: true })}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

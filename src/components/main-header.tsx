@@ -58,7 +58,7 @@ export default async function MainHeader() {
         </div>
 
         {/* Right section: User Menu */}
-        <div className="flex items-center gap-3 sm:gap-4 cursor-pointer">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <UserMenu
             name={userRole?.fullName}
             email={user!.user_metadata.email}

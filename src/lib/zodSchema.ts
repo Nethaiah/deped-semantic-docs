@@ -1,6 +1,9 @@
 import { z } from "zod";
 
+export const studentIdRegex = /^\d{3}-\d{4}$/;
+
 export const registerSchema = z.object({
+  studentId: z.string().min(1, { message: "Student ID is required" }).regex(studentIdRegex, { message: "Student ID must follow the format 000-0000" }),
   fullName: z.string().min(1, { message: "Full name is required" }),
   email: z.email({ message: "Invalid email address" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
@@ -10,7 +13,7 @@ export const registerSchema = z.object({
 export type RegisterSchema = z.infer<typeof registerSchema>;
 
 export const loginSchema = z.object({
-  email: z.email({ message: "Invalid email address" }),
+  studentId: z.string().min(1, { message: "Student ID is required" }).regex(studentIdRegex, { message: "Student ID must follow the format 000-0000" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
 })
 

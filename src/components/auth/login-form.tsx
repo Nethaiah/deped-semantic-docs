@@ -10,7 +10,7 @@ import { useEffect, useState, useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { login } from "@/server/auth/login";
 import { createClient } from "@/lib/supabase/client";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Hash, Lock, Eye, EyeOff } from "lucide-react";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
 
@@ -22,7 +22,7 @@ export default function LoginForm() {
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      studentId: "",
       password: "",
     },
   });
@@ -48,11 +48,11 @@ export default function LoginForm() {
   async function onSubmit(values: LoginSchema) {
     form.clearErrors();
     const result = await login({
-      email: values.email,
+      studentId: values.studentId,
       password: values.password,
     });
     if (result?.error) {
-      toast.error(result.error || "Invalid email or password", {
+      toast.error(result.error || "Invalid student ID or password", {
         duration: 5000,
         position: "bottom-right",
       });
@@ -84,23 +84,23 @@ export default function LoginForm() {
         <div className="space-y-5">
           <FieldGroup>
             <Controller
-              name="email"
+              name="studentId"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="email" className="font-semibold text-gray-700">
-                    Email address
+                  <FieldLabel htmlFor="studentId" className="font-semibold text-gray-700">
+                    Student ID
                   </FieldLabel>
                   <InputGroup>
                     <InputGroupAddon align="inline-start">
                       <InputGroupText>
-                        <Mail className="h-4 w-4 text-gray-400" />
+                        <Hash className="h-4 w-4 text-gray-400" />
                       </InputGroupText>
                     </InputGroupAddon>
                     <InputGroupInput
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email"
+                      id="studentId"
+                      type="text"
+                      placeholder="000-0000"
                       {...field}
                       aria-invalid={fieldState.invalid}
                       onKeyDown={(e) => {
