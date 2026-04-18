@@ -3,7 +3,7 @@ import type { SearchParams } from "nuqs/server";
 import { thesesFilterParamsCache } from "@/lib/search-params";
 import { getThemeForRole } from "@/lib/theme-config";
 import { getCurrentUserRole } from "@/lib/dal";
-import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 
 // Data fetchers
 import { getStats } from "@/server/stats/get-stats";
@@ -13,15 +13,12 @@ import { getMonthlyActivity } from "@/server/stats/get-monthly-activity";
 import { getRecentlyViewed } from "@/server/theses/get-recently-viewed";
 
 // Dashboard components
-import ClientTimeDisplay from "@/components/shared/time";
-import StatsCards from "@/components/dashboard/stats-card";
 import ThesesTable from "@/components/dashboard/theses-table";
 import MonthlyActivity from "@/components/dashboard/monthly-activity";
 import RecentlyViewed from "@/components/dashboard/recently-viewed";
 
 // Skeleton fallbacks
 import {
-  StatsCardsSkeleton,
   ThesesTableSkeleton,
   MonthlyActivitySkeleton,
   RecentlyViewedSkeleton,
@@ -34,63 +31,101 @@ type Props = {
 
 /* ── Async data-fetching sections ── */
 
-async function HeroSection() {
+async function DashboardHeader() {
   const userRole = await getCurrentUserRole();
   const role = userRole?.role || "user";
   const displayName = userRole?.fullName || "Researcher";
-  const theme = getThemeForRole(role);
   const isAdmin = userRole?.isAdmin || false;
 
-  return (
-    <div className="relative rounded-xl border bg-card shadow-sm overflow-hidden">
-      {/* Decorative blob */}
-      <div
-        className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full blur-3xl opacity-20"
-        style={{ background: theme.primary }}
-      />
-      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-7 sm:px-8 sm:py-9">
-        <div className="space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            {isAdmin ? "Administrator" : "Researcher"} Portal
-          </p>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">
-            Welcome back,{" "}
-            <span style={{ color: theme.primary }}>{displayName}!</span>
-          </h1>
-          <p className="text-sm text-muted-foreground max-w-md">
-            Explore and discover theses from your institution.
-          </p>
-        </div>
-        <div className="flex-shrink-0">
-          <ClientTimeDisplay />
-        </div>
-      </div>
-      <Separator />
-    </div>
-  );
-}
-
-function HeroSkeleton() {
-  return (
-    <div className="relative rounded-xl border bg-card shadow-sm overflow-hidden">
-      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-7 sm:px-8 sm:py-9">
-        <div className="space-y-2">
-          <Skeleton className="w-28 h-3 rounded" />
-          <Skeleton className="w-64 h-8 rounded" />
-          <Skeleton className="w-48 h-4 rounded" />
-        </div>
-        <Skeleton className="w-32 h-6 rounded" />
-      </div>
-      <Separator />
-    </div>
-  );
-}
-
-async function StatsSection() {
-  const userRole = await getCurrentUserRole();
-  const theme = getThemeForRole(userRole?.role || "user");
   const stats = await getStats();
-  return <StatsCards stats={stats} accentColor={theme.primary} />;
+
+  return (
+    <div className="relative rounded-[2rem] overflow-hidden bg-[#1C402E] shadow-xl p-6 sm:p-10 border border-white/5">
+      {/* --- Ambient Blobs / Glow --- */}
+      {/* Intense Golden/Amber Glow Bottom Right only */}
+      <div className="absolute -bottom-[400px] -right-[200px] w-[800px] h-[800px] bg-amber-500/20 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute -bottom-[200px] -right-[100px] w-[450px] h-[450px] bg-[#D4A373]/30 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute -bottom-[80px] -right-[50px] w-[250px] h-[250px] bg-amber-400/20 rounded-full blur-[80px] pointer-events-none" />
+      
+      {/* Solid Low-Opacity White Circles */}
+      <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] bg-white/5 rounded-full pointer-events-none" />
+      <div className="absolute -top-48 -right-48 w-[550px] h-[550px] bg-white/5 rounded-full pointer-events-none" />
+      
+      <div className="relative z-10 flex flex-col gap-8 sm:gap-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="space-y-6">
+            {/* Logo/Dashboard Header text */}
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20 shadow-inner">
+                 <span className="text-white font-bold text-sm">D</span>
+              </div>
+              <span className="text-xs font-bold tracking-[0.2em] uppercase text-white/90">DASHBOARD</span>
+            </div>
+
+            <div>
+              <h1 className="text-3xl sm:text-[2.5rem] font-bold text-white tracking-tight mb-3">
+                Welcome back, {displayName}
+              </h1>
+              <p className="text-white/70 text-sm sm:text-base max-w-xl">
+                A refined view of your institution's {isAdmin ? 'system repository, including users and system metrics.' : 'theses repository, including document metrics and recent uploads.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-end gap-3 flex-shrink-0 self-end md:self-auto md:-mt-20">
+            {/* Top Pill button */}
+            <div className="px-5 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-md shadow-sm">
+              <span className="text-xs font-semibold text-white tracking-wide">
+                {isAdmin ? 'Admin Portal' : 'Researcher Portal'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Glass Bar */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/10 rounded-2xl border border-white/10 bg-white/10 backdrop-blur-md shadow-xl overflow-hidden mt-4">
+          <div className="px-6 py-6 flex flex-col items-center justify-center">
+            <p className="text-[2rem] font-bold text-white mb-1 leading-none">{stats.totalTheses}</p>
+            <p className="text-xs text-white/80 font-bold tracking-wide">Total Theses</p>
+          </div>
+          <div className="px-6 py-6 flex flex-col items-center justify-center">
+            <p className="text-[2rem] font-bold text-white mb-1 leading-none">{stats.totalViews}</p>
+            <p className="text-xs text-white/80 font-bold tracking-wide">Total Views</p>
+          </div>
+          <div className="px-6 py-6 flex flex-col items-center justify-center">
+            <p className="text-[2rem] font-bold text-white mb-1 leading-none">{stats.recentUploads}</p>
+            <p className="text-xs text-white/80 font-bold tracking-wide">Recent Uploads</p>
+            <p className="text-[10px] text-white/50 font-bold tracking-widest mt-1 uppercase">{stats.currentMonth}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DashboardHeaderSkeleton() {
+  return (
+    <div className="relative rounded-[2rem] overflow-hidden bg-[#1C402E] shadow-xl p-6 sm:p-10 border border-white/5 min-h-[350px]">
+       <div className="animate-pulse flex flex-col gap-8 sm:gap-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+             <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                   <div className="w-8 h-8 rounded-full bg-white/10"></div>
+                   <div className="h-4 w-24 bg-white/10 rounded" />
+                </div>
+                <div className="space-y-3">
+                   <div className="h-10 w-64 sm:w-96 bg-white/10 rounded-lg" />
+                   <div className="h-4 w-48 sm:w-72 bg-white/10 rounded-lg" />
+                </div>
+             </div>
+             <div className="flex flex-col gap-3 self-end md:-mt-20 md:self-auto">
+                <div className="h-8 w-32 bg-white/10 rounded-full" />
+             </div>
+          </div>
+          <div className="h-28 w-full bg-white/10 rounded-2xl" />
+       </div>
+    </div>
+  );
 }
 
 async function ThesesSection({
@@ -153,35 +188,31 @@ async function RecentSection() {
 export default function DocumentsPage({ searchParams }: Props) {
   return (
     <div className="min-h-screen bg-muted/30 p-4 sm:p-6 lg:p-8 space-y-6">
-      {/* ── Hero Header ── */}
-      <Suspense fallback={<HeroSkeleton />}>
-        <HeroSection />
+      {/* ── Dashboard Unified Header (Hero & Stats) ── */}
+      <Suspense fallback={<DashboardHeaderSkeleton />}>
+        <DashboardHeader />
       </Suspense>
 
-      {/* ── Stats Cards ── */}
-      <Suspense fallback={<StatsCardsSkeleton />}>
-        <StatsSection />
-      </Suspense>
-
-      {/* ── Main Grid: Theses Table + Sidebar ── */}
-      <div className="flex flex-col xl:flex-row gap-6 items-start">
-        {/* Theses Table — takes flexible max space */}
-        <div className="w-full xl:flex-1 min-w-0">
-          <Suspense fallback={<ThesesTableSkeleton />}>
-            <ThesesSection searchParams={searchParams} />
-          </Suspense>
-        </div>
-
-        {/* Right Column — fixed width on large screens */}
-        <div className="w-full xl:w-[350px] 2xl:w-[400px] flex-shrink-0 space-y-6">
+      {/* ── Top Grid: Activity & Recent ── */}
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 w-full">
+        <div className="xl:col-span-3 min-w-0">
           <Suspense fallback={<MonthlyActivitySkeleton />}>
             <ActivitySection />
           </Suspense>
+        </div>
 
+        <div className="xl:col-span-1 min-w-0">
           <Suspense fallback={<RecentlyViewedSkeleton />}>
             <RecentSection />
           </Suspense>
         </div>
+      </div>
+
+      {/* ── Main Grid: Theses Table Full Width ── */}
+      <div className="w-full">
+        <Suspense fallback={<ThesesTableSkeleton />}>
+          <ThesesSection searchParams={searchParams} />
+        </Suspense>
       </div>
     </div>
   );

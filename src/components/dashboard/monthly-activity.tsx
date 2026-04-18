@@ -1,6 +1,6 @@
 "use client";
 
-import { HighlightedBarChart } from "@/components/dashboard/highlighted-bar-chart";
+import { HighlightedLineChart } from "@/components/dashboard/highlighted-line-chart";
 import { MonthlyActivityData } from "@/server/stats/get-monthly-activity";
 
 interface MonthlyActivityProps {
@@ -10,7 +10,7 @@ interface MonthlyActivityProps {
 
 import { Card, CardContent } from "@/components/ui/card";
 
-export default function MonthlyActivity({ data, accentColor = "#278fb6" }: MonthlyActivityProps) {
+export default function MonthlyActivity({ data, accentColor = "var(--theme-color)" }: MonthlyActivityProps) {
   const currentData = data.map((d) => ({
     month: d.month,
     desktop: d.uploads,
@@ -18,15 +18,13 @@ export default function MonthlyActivity({ data, accentColor = "#278fb6" }: Month
   }));
 
   return (
-    <Card className="bg-white rounded-lg shadow-md border border-slate-200 p-0 relative flex flex-col justify-center overflow-hidden">
-      <CardContent className="p-4 pt-1 flex-1 min-h-[340px]">
-        <HighlightedBarChart
-          data={currentData}
-          title="Monthly Activity"
-          description="New theses added over the last 6 months."
-          color={accentColor}
-        />
-      </CardContent>
+    <Card className="bg-white rounded-lg shadow-md border border-slate-200 p-0 flex flex-col gap-0 overflow-hidden h-[420px]">
+      <HighlightedLineChart
+        data={currentData}
+        title="Monthly Activity"
+        description="New theses added over the last 6 months."
+        color={accentColor}
+      />
     </Card>
   );
 }

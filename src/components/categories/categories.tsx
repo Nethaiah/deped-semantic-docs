@@ -27,11 +27,12 @@ function getCollegeIcon(collegeCode: string) {
 // Get color scheme for each college
 function getCollegeColor(collegeCode: string): string {
   const colorMap: Record<string, string> = {
-    CAS: "bg-purple-100 text-purple-600",
-    CCS: "bg-blue-100 text-blue-600",
-    CBAA: "bg-emerald-100 text-emerald-600",
-    COED: "bg-orange-100 text-orange-600",
+    CAS: "bg-slate-100 text-slate-600",
+    CCS: "bg-[#fbeaea] text-[#800000]", // Maroon
+    CBAA: "bg-yellow-100 text-yellow-600",
+    COED: "bg-blue-100 text-blue-600",
     COE: "bg-red-100 text-red-600",
+    COENG: "bg-red-100 text-red-600",
   };
 
   return colorMap[collegeCode] || "bg-gray-100 text-gray-600";

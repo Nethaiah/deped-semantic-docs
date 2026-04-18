@@ -172,30 +172,43 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
 
   return (
     <>
-      <DropdownMenu open={isOpen} onOpenChange={handleOpenChange}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="relative h-auto p-0 hover:bg-transparent cursor-pointer"
-          >
-            <Avatar className="size-10">
-              {image && <AvatarImage src={image} alt={name || ""} />}
-              <AvatarFallback className="text-md bg-gray-100 text-gray-800">
-                {(name || email || "User")
-                  .split(" ")
-                  .map((n: string) => n[0])
-                  .join("")
-                  .toUpperCase()
-                  .substring(0, 2)}
-              </AvatarFallback>
-            </Avatar>
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-sm ring-1 ring-white">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
-            )}
-          </Button>
-        </DropdownMenuTrigger>
+      <div className="flex items-center gap-3">
+        {/* Notification Bell Trigger */}
+        <button
+          onClick={(e) => {
+            setIsOpen(true);
+            openNotifications(e as any);
+          }}
+          className="relative flex items-center justify-center p-2 rounded-full hover:bg-slate-100/80 transition-colors focus:outline-none cursor-pointer text-white hover:text-slate-900"
+        >
+          <Bell className="h-5 w-5" />
+          {unreadCount > 0 && (
+            <span className="absolute top-1 right-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-sm ring-1 ring-white">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          )}
+        </button>
+
+        {/* User Profile Dropdown Menu */}
+        <DropdownMenu open={isOpen} onOpenChange={handleOpenChange}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="relative h-auto p-0 hover:bg-transparent cursor-pointer rounded-full"
+            >
+              <Avatar className="size-10 border border-slate-200 transition-transform hover:scale-105 duration-200">
+                {image && <AvatarImage src={image} alt={name || ""} />}
+                <AvatarFallback className="text-md bg-gray-100 text-gray-800">
+                  {(name || email || "User")
+                    .split(" ")
+                    .map((n: string) => n[0])
+                    .join("")
+                    .toUpperCase()
+                    .substring(0, 2)}
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
 
         <DropdownMenuContent
           className="w-80 p-0 z-[1500] max-h-[500px] flex flex-col overflow-hidden"
@@ -222,22 +235,8 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
                 </DropdownMenuItem>
                 
                 {/* Notifications Menu Item */}
-                <DropdownMenuItem 
-                  onClick={openNotifications}
-                  className="flex items-center justify-between cursor-pointer px-3 py-2.5"
-                >
-                  <div className="flex items-center">
-                    <Bell size={16} className="opacity-60 mr-2" aria-hidden="true" />
-                    <span>Notifications</span>
-                  </div>
-                  {unreadCount > 0 && (
-                    <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                      {unreadCount > 99 ? "99+" : unreadCount} new
-                    </span>
-                  )}
-                </DropdownMenuItem>
+                
               </DropdownMenuGroup>
-              <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => setShowLogoutDialog(true)}
                 className="text-red-600 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white group cursor-pointer px-3 py-2.5"
@@ -248,12 +247,9 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
             </div>
           ) : (
             <div className="flex flex-col h-full bg-white">
-              <div className="flex items-center justify-between border-b px-2 py-2 sticky top-0 bg-white z-10">
-                <Button variant="ghost" size="sm" onClick={(e) => { e.preventDefault(); setView("menu"); }} className="h-8 w-8 p-0 cursor-pointer text-muted-foreground hover:text-foreground">
-                  <ChevronLeft className="h-5 w-5" />
-                </Button>
-                <h4 className="font-semibold text-sm">Notifications</h4>
-                <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="h-8 w-8 p-0 cursor-pointer text-muted-foreground hover:text-foreground">
+              <div className="flex items-center justify-between border-b px-4 py-3 sticky top-0 bg-white z-10">
+                <h4 className="font-semibold text-sm text-slate-800">Notifications</h4>
+                <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="h-8 w-8 p-0 cursor-pointer text-muted-foreground hover:bg-slate-100 hover:text-slate-900 rounded-full transition-colors">
                   <X className="h-4 w-4" />
                 </Button>
               </div>
@@ -306,6 +302,7 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
           )}
         </DropdownMenuContent>
       </DropdownMenu>
+      </div>
 
       <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
         <AlertDialogContent>

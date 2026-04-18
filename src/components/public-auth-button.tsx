@@ -28,7 +28,7 @@ export default function PublicAuthButton() {
     return (
       <Link
         href="/dashboard"
-        className="flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-medium text-[#333] hover:bg-gray-200 transition"
+        className="flex items-center gap-2 rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white hover:bg-black transition-colors"
       >
         Back to Dashboard
       </Link>
@@ -38,7 +38,7 @@ export default function PublicAuthButton() {
   return (
     <Link
       href="/login"
-      className="rounded-full bg-white px-5 py-2 text-sm font-medium text-[#333] hover:bg-gray-200 transition"
+      className="rounded-full bg-[#1c402e] px-5 py-2 text-sm font-medium text-white hover:bg-[#1c402e]/95 transition-colors"
     >
       Log in
     </Link>

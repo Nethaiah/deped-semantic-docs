@@ -19,7 +19,7 @@ export default function TermsDialog({
       <DialogTrigger asChild>
         <button
           type="button"
-          className="text-[#278fb6] hover:text-[#278fb6]/80 font-medium underline"
+          className="text-[#1C402E] hover:text-[#1C402E]/80 font-medium underline"
         >
           {children}
         </button>

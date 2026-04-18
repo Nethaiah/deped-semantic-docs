@@ -6,5 +6,9 @@ import ResetPasswordForm from "@/components/auth/reset-password";
 // users arriving from the Supabase password reset email flow need access.
 
 export default function ResetPasswordPage() {
-  return <ResetPasswordForm />;
+  return (
+    <div className="flex w-full justify-center">
+      <ResetPasswordForm />
+    </div>
+  );
 }
