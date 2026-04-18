@@ -19,11 +19,11 @@ import RecentlyViewed from "@/components/dashboard/recently-viewed";
 
 // Skeleton fallbacks
 import {
+  DashboardHeroSkeleton,
   ThesesTableSkeleton,
   MonthlyActivitySkeleton,
   RecentlyViewedSkeleton,
 } from "@/components/dashboard/skeleton";
-import { Skeleton } from "@/components/ui/skeleton";
 
 type Props = {
   searchParams: Promise<SearchParams>;
@@ -34,18 +34,33 @@ type Props = {
 async function DashboardHeader() {
   const userRole = await getCurrentUserRole();
   const role = userRole?.role || "user";
+  const theme = getThemeForRole(role);
   const displayName = userRole?.fullName || "Researcher";
   const isAdmin = userRole?.isAdmin || false;
 
   const stats = await getStats();
 
   return (
-    <div className="relative rounded-[2rem] overflow-hidden bg-[#1C402E] shadow-xl p-6 sm:p-10 border border-white/5">
+    <div
+      className="relative overflow-hidden rounded-[2rem] border border-white/5 p-6 shadow-xl sm:p-10"
+      style={{ backgroundColor: theme.primary }}
+    >
       {/* --- Ambient Blobs / Glow --- */}
-      {/* Intense Golden/Amber Glow Bottom Right only */}
-      <div className="absolute -bottom-[400px] -right-[200px] w-[800px] h-[800px] bg-amber-500/20 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute -bottom-[200px] -right-[100px] w-[450px] h-[450px] bg-[#D4A373]/30 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute -bottom-[80px] -right-[50px] w-[250px] h-[250px] bg-amber-400/20 rounded-full blur-[80px] pointer-events-none" />
+      <div
+        className={`pointer-events-none absolute -bottom-[400px] -right-[200px] h-[800px] w-[800px] rounded-full blur-[140px] ${
+          isAdmin ? "bg-white/18" : "bg-amber-500/20"
+        }`}
+      />
+      <div
+        className={`pointer-events-none absolute -bottom-[200px] -right-[100px] h-[450px] w-[450px] rounded-full blur-[100px] ${
+          isAdmin ? "bg-white/20" : "bg-[#D4A373]/30"
+        }`}
+      />
+      <div
+        className={`pointer-events-none absolute -bottom-[80px] -right-[50px] h-[250px] w-[250px] rounded-full blur-[80px] ${
+          isAdmin ? "bg-white/16" : "bg-amber-400/20"
+        }`}
+      />
       
       {/* Solid Low-Opacity White Circles */}
       <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] bg-white/5 rounded-full pointer-events-none" />
@@ -99,31 +114,6 @@ async function DashboardHeader() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function DashboardHeaderSkeleton() {
-  return (
-    <div className="relative rounded-[2rem] overflow-hidden bg-[#1C402E] shadow-xl p-6 sm:p-10 border border-white/5 min-h-[350px]">
-       <div className="animate-pulse flex flex-col gap-8 sm:gap-10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-             <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                   <div className="w-8 h-8 rounded-full bg-white/10"></div>
-                   <div className="h-4 w-24 bg-white/10 rounded" />
-                </div>
-                <div className="space-y-3">
-                   <div className="h-10 w-64 sm:w-96 bg-white/10 rounded-lg" />
-                   <div className="h-4 w-48 sm:w-72 bg-white/10 rounded-lg" />
-                </div>
-             </div>
-             <div className="flex flex-col gap-3 self-end md:-mt-20 md:self-auto">
-                <div className="h-8 w-32 bg-white/10 rounded-full" />
-             </div>
-          </div>
-          <div className="h-28 w-full bg-white/10 rounded-2xl" />
-       </div>
     </div>
   );
 }
@@ -189,7 +179,7 @@ export default function DocumentsPage({ searchParams }: Props) {
   return (
     <div className="min-h-screen bg-muted/30 p-4 sm:p-6 lg:p-8 space-y-6">
       {/* ── Dashboard Unified Header (Hero & Stats) ── */}
-      <Suspense fallback={<DashboardHeaderSkeleton />}>
+      <Suspense fallback={<DashboardHeroSkeleton />}>
         <DashboardHeader />
       </Suspense>
 
