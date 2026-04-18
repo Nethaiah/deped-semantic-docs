@@ -1,217 +1,241 @@
 "use client";
 
-import React, { useState } from "react";
-import { Layers, Link as LinkIcon, FileText, Search, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+
+const steps = [
+  {
+    step: "01",
+    title: "Browse available theses",
+    lead: "Users can immediately",
+    highlight: "look for available theses",
+    tail: "that have already been uploaded into the system and organized for exploration.",
+    note: "This gives students and researchers a cleaner starting point than digging through scattered folders or isolated files.",
+  },
+  {
+    step: "02",
+    title: "Search by keyword or topic",
+    lead: "Instead of opening documents one by one, users can",
+    highlight: "search a thesis using keywords",
+    tail: "to surface relevant papers faster and narrow their focus quickly.",
+    note: "This supports both directed searching and early-stage topic exploration when users only know a concept, theme, or field.",
+  },
+  {
+    step: "03",
+    title: "See documents grouped by category",
+    lead: "Users can also explore research through",
+    highlight: "organized categories",
+    tail: "so related theses feel easier to scan, compare, and revisit.",
+    note: "Categorized browsing helps when users want to discover papers within a field instead of relying on a single keyword search.",
+  },
+  {
+    step: "04",
+    title: "Read the thesis details and summary",
+    lead: "After selecting a paper, users can view the thesis details and quickly understand it through",
+    highlight: "the summarized version",
+    tail: "before committing to a deeper read of the full document.",
+    note: "This helps users judge relevance earlier and saves time when comparing several papers on the same subject.",
+  },
+  {
+    step: "05",
+    title: "Ask questions about the selected topic",
+    lead: "Once the user opens a thesis, the system lets them",
+    highlight: "ask questions about the selected topic",
+    tail: "to get clearer guidance while staying inside the same research workspace.",
+    note: "This makes the experience more interactive, especially when users want quick clarification on concepts, methods, or findings.",
+  },
+];
 
 export default function FeatureShowcase() {
-  const [activeFeature, setActiveFeature] = useState(0);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const itemRefs = useRef<Array<HTMLElement | null>>([]);
+  const [visibleSteps, setVisibleSteps] = useState<number[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  const features = [
-    {
-      id: 0,
-      title: "Smart Categories",
-      icon: Layers,
-      description: "Automatically index and categorize massive archives into Business, IT, Education, and custom domains securely without needing tagging.",
-      diagram: (
-        <>
-          <div className="bg-white rounded-2xl p-5 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.05)] w-full sm:w-[170px] shrink-0 sm:transform sm:-translate-y-6 sm:mr-3">
-            <h4 className="font-bold text-gray-900 mb-4 text-[15px]">Raw Dump</h4>
-            <div className="space-y-3">
-              <div className="text-xs font-medium text-gray-600 pb-2 border-b border-gray-100 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-gray-300"></div> PDF 1042.pdf</div>
-              <div className="text-xs font-medium text-gray-600 pb-2 border-b border-gray-100 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-gray-300"></div> Thesis_Final.pdf</div>
-              <div className="text-xs font-medium text-gray-600 pb-1 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-gray-300"></div> Unnamed.pdf</div>
-            </div>
-          </div>
-          <div className="hidden sm:flex text-[#C4BDB1] shrink-0 items-center justify-center w-8">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-          </div>
-          <div className="bg-white rounded-2xl p-5 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.05)] w-full sm:w-[240px] shrink-0 sm:ml-3">
-            <h4 className="font-bold text-gray-900 mb-4 text-[15px]">Smart Archives</h4>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs font-medium text-gray-800 pb-2 border-b border-gray-100">
-                <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div> Computer Science</span>
-                <span className="text-gray-400">142</span>
-              </div>
-              <div className="flex items-center justify-between text-xs font-medium text-gray-800 pb-2 border-b border-gray-100">
-                <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-green-500"></div> Business Admin</span>
-                <span className="text-gray-400">89</span>
-              </div>
-              <div className="flex items-center justify-between text-xs font-medium text-gray-800 pb-1">
-                <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-red-500"></div> Engineering</span>
-                <span className="text-gray-400">54</span>
-              </div>
-            </div>
-          </div>
-        </>
-      ),
-    },
-    {
-      id: 1,
-      title: "Link Detection",
-      icon: LinkIcon,
-      description: "Graph traversal reveals related works automatically. Instantly jump to cited prerequisites or connected domain theses.",
-      diagram: (
-        <>
-          <div className="bg-white rounded-2xl flex flex-col p-5 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.05)] w-full sm:w-[220px] shrink-0">
-            <h4 className="font-bold text-gray-900 mb-2 text-[15px]">Thesis 2024</h4>
-            <span className="text-xs text-gray-500 mb-4 font-medium">Biometric Systems</span>
-            <div className="bg-gray-50 border border-gray-100 p-3 rounded-lg flex items-center justify-between">
-              <span className="text-xs font-medium text-gray-800">References</span>
-              <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">14 Found</span>
-            </div>
-          </div>
-          <div className="hidden sm:flex text-[#C4BDB1] shrink-0 items-center justify-center w-8">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-          </div>
-          <div className="bg-white rounded-2xl flex flex-col p-5 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.05)] w-full sm:w-[220px] shrink-0">
-            <h4 className="font-bold text-gray-900 mb-2 text-[15px]">Foundational Works</h4>
-            <div className="space-y-2 mt-2">
-              <div className="bg-gray-50 border border-gray-100 p-2.5 rounded-lg">
-                <div className="text-[11px] font-bold text-gray-800 line-clamp-1">RFID Student Tracking</div>
-                <div className="text-[10px] text-gray-500 mt-0.5">Author: J. Doe (2021)</div>
-              </div>
-              <div className="bg-gray-50 border border-gray-100 p-2.5 rounded-lg">
-                <div className="text-[11px] font-bold text-gray-800 line-clamp-1">Machine Vision Basics</div>
-                <div className="text-[10px] text-gray-500 mt-0.5">Author: K. Smith (2019)</div>
-              </div>
-            </div>
-          </div>
-        </>
-      ),
-    },
-    {
-      id: 2,
-      title: "Auto-generated summaries",
-      icon: FileText,
-      description: "Instantly condense 50-page theses into concise summaries. Our AI captures key objectives and conclusions safely online.",
-      diagram: (
-        <>
-          <div className="bg-white rounded-2xl p-5 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.05)] w-full sm:w-[170px] shrink-0 sm:transform sm:-translate-y-6 sm:mr-3">
-            <h4 className="font-bold text-gray-900 mb-4 text-[15px]">Original Paper</h4>
-            <div className="space-y-3">
-              <div className="text-xs font-medium text-gray-600 pb-2 border-b border-gray-100">Length: 45 pages</div>
-              <div className="text-xs font-medium text-gray-600 pb-2 border-b border-gray-100">Words: 4,200</div>
-              <div className="text-xs font-medium text-gray-600 pb-1">Type: Thesis</div>
-            </div>
-          </div>
-          <div className="hidden sm:flex text-[#C4BDB1] shrink-0 items-center justify-center w-8">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-          </div>
-          <div className="bg-white rounded-2xl p-5 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.05)] w-full sm:w-[240px] shrink-0 sm:ml-3">
-            <h4 className="font-bold text-gray-900 mb-4 text-[15px]">AI Summary</h4>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs font-medium text-gray-800 pb-2 border-b border-gray-100">
-                <span>Core Objectives</span>
-                <div className="w-[18px] h-[18px] rounded-full bg-gray-800 text-white flex items-center justify-center text-[10px]">✓</div>
-              </div>
-              <div className="flex items-center justify-between text-xs font-medium text-gray-800 pb-2 border-b border-gray-100">
-                <span>Methodology</span>
-                <div className="w-[18px] h-[18px] rounded-full bg-gray-800 text-white flex items-center justify-center text-[10px]">✓</div>
-              </div>
-              <div className="flex items-center justify-between text-xs font-medium text-gray-800 pb-1">
-                <span>Conclusions</span>
-                <div className="w-[18px] h-[18px] rounded-full bg-gray-800 text-white flex items-center justify-center text-[10px]">✓</div>
-              </div>
-            </div>
-          </div>
-        </>
-      ),
-    },
-    {
-      id: 3,
-      title: "Semantic Smart Search",
-      icon: Search,
-      description: "Stop relying on rigid keywords. Input pure queries in plain English and retrieve meaning-matched abstracts.",
-      diagram: (
-        <>
-          <div className="bg-white rounded-2xl p-5 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.05)] w-full sm:w-[200px] shrink-0 sm:mr-2">
-            <h4 className="font-bold text-gray-900 mb-4 text-[15px]">Plain English</h4>
-            <div className="bg-gray-50 border border-gray-200 text-xs text-gray-600 rounded-lg p-3 font-medium italic">
-              "Find papers about tracking students using RFID cards"
-            </div>
-          </div>
-          <div className="hidden sm:flex text-[#C4BDB1] shrink-0 items-center justify-center w-8">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-          </div>
-          <div className="bg-white rounded-2xl p-5 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.05)] w-full sm:w-[220px] shrink-0 sm:ml-2">
-            <h4 className="font-bold text-[#087830] mb-4 text-[15px]">Matched Matches</h4>
-            <div className="space-y-2">
-              <div className="border-l-4 border-[#087830] pl-3 py-1">
-                <div className="text-[11px] font-bold text-gray-900">Mobile Attendance System</div>
-                <div className="text-[10px] text-gray-500 mt-0.5">Capstone 2025</div>
-              </div>
-              <div className="border-l-4 border-green-300 pl-3 py-1">
-                <div className="text-[11px] font-bold text-gray-900">Biometric Interfacing</div>
-                <div className="text-[10px] text-gray-500 mt-0.5">Thesis 2024</div>
-              </div>
-            </div>
-          </div>
-        </>
-      ),
-    },
-  ];
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const elements = Array.from(
+      section.querySelectorAll<HTMLElement>("[data-feature-step]")
+    );
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          const index = Number(entry.target.getAttribute("data-feature-step"));
+          setVisibleSteps((current) =>
+            current.includes(index) ? current : [...current, index]
+          );
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.16,
+        rootMargin: "0px 0px -12% 0px",
+      }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    let frame = 0;
+
+    const updateActiveStep = () => {
+      const focusLine = window.innerHeight * 0.36;
+      let nextActiveIndex = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      itemRefs.current.forEach((element, index) => {
+        if (!element) return;
+
+        const rect = element.getBoundingClientRect();
+        const anchor = rect.top + Math.min(rect.height * 0.32, 220);
+        const distance = Math.abs(anchor - focusLine);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          nextActiveIndex = index;
+        }
+      });
+
+      setActiveIndex((current) =>
+        current === nextActiveIndex ? current : nextActiveIndex
+      );
+    };
+
+    const handleViewportChange = () => {
+      if (frame) cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(updateActiveStep);
+    };
+
+    updateActiveStep();
+
+    window.addEventListener("scroll", handleViewportChange, { passive: true });
+    window.addEventListener("resize", handleViewportChange);
+
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", handleViewportChange);
+      window.removeEventListener("resize", handleViewportChange);
+    };
+  }, []);
 
   return (
-    <section id="features" className="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-20 md:py-28 mb-6 sm:mb-10 border-t border-gray-100">
-      <div className="flex flex-col md:flex-row items-start justify-between gap-4 sm:gap-6 mb-10 sm:mb-16">
-        <div className="max-w-2xl">
-          <div className="inline-flex items-center rounded-full bg-green-50 px-3 py-1.5 text-[11px] font-bold text-green-800 uppercase tracking-widest mb-4 sm:mb-6">
-            DocuLens Features
-          </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-medium tracking-tight text-gray-900 mb-3 sm:mb-4 leading-tight md:leading-none">
-            Read, summarize, and<br className="hidden md:block" /> organize in seconds
-          </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-500 font-medium tracking-tight mt-4 sm:mt-6">
-            High-converting research discovery, no reading required.
+    <section
+      id="features"
+      ref={sectionRef}
+      className="relative overflow-hidden border-y border-[#d9e7df] bg-[linear-gradient(180deg,#f7fbf8_0%,#f3f8f5_100%)] py-16 sm:py-20 md:py-24"
+    >
+      <div className="absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top,rgba(28,64,46,0.09),transparent_62%)]" />
+      <div className="absolute left-[-8rem] top-28 h-64 w-64 rounded-full bg-[#d5efe0] blur-3xl" />
+      <div className="absolute bottom-12 right-[-6rem] h-56 w-56 rounded-full bg-[#e5f5eb] blur-3xl" />
+
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#1c402e]/70">
+            Features
           </p>
-        </div>
-        <div className="mt-0 md:mt-20">
-          <button className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors shadow-sm">
-            Explore features
-            <ArrowRight className="h-4 w-4 text-gray-400" />
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-8 sm:gap-12 lg:gap-24 items-stretch">
-        {/* Left: Diagram Mockup Area */}
-        <div className="bg-[#f2f7f4] rounded-2xl sm:rounded-[2rem] p-6 sm:p-8 md:p-12 min-h-[300px] sm:min-h-[400px] md:min-h-[450px] flex items-center justify-center relative overflow-hidden transition-all duration-500">
-          <div className="flex flex-col sm:flex-row gap-6 sm:gap-2 w-full max-w-lg items-center justify-center relative z-10 transition-all duration-300">
-            {features[activeFeature].diagram}
-          </div>
+          <h2 className="mt-5 text-2xl font-bold leading-tight text-gray-900 sm:text-3xl md:text-4xl">
+            How users explore research with DocuLens
+          </h2>
         </div>
 
-        {/* Right: Feature List */}
-        <div className="flex flex-col gap-1 justify-center py-2 relative">
-          {features.map((feature, idx) => {
-            const isActive = activeFeature === idx;
-            const IconComponent = feature.icon;
+        <div className="mt-14 space-y-12 md:mt-20 md:space-y-20">
+          {steps.map((item, index) => {
+            const isVisible = visibleSteps.includes(index);
+            const isActive = activeIndex === index;
 
             return (
-              <div 
-                key={feature.id} 
-                onClick={() => setActiveFeature(idx)}
-                className={`flex flex-col gap-2 px-6 py-5 cursor-pointer transition-all duration-300 ${
-                  isActive 
-                  ? "bg-[#f2f7f4] rounded-[1.25rem] text-gray-900 my-2" 
-                  : "text-gray-800 hover:bg-gray-50 rounded-[1.25rem]"
-                }`}
+              <article
+                key={item.step}
+                ref={(element) => {
+                  itemRefs.current[index] = element;
+                }}
+                data-feature-step={index}
+                className="relative grid gap-5 md:grid-cols-[clamp(5.5rem,12vw,10rem)_minmax(0,44rem)] md:justify-center md:gap-12"
               >
-                <div className="flex items-center gap-4">
-                  <IconComponent 
-                    className={`w-[22px] h-[22px] shrink-0 ${isActive ? "opacity-100 text-[#087830]" : "opacity-80"}`} 
-                    strokeWidth={isActive ? 2 : 1.5} 
-                  />
-                  <span className={`text-[17px] tracking-tight ${isActive ? "font-semibold" : "font-medium"}`}>
-                    {feature.title}
-                  </span>
+                <div className="hidden md:block">
+                  <div className="sticky top-28 flex items-start justify-center">
+                    <span
+                      className={`select-none text-[clamp(4.75rem,10vw,8.75rem)] font-black leading-[0.82] tracking-[-0.09em] text-[#1c402e] transition-all duration-500 ${
+                        isActive
+                          ? "scale-110 opacity-100"
+                          : "scale-[0.88] opacity-30"
+                      }`}
+                    >
+                      {item.step}
+                    </span>
+                  </div>
                 </div>
-                {isActive && (
-                  <p className="text-[14px] font-medium text-gray-600 leading-relaxed pl-10 pr-2 mt-1 animate-in slide-in-from-top-1 fade-in duration-300">
-                    {feature.description}
-                  </p>
-                )}
-              </div>
+
+                <div
+                  className={`relative transition-all duration-700 ${
+                    isVisible
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-10 opacity-0"
+                  }`}
+                  style={{ transitionDelay: `${index * 90}ms` }}
+                >
+                  <div className="absolute left-0 top-0 hidden h-full w-px bg-[linear-gradient(180deg,rgba(28,64,46,0.24),rgba(28,64,46,0.04),transparent)] md:block" />
+
+                  <div className="mx-auto flex max-w-[44rem] flex-col items-start text-left md:pl-8">
+                    <div className="flex items-start justify-center gap-4 md:hidden">
+                      <span
+                        className={`text-5xl font-black leading-none tracking-[-0.09em] text-[#1c402e] transition-all duration-500 ${
+                          isActive ? "scale-100 opacity-100" : "scale-90 opacity-35"
+                        }`}
+                      >
+                        {item.step}
+                      </span>
+                    </div>
+
+                    <h3
+                      className={`mt-3 max-w-3xl text-xl font-semibold tracking-tight text-gray-900 transition-colors duration-500 sm:text-2xl md:mt-0 md:text-[2.15rem] ${
+                        isActive ? "text-[#102e20]" : ""
+                      }`}
+                    >
+                      {item.title}
+                    </h3>
+
+                    <p className="mt-4 max-w-3xl text-sm leading-7 text-gray-600 sm:text-[15px]">
+                      {item.lead}{" "}
+                      <span className="font-semibold text-[#1c402e]">
+                        {item.highlight}
+                      </span>{" "}
+                      {item.tail}
+                    </p>
+                    <p className="mt-4 max-w-2xl text-sm leading-6 text-[#1c402e]/62">
+                      {item.note}
+                    </p>
+
+                    <div
+                      className={`mt-6 w-full max-w-[38rem] overflow-hidden rounded-[1.7rem] border border-[#bfdccd] bg-white transition-all duration-500 ${
+                        isActive
+                          ? "border-[#92c7a8]"
+                          : ""
+                      }`}
+                    >
+                      <div className="relative mx-auto w-full max-w-[38rem]">
+                        <Image
+                          src="/dashboard.png"
+                          alt={`Feature step ${item.step} preview`}
+                          width={1360}
+                          height={768}
+                          className="h-auto w-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
             );
           })}
         </div>

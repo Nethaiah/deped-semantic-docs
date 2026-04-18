@@ -45,7 +45,7 @@ const SettingsSection = ({
   description: string;
   children: React.ReactNode;
 }) => (
-  <Card className="rounded-xl border-gray-200">
+  <Card className="rounded-xl border-gray-200 py-6">
     <CardHeader>
       <CardTitle>{title}</CardTitle>
       <CardDescription>{description}</CardDescription>

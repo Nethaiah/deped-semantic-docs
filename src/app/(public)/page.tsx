@@ -1,139 +1,229 @@
 import React from "react";
 import Image from "next/image";
+import { Facebook, MapPin } from "lucide-react";
 import FeatureShowcase from "@/components/public/feature-showcase";
 import CollegeMarquee from "@/components/public/college-marquee";
+import SmoothFooterLink from "@/components/public/smooth-footer-link";
 
 export default function Home() {
+  const heroContent = (
+    <>
+      <div className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-100 bg-white/60 px-4 py-1.5 text-xs font-bold text-[#1c402e] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.08)] backdrop-blur transition-all hover:bg-white hover:shadow-md">
+        Laguna University Research Archives
+      </div>
+
+      <h1 className="mt-6 w-full max-w-3xl text-lg font-medium leading-snug tracking-tight text-gray-900 sm:text-xl md:text-2xl lg:text-3xl">
+        The intelligent platform to read,{" "}
+        <span className="relative mx-1 inline-block rounded border border-green-200/50 bg-[#d1e7d8] px-1.5 text-gray-900 shadow-sm">
+          summarize,
+        </span>{" "}
+        <br className="hidden md:block" />
+        organize, and discover research papers
+      </h1>
+
+      <CollegeMarquee />
+    </>
+  );
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section - Split Layout */}
-      {/* Hero Section - Image as background, text overlaid in upper area */}
-<section className="w-full relative overflow-hidden bg-white">
-  
-  {/* Native Image Layer — mathematically commands the 100% natural, uncropped height of the hero block */}
-  <div className="w-full flex justify-center">
-    <Image 
-      src="/LUBG9.png" 
-      alt="Laguna University Campus" 
-      width={1920}
-      height={1080}
-      className="w-full h-auto max-w-[1920px]"
-      priority
-    />
-  </div>
+    <div id="top" className="min-h-screen bg-white">
+      <section className="w-full bg-white">
+        <div className="mx-auto flex max-w-5xl flex-col items-center px-4 pb-8 pt-20 text-center sm:px-6 lg:hidden">
+          {heroContent}
+        </div>
 
-  {/* Text overlay — pinned to the top, responsive padding */}
-  <div className="absolute top-0 left-0 right-0 flex flex-col items-center text-center px-4 sm:px-6 z-10 w-full max-w-5xl mx-auto pt-20 sm:pt-28 lg:pt-36 pb-6 sm:pb-10">
-    
-    {/* Top Pill */}
-    <div className="inline-flex items-center justify-center gap-2 rounded-full bg-white/60 backdrop-blur px-4 py-1.5 text-xs font-bold text-[#1c402e] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.08)] border border-gray-100 mb-8 hover:bg-white hover:shadow-md transition-all cursor-pointer">
-      Laguna University Research Archives
-    </div>
+        <div className="relative overflow-hidden bg-white">
+          <div className="flex w-full justify-center">
+            <Image
+              src="/LUBG9.png"
+              alt="Laguna University Campus"
+              width={1920}
+              height={1080}
+              sizes="100vw"
+              className="h-[18rem] w-full object-cover object-[center_16%] sm:h-[24rem] md:h-[30rem] lg:h-auto lg:max-w-[1920px] lg:object-contain lg:object-center"
+              priority
+            />
+          </div>
 
-    {/* Headline */}
-    <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium tracking-tight text-gray-900 leading-snug mb-4 sm:mb-6 w-full max-w-3xl">      
-      The intelligent platform to read, {" "}
-      <span className="relative inline-block px-1.5 bg-[#d1e7d8] rounded text-gray-900 shadow-sm border border-green-200/50 mx-1">
-        summarize,
-      </span>{" "}
-      <br className="hidden md:block" />
-      organize, and discover research papers
-    </h1>
+          <div className="absolute inset-0 z-10 hidden items-start justify-center lg:flex">
+            <div className="mx-auto flex w-full max-w-5xl flex-col items-center px-4 pb-10 pt-28 text-center sm:px-6 xl:pt-36">
+              {heroContent}
+            </div>
+          </div>
+        </div>
+      </section>
 
-    {/* Departments Row — Animated Marquee */}
-    <CollegeMarquee />
-
-  </div>
-</section>
-
-      {/* Problem Statement */}
-      <section className="border-y border-gray-200 bg-gray-100 py-10 sm:py-12 md:py-16">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
+      <section className="border-y border-[#b8dcc5] bg-[#dff3e6] py-10 sm:py-12 md:py-16">
+        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
+          <h2 className="mb-3 text-xl font-bold text-[#123a29] sm:mb-4 sm:text-2xl md:text-3xl">
             Hundreds of research papers. One system.
           </h2>
-          <div className="mx-auto w-20 sm:w-30 h-1 bg-[#087830] rounded-full mb-6"></div>
-          <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
+          <div className="mx-auto mb-6 h-1 w-20 rounded-full bg-[#1c402e] shadow-[0_0_20px_rgba(125,255,155,0.45)] sm:w-28" />
+          <p className="text-base leading-relaxed text-[#1c402e]/82 sm:text-lg">
             Students, faculty, and researchers at Laguna University deal with
             hundreds of theses, capstones, and studies. Finding the right paper,
-            understanding its key findings, and seeing related works shouldn't
+            understanding its key findings, and seeing related works should not
             take hours of searching.
           </p>
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-16 sm:py-20 md:py-28 bg-white relative overflow-hidden">
-
-        {/* Centered Header */}
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 text-center mb-12 sm:mb-16 md:mb-20">
-          <span className="text-base sm:text-lg italic text-gray-400 font-medium mb-3 sm:mb-4 block">About</span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-bold text-gray-900 leading-tight mb-4 sm:mb-6">
-            Built by Researchers.<br />
+      <section
+        id="about"
+        className="relative overflow-hidden bg-white py-16 sm:py-20 md:py-28"
+      >
+        <div className="mx-auto mb-12 max-w-4xl px-4 text-center sm:mb-16 sm:px-6 md:mb-20">
+          <h2 className="mb-4 text-2xl font-bold leading-tight text-gray-900 sm:mb-6 sm:text-3xl md:text-4xl lg:text-[2.75rem]">
+            Built by Researchers.
+            <br />
             For Researchers.
           </h2>
-          <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            DocuLens was born from a simple frustration — spending hours digging through 
-            stacks of theses just to find one relevant study. We built the tool we wished we had.
+          <p className="mx-auto max-w-2xl text-base leading-relaxed text-gray-500 sm:text-lg">
+            DocuLens was born from a simple frustration - spending hours digging
+            through stacks of theses just to find one relevant study. We built
+            the tool we wished we had.
           </p>
         </div>
 
-        
-
-        {/* Open Letter — Two Column Split */}
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-8 sm:gap-12 lg:gap-20 items-start">
-          {/* Left — Bold Statement */}
+        <div className="mx-auto grid max-w-5xl grid-cols-1 items-start gap-8 px-4 sm:gap-12 sm:px-6 md:grid-cols-[1fr_1.2fr] lg:gap-20">
           <div>
-            <div className="flex items-center gap-3 mb-4 sm:mb-6">
-              <div className="w-9 h-9 bg-[#1c402e] rounded-lg flex items-center justify-center">
-                <span className="text-white font-black text-sm">LU</span>
+            <div className="mb-4 flex items-center gap-3 sm:mb-6">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1c402e]">
+                <span className="text-sm font-black text-white">LU</span>
               </div>
-              <span className="text-sm italic text-gray-400 font-medium">Laguna University</span>
+              <span className="text-sm font-medium italic text-gray-400">
+                Laguna University
+              </span>
             </div>
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-snug mb-2">
+            <h3 className="text-xl font-bold leading-snug text-gray-900 sm:text-2xl md:text-3xl">
               For Every Student,{" "}
-              <span className="text-gray-400 font-medium">
-                Every Faculty Member,<br className="hidden sm:block" />
+              <span className="font-medium text-gray-400">
+                Every Faculty Member,
+                <br className="hidden sm:block" />
                 Every Researcher at LU.
               </span>
             </h3>
           </div>
 
-          {/* Right — Narrative Paragraphs */}
-          <div className="space-y-5 sm:space-y-6 text-sm sm:text-[15px] text-gray-600 leading-relaxed">
+          <div className="space-y-5 text-sm leading-relaxed text-gray-600 sm:space-y-6 sm:text-[15px]">
             <p>
-              As students and researchers at Laguna University, we know what it&apos;s like 
-              to spend entire weekends scrolling through unorganized folders of theses and 
-              capstones — desperately searching for the right study, the right data, the 
-              right conclusion.
+              As students and researchers at Laguna University, we know what
+              it&apos;s like to spend entire weekends scrolling through
+              unorganized folders of theses and capstones - desperately
+              searching for the right study, the right data, and the right
+              conclusion.
             </p>
             <p>
-              But here&apos;s the thing: the knowledge already exists. Hundreds of brilliant 
-              research papers sit in university archives, waiting to be discovered. The 
-              problem was never the research — it was the access.
+              But here&apos;s the thing: the knowledge already exists. Hundreds
+              of brilliant research papers sit in university archives, waiting
+              to be discovered. The problem was never the research - it was the
+              access.
             </p>
             <p>
-              That&apos;s exactly why we built DocuLens. An AI-powered platform that reads, 
-              summarizes, categorizes, and connects every research paper in the archive.{" "}
-              <span className="text-gray-900 font-semibold">
+              That&apos;s exactly why we built DocuLens. An AI-powered platform
+              that reads, summarizes, categorizes, and connects every research
+              paper in the archive.{" "}
+              <span className="font-semibold text-gray-900">
                 So you spend less time searching and more time discovering.
               </span>
             </p>
           </div>
         </div>
-
       </section>
 
       <FeatureShowcase />
 
-      {/* Footer */}
-      <footer className="border-t border-gray-300 bg-[#087830]/10 py-8 sm:py-12">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex flex-col items-center justify-between gap-3 sm:gap-4 md:flex-row text-center md:text-left">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-[#333]">Doculens</span>
+      <footer className="relative overflow-hidden border-t border-[#0b2619] bg-[linear-gradient(145deg,#071a12_0%,#0d2d20_52%,#123a29_100%)] py-8 sm:py-12">
+        <div className="auth-dot-grid absolute inset-0 opacity-40" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(125,255,155,0.14),transparent_58%)]" />
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="grid gap-10 md:grid-cols-[1.15fr_0.85fr] md:items-start">
+            <div className="max-w-md text-left">
+              <div className="flex items-center justify-start gap-3">
+                <Image
+                  src="/logo.png"
+                  alt="DocuLens Logo"
+                  width={42}
+                  height={42}
+                  className="h-10 w-10 object-contain"
+                />
+                <div>
+                  <p className="text-lg font-semibold tracking-tight text-white">
+                    Doculens
+                  </p>
+                  <p className="text-sm text-white/64">
+                    AI-powered research intelligence
+                  </p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-6 text-white/76">
+                DocuLens helps Laguna University students, faculty, and
+                researchers search, organize, and understand academic papers in
+                one smarter workspace.
+              </p>
             </div>
-            <p className="text-sm text-[#333]">
+
+            <div className="grid grid-cols-2 gap-6 text-left sm:gap-8">
+              <div>
+                <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#7dff9b]">
+                  Quick Links
+                </h3>
+                <div className="mt-4 flex flex-col gap-2.5 text-sm text-white/76">
+                  <SmoothFooterLink
+                    href="/"
+                    className="text-left transition hover:text-white"
+                  >
+                    Home
+                  </SmoothFooterLink>
+                  <SmoothFooterLink
+                    href="#about"
+                    className="text-left transition hover:text-white"
+                  >
+                    About
+                  </SmoothFooterLink>
+                  <SmoothFooterLink
+                    href="#features"
+                    className="text-left transition hover:text-white"
+                  >
+                    Features
+                  </SmoothFooterLink>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#7dff9b]">
+                  Connect with us
+                </h3>
+                <div className="mt-4 flex flex-col gap-3 text-sm text-white/76">
+                  <p className="flex items-start gap-2.5">
+                    <MapPin
+                      className="mt-0.5 h-4 w-4 shrink-0 text-[#7dff9b]"
+                      aria-hidden="true"
+                    />
+                    <span>
+                      Laguna Sports Complex, Brgy. Bubukal, Santa Cruz, Laguna
+                    </span>
+                  </p>
+                  <a
+                    href="https://www.facebook.com/LagunaUniversityOfficial/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-start gap-2.5 transition hover:text-white"
+                  >
+                    <Facebook
+                      className="mt-0.5 h-4 w-4 shrink-0 text-[#7dff9b]"
+                      aria-hidden="true"
+                    />
+                    <span>Laguna University | Santa Cruz</span>
+                  </a>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 border-t border-white/12 pt-5 text-center md:text-center">
+            <p className="text-sm text-white/78">
               © 2025 Doculens. AI-powered research paper intelligence for Laguna
               University.
             </p>

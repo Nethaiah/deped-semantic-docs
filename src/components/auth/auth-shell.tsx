@@ -1,5 +1,6 @@
+import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, BookOpenText, ShieldCheck, Sparkles } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 type AuthShellVariant = "login" | "register";
 
@@ -69,9 +70,9 @@ const shellContent: Record<
   },
   register: {
     badge: "Create your account",
-    title: "Get started with a calmer, smarter way to explore university research.",
+    title: "Get started with a smarter way to explore research",
     description:
-      "Join Doculens with the same fields your app already uses, then verify your email and wait for admin approval.",
+      "Dive into university literature with tools built to keep your thinking sharp and organized.",
     highlight: "Built for students and faculty",
     steps: [
       {
@@ -112,7 +113,10 @@ export default function AuthShell({
             <div className="relative flex h-full flex-col">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="flex items-center gap-3">
+                  <Link
+                    href="/"
+                    className="inline-flex items-center gap-3 transition-opacity hover:opacity-90"
+                  >
                     <Image
                       src="/Logo.png"
                       alt="Doculens Logo"
@@ -126,10 +130,10 @@ export default function AuthShell({
                         Doculens
                       </p>
                       <p className="text-xs text-white/70">
-                        Process Smarter. Extract Faster. Understand More.
+                        AI-powered research intelligence
                       </p>
                     </div>
-                  </div>
+                  </Link>
                 </div>
                 
               </div>
@@ -143,7 +147,7 @@ export default function AuthShell({
                 </p>
               </div>
 
-              <div className="mt-6 grid gap-2.5 sm:grid-cols-3 lg:mt-auto">
+              <div className="mt-6 hidden gap-2.5 md:grid md:grid-cols-3 lg:mt-auto">
                 {content.steps.map((step, index) => (
                   <div
                     key={step.title}
@@ -173,33 +177,31 @@ export default function AuthShell({
                   </div>
                 ))}
               </div>
-
-              
             </div>
           </div>
 
-          <div className="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.88),rgba(248,250,248,0.7)_40%,rgba(240,244,240,0.9)_100%)] px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6">
-            <div className="absolute inset-x-3 bottom-3 top-3 rounded-[1.6rem] border border-white/35 bg-white/12 backdrop-blur-[3px]" />
-            <div className="auth-light-grid absolute inset-0 opacity-70" />
+          <div className="relative isolate overflow-hidden bg-transparent px-4 pb-5 pt-1 sm:px-5 sm:pb-5 md:px-5 md:py-5 lg:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.88),rgba(248,250,248,0.7)_40%,rgba(240,244,240,0.9)_100%)] lg:px-6 lg:py-6">
+            <div className="absolute inset-x-3 bottom-3 top-3 hidden rounded-[1.6rem] border border-white/35 bg-white/12 backdrop-blur-[3px] lg:block" />
+            <div className="auth-light-grid absolute inset-0 hidden opacity-70 lg:block" />
             {showRightDecor && (
               <>
-                <div className="absolute -right-10 top-8 h-48 w-48 rounded-full bg-white/90 blur-3xl" />
-                <div className="absolute left-4 top-12 h-40 w-40 rounded-full bg-[#1c402e]/12 blur-3xl" />
-                <div className="absolute bottom-8 left-1/3 h-44 w-44 rounded-full bg-[#087830]/16 blur-3xl" />
-                <div className="absolute inset-x-8 top-10 h-44 rounded-[2rem] bg-black/8 blur-3xl" />
-                <div className="auth-shimmer absolute -left-16 top-0 h-full w-56 opacity-70" />
+                <div className="absolute -right-10 top-8 hidden h-48 w-48 rounded-full bg-white/90 blur-3xl lg:block" />
+                <div className="absolute left-4 top-12 hidden h-40 w-40 rounded-full bg-[#1c402e]/12 blur-3xl lg:block" />
+                <div className="absolute bottom-8 left-1/3 hidden h-44 w-44 rounded-full bg-[#087830]/16 blur-3xl lg:block" />
+                <div className="absolute inset-x-8 top-10 hidden h-44 rounded-[2rem] bg-black/8 blur-3xl lg:block" />
+                <div className="auth-shimmer absolute -left-16 top-0 hidden h-full w-56 opacity-70 lg:block" />
                 <div
-                  className="absolute right-[12%] top-[14%] h-36 w-36 rounded-full border border-white/65"
+                  className="absolute right-[12%] top-[14%] hidden h-36 w-36 rounded-full border border-white/65 lg:block"
                   style={{ animation: "auth-drift 24s ease-in-out infinite" }}
                 />
                 <div
-                  className="absolute left-[10%] bottom-[11%] h-20 w-20 rounded-full border border-[#1C402E]/10"
+                  className="absolute left-[10%] bottom-[11%] hidden h-20 w-20 rounded-full border border-[#1C402E]/10 lg:block"
                   style={{ animation: "auth-drift 16s ease-in-out -6s infinite" }}
                 />
                 {rightParticles.map((particle, index) => (
                   <span
                     key={`${particle.top}-${particle.left}-${index}`}
-                    className="pointer-events-none absolute rounded-full"
+                    className="pointer-events-none absolute hidden rounded-full lg:block"
                     style={{
                       top: particle.top,
                       left: particle.left,
@@ -215,12 +217,9 @@ export default function AuthShell({
               </>
             )}
 
-            <div className="relative flex h-full items-center justify-center">
-              <div className="w-full max-w-md lg:max-w-lg">
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#1C402E]/15 bg-white/20 px-3 py-1 text-[11px] font-medium text-[#1C402E] backdrop-blur-md">
-                    <ShieldCheck className="h-3.5 w-3.5" />
-                    Secure university access
-                </div>
+            <div className="relative flex h-full items-start justify-center md:items-center">
+              <div className="w-full mt-4 max-w-md lg:max-w-lg">
+                
                 {children}
               </div>
             </div>

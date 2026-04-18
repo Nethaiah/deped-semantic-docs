@@ -1,6 +1,3 @@
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-
 export default function AuthLayout({
   children,
 }: {
@@ -10,16 +7,6 @@ export default function AuthLayout({
     <div className="relative min-h-screen overflow-hidden bg-gray-50">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(8,120,48,0.08),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(28,64,46,0.08),transparent_30%)]" />
       <div className="absolute left-1/2 top-0 h-72 w-[32rem] -translate-x-1/2 rounded-full bg-white/80 blur-3xl" />
-
-      <div className="absolute top-6 left-6 z-20">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-gray-600 shadow-sm backdrop-blur-md transition-colors hover:text-[#1C402E]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Home
-        </Link>
-      </div>
 
       <div className="relative flex min-h-screen flex-col px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
         <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center">

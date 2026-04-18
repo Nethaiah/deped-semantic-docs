@@ -138,8 +138,7 @@ export default function RegisterForm() {
             Create your account
           </h2>
           <p className="mt-1.5 text-sm leading-5 text-gray-600">
-            Register with your current app fields and we&apos;ll guide you through
-            verification and approval.
+            Your research journey starts here.
           </p>
         </div>
 
