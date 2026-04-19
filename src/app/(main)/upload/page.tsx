@@ -47,7 +47,7 @@ function UploadFormSkeleton() {
  */
 export default function UploadPage() {
   return (
-    <div className="p-4 sm:p-5 lg:p-8 bg-gray-50 min-h-full">
+    <div className="p-4 sm:p-5 lg:p-8 bg-gray-50 flex-1 w-full flex flex-col">
       {/* Header Section — static, renders instantly */}
       <div className="mb-6 lg:mb-8">
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Upload Research Document</h1>

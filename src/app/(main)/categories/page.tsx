@@ -11,7 +11,7 @@ export default function CategoriesPage() {
   );
 
   return (
-    <div className="p-5 lg:p-8 bg-gray-50 min-h-full">
+    <div className="p-5 lg:p-8 bg-gray-50 flex-1 w-full flex flex-col">
       {/* Header Section — renders instantly */}
       <div className="mb-8">
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">

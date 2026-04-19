@@ -233,7 +233,7 @@ export default function Sidebar({ children }: SidebarProps) {
       {/* Main Content */}
       {children && (
         <main
-          className={`box-border flex-1 min-w-0 overflow-x-hidden overflow-y-auto overscroll-y-contain bg-gray-50 transition-all duration-300 pt-[65px] h-dvh ${
+          className={`box-border flex-1 min-w-0 min-h-dvh bg-gray-50 transition-all duration-300 pt-[65px] flex flex-col ${
             isMobile
               ? "ml-0" // Full width on mobile — no sidebar space
               : isDesktopExpanded
