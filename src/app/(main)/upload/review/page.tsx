@@ -4,7 +4,7 @@ import ReviewPageClient from "@/components/upload/review-page-client";
 
 function ReviewSkeleton() {
   return (
-    <div className="p-4 md:p-5 lg:p-8 bg-gray-50 min-h-full">
+    <div className="p-4 md:p-5 lg:p-8 bg-gray-50 flex-1 w-full flex flex-col">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-md border flex items-center justify-center bg-transparent">
@@ -36,7 +36,7 @@ function ReviewSkeleton() {
  */
 export default function ReviewPage() {
   return (
-    <div className="p-4 md:p-5 lg:p-8 bg-gray-50 min-h-full">
+    <div className="p-4 md:p-5 lg:p-8 bg-gray-50 flex-1 w-full flex flex-col">
       <Suspense fallback={<ReviewSkeleton />}>
         <ReviewPageClient />
       </Suspense>

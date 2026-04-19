@@ -8,7 +8,7 @@ import {
 
 export default function Loading() {
   return (
-    <div className="min-h-full bg-muted/30 p-4 sm:p-6 lg:p-8 space-y-6">
+    <div className="flex-1 w-full flex flex-col bg-muted/30 p-4 sm:p-6 lg:p-8 gap-6">
       {/* Header Skeleton */}
       <DashboardHeroSkeleton />
 
