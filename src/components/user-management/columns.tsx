@@ -353,21 +353,28 @@ export const columns: ColumnDef<UserRecord>[] = [
           <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuLabel className="text-xs text-gray-500">Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="gap-2 text-sm cursor-pointer text-green-700 focus:text-green-700 focus:bg-green-50"
-              onClick={() => meta?.onAction?.([user.id], "approved")}
-            >
-              <Check className="h-4 w-4" />
-              Approve
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="gap-2 text-sm cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
-              onClick={() => meta?.onAction?.([user.id], "rejected")}
-            >
-              <X className="h-4 w-4" />
-              Reject
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            {user.status !== "approved" && (
+              <>
+                <DropdownMenuItem
+                  className="gap-2 text-sm cursor-pointer text-green-700 focus:text-green-700 focus:bg-green-50"
+                  onClick={() => meta?.onAction?.([user.id], "approved")}
+                >
+                  <Check className="h-4 w-4" />
+                  Approve
+                </DropdownMenuItem>
+                
+                {user.status !== "rejected" && (
+                  <DropdownMenuItem
+                    className="gap-2 text-sm cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
+                    onClick={() => meta?.onAction?.([user.id], "rejected")}
+                  >
+                    <X className="h-4 w-4" />
+                    Reject
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+              </>
+            )}
             <DropdownMenuItem
               className="gap-2 text-sm cursor-pointer"
               onClick={() => navigator.clipboard.writeText(user.email || "")}
