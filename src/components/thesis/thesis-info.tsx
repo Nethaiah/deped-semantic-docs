@@ -10,6 +10,12 @@ import {
 } from "lucide-react";
 import { getBadgeVariant, getDynamicBadgeClasses } from "@/lib/badge-variants";
 import type { ThesisData } from "@/server/theses/get-thesis-data";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Props = {
   thesis: ThesisData;
@@ -76,25 +82,47 @@ export default function ThesisInfoSidebar({ thesis }: Props) {
 
         {/* Keywords */}
         {thesis.keywords && thesis.keywords.length > 0 && (
-          <div className="pt-3 border-t border-slate-200">
+          <div className="pt-3 border-t border-slate-200 w-full overflow-hidden">
             <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
               Keywords
             </span>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {thesis.keywords.map((keyword) => {
-                const variant = getBadgeVariant(keyword);
-                return (
-                  <Badge
-                    key={keyword}
-                    size="md"
-                    {...(variant === "dynamic"
-                      ? { className: getDynamicBadgeClasses(keyword) }
-                      : { variant })}
-                  >
-                    {keyword}
-                  </Badge>
-                );
-              })}
+            <div className="flex flex-wrap gap-2 mt-2 w-full">
+              <TooltipProvider delayDuration={300}>
+                {thesis.keywords.map((keyword) => {
+                  const variant = getBadgeVariant(keyword);
+                  
+                  // Combine dynamic classes with max-w-full so the badge can shrink
+                  const badgeClasses = variant === "dynamic" 
+                    ? `max-w-full ${getDynamicBadgeClasses(keyword)}` 
+                    : "max-w-full";
+
+                  const badgeContent = (
+                    <Badge
+                      key={keyword}
+                      size="md"
+                      className={badgeClasses}
+                      variant={variant !== "dynamic" ? variant : undefined}
+                    >
+                      <span className="truncate block max-w-full">
+                        {keyword}
+                      </span>
+                    </Badge>
+                  );
+
+                  return (
+                    <Tooltip key={keyword}>
+                      <TooltipTrigger asChild>
+                        <div tabIndex={0} className="inline-flex outline-none max-w-full min-w-0 cursor-default">
+                          {badgeContent}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[400px]">
+                        <p className="text-sm font-medium">{keyword}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                })}
+              </TooltipProvider>
             </div>
           </div>
         )}

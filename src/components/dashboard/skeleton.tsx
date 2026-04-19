@@ -157,8 +157,8 @@ export function RecentlyViewedSkeleton() {
                   <Skeleton className="h-4 w-full rounded" />
                   <Skeleton className="h-4 w-3/4 rounded" />
                   <div className="mt-1 flex gap-3">
-                    <Skeleton className="h-3 w-24 rounded" />
-                    <Skeleton className="h-3 w-16 rounded" />
+                     <Skeleton className="h-3 w-24 rounded" />
+                     <Skeleton className="h-3 w-16 rounded" />
                   </div>
                 </div>
                 <Skeleton className="mt-1 h-4 w-4 shrink-0 rounded" />
@@ -167,6 +167,28 @@ export function RecentlyViewedSkeleton() {
             </li>
           ))}
         </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function CollegeInteractionsSkeleton() {
+  return (
+    <Card className="gap-0 border p-0 shadow-sm h-[420px]">
+      <CardHeader className="p-4 border-b border-slate-100 bg-slate-50/50 mb-0 shrink-0">
+        <Skeleton className="h-6 w-48 rounded" />
+        <Skeleton className="mt-1 h-4 w-64 rounded" />
+      </CardHeader>
+      <CardContent className="px-4 pb-4 pt-6 flex-1 flex flex-col justify-center gap-6">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-4">
+            <Skeleton className="h-4 w-20 rounded" />
+            <Skeleton 
+              className="h-8 rounded" 
+              style={{ width: `${80 - i * 15}%` }}
+            />
+          </div>
+        ))}
       </CardContent>
     </Card>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,6 +35,8 @@ import {
   UploadApiService,
   type PendingThesisItem,
 } from "@/lib/api/rag-api";
+import { getPendingUploadsPaginated } from "@/server/theses/get-pending-uploads";
+import NumberedPagination from "@/components/shared/numbered-pagination";
 import { toast } from "sonner";
 
 const STATUS_CONFIG: Record<
@@ -96,22 +98,49 @@ function formatDate(dateStr: string): string {
 
 export default function UploadStatus() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
   const [uploads, setUploads] = useState<PendingThesisItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [total, setTotal] = useState(0);
   const [retryingId, setRetryingId] = useState<string | null>(null);
+
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const statusFilter = searchParams.get("status") || "all";
+  const pageSize = 10;
+
+  const updateParams = useCallback(
+    (updates: Record<string, string>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      // Need to maintain the active tab if present
+      const tab = searchParams.get("tab");
+      if (tab) params.set("tab", tab);
+      
+      for (const [key, value] of Object.entries(updates)) {
+        if (value) {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      }
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [router, pathname, searchParams]
+  );
 
   const fetchUploads = useCallback(async () => {
     try {
       const filter = statusFilter === "all" ? undefined : statusFilter;
-      const result = await UploadApiService.listUploads(filter);
-      setUploads(result.items);
+      const result = await getPendingUploadsPaginated(page, pageSize, filter);
+      setUploads(result.data as unknown as PendingThesisItem[]);
+      setTotal(result.total);
     } catch (error) {
       console.error("Failed to fetch uploads:", error);
     } finally {
       setLoading(false);
     }
-  }, [statusFilter]);
+  }, [statusFilter, page]);
 
   useEffect(() => {
     fetchUploads();
@@ -142,6 +171,15 @@ export default function UploadStatus() {
     router.push(`/upload/review?id=${id}`);
   };
 
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  // Determine current params string without page for pagination links
+  const buildPaginationHref = (pageNum: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", pageNum.toString());
+    return `${pathname}?${params.toString()}`;
+  };
+
   const processingCount = uploads.filter(
     (u) => u.status === "processing" || u.status === "pending"
   ).length;
@@ -166,7 +204,13 @@ export default function UploadStatus() {
           </p>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select 
+            value={statusFilter} 
+            onValueChange={(val) => {
+              setLoading(true);
+              updateParams({ status: val === "all" ? "" : val, page: "1" });
+            }}
+          >
             <SelectTrigger className="w-full sm:w-[160px]">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
@@ -308,6 +352,18 @@ export default function UploadStatus() {
               })}
             </TableBody>
           </Table>
+          
+          <div className="p-4 border-t border-gray-100 bg-white">
+            <NumberedPagination
+              currentPage={page}
+              totalPages={totalPages}
+              buildHref={buildPaginationHref}
+              onPageChange={(p) => {
+                setLoading(true);
+                updateParams({ page: p.toString() });
+              }}
+            />
+          </div>
         </div>
       )}
     </div>

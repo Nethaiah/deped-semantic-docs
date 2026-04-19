@@ -96,7 +96,10 @@ export async function getStats(): Promise<Stats> {
       currentMonth: `${currentMonthName} ${currentYear}`,
     };
   } catch (error) {
-    console.error("Error fetching user stats:", error);
+    if (!isPrerenderAbortError(error)) {
+      console.error("Error fetching user stats:", error);
+    }
+
     // Return default values on error
     return {
       totalTheses: 0,
@@ -107,4 +110,28 @@ export async function getStats(): Promise<Stats> {
       currentMonth: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
     };
   }
+}
+
+function isPrerenderAbortError(error: unknown) {
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof error === "object" && error !== null && "message" in error
+        ? String(error.message)
+        : "";
+
+  const digest =
+    typeof error === "object" && error !== null && "digest" in error
+      ? String(error.digest)
+      : "";
+
+  return (
+    message.includes(
+      "During prerendering, `cookies()` rejects when the prerender is complete"
+    ) ||
+    message.includes(
+      "During prerendering, fetch() rejects when the prerender is complete"
+    ) ||
+    digest === "HANGING_PROMISE_REJECTION"
+  );
 }

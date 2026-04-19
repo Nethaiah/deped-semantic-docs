@@ -1,7 +1,7 @@
 "use server";
 
 import { verifySession } from "@/lib/dal";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 
 /**
  * Log a Q&A interaction for the current user on a thesis.
@@ -30,7 +30,7 @@ export async function logThesisInteraction(
     }
 
     // Revalidate the cached interaction stats for this thesis
-    revalidateTag(`thesis-interactions-${thesisId}`, "max");
+    updateTag(`thesis-interactions-${thesisId}`);
 
     return { success: true };
   } catch (error) {

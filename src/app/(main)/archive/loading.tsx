@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
+    <div className="p-5 lg:p-8 bg-gray-50 min-h-full">
       {/* Header — renders instantly from the page, this is just for initial load */}
       <div className="mb-6">
         <Skeleton className="w-32 h-8 rounded mb-1" />

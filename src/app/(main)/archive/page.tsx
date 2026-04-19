@@ -141,7 +141,7 @@ function ArchiveDataSkeleton() {
  */
 export default function ArchivePage({ searchParams }: Props) {
   return (
-    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
+    <div className="p-5 lg:p-8 bg-gray-50 min-h-full">
       {/* Page Header — static, renders instantly */}
       <div className="mb-6">
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
