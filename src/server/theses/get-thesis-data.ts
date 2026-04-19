@@ -27,6 +27,7 @@ export type ThesisData = {
   authors: ThesisAuthor[];
   createdAt?: string;
   updatedAt?: string;
+  reviewNotes?: string;
 };
 
 /**
@@ -50,16 +51,27 @@ export async function getThesisById(thesisId: string) {
     return { error: "Thesis not found", data: null };
   }
 
-  // Fetch authors for this thesis
-  const { data: authors, error: authorsError } = await supabase
-    .from("thesis_authors")
-    .select("*")
-    .eq("thesis_id", thesisId)
-    .order("author_order", { ascending: true });
+  // Fetch authors for this thesis and review notes from pending_theses concurrently
+  const [authorsResponse, pendingResponse] = await Promise.all([
+    supabase
+      .from("thesis_authors")
+      .select("*")
+      .eq("thesis_id", thesisId)
+      .order("author_order", { ascending: true }),
+    supabase
+      .from("pending_theses")
+      .select("review_notes")
+      .eq("thesis_id", thesisId)
+      .maybeSingle() // use maybeSingle to avoid errors for theses with no pending record
+  ]);
+
+  const { data: authors, error: authorsError } = authorsResponse;
+  const { data: pendingData } = pendingResponse;
 
   if (authorsError) {
     console.error("Error fetching thesis authors:", authorsError);
   }
+
 
   // Transform authors data
   const transformedAuthors: ThesisAuthor[] = (authors || []).map((author) => ({
@@ -85,6 +97,7 @@ export async function getThesisById(thesisId: string) {
     authors: transformedAuthors,
     createdAt: thesis.created_at,
     updatedAt: thesis.updated_at,
+    reviewNotes: pendingData?.review_notes || undefined,
   };
 
   return { data: transformedThesis, error: null };

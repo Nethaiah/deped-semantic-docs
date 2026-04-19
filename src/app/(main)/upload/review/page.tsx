@@ -4,17 +4,26 @@ import ReviewPageClient from "@/components/upload/review-page-client";
 
 function ReviewSkeleton() {
   return (
-    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
-      <div className="flex items-center gap-3 mb-4">
-        <Skeleton className="w-8 h-8 rounded" />
-        <div>
-          <Skeleton className="w-48 h-6 rounded mb-1" />
-          <Skeleton className="w-72 h-4 rounded" />
+    <div className="p-4 md:p-5 lg:p-8 bg-gray-50 min-h-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-md border flex items-center justify-center bg-transparent">
+             {/* Simple visual placeholder for the back button */}
+             <div className="w-4 h-4 bg-muted-foreground/30 mask mask-arrow-left" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold">Review Thesis Upload</h2>
+            <p className="text-sm text-muted-foreground">
+              Compare the PDF with extracted text and metadata, then approve or
+              reject.
+            </p>
+          </div>
         </div>
+        <Skeleton className="h-6 w-24 rounded-full" />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Skeleton className="h-[600px] rounded-lg" />
-        <Skeleton className="h-[600px] rounded-lg" />
+        <Skeleton className="h-[500px] lg:h-[700px] rounded-lg" />
+        <Skeleton className="h-[500px] lg:h-[700px] rounded-lg" />
       </div>
     </div>
   );
@@ -27,7 +36,7 @@ function ReviewSkeleton() {
  */
 export default function ReviewPage() {
   return (
-    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
+    <div className="p-4 md:p-5 lg:p-8 bg-gray-50 min-h-full">
       <Suspense fallback={<ReviewSkeleton />}>
         <ReviewPageClient />
       </Suspense>

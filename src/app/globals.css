@@ -124,3 +124,69 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes auth-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -16px, 0) scale(1.08);
+  }
+}
+
+@keyframes auth-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(18px, -10px, 0) rotate(8deg);
+  }
+}
+
+@keyframes auth-shimmer {
+  0% {
+    transform: translateX(-12%) rotate(0deg);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(12%) rotate(8deg);
+    opacity: 0.2;
+  }
+}
+
+@layer utilities {
+  .auth-dot-grid {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(255, 255, 255, 0.2) 1.1px,
+      transparent 0
+    );
+    background-size: 24px 24px;
+  }
+
+  .auth-light-grid {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(28, 64, 46, 0.08) 1px,
+      transparent 0
+    );
+    background-size: 22px 22px;
+  }
+
+  .auth-shimmer {
+    animation: auth-shimmer 16s linear infinite;
+    background: linear-gradient(
+      120deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.35) 28%,
+      rgba(187, 247, 208, 0.32) 52%,
+      transparent 76%
+    );
+    mix-blend-mode: screen;
+  }
+}

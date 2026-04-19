@@ -14,7 +14,7 @@ function getApprovedEmailHtml(fullName: string): string {
 </head>
 <body style="margin:0;padding:0;background-color:#f9fafb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
   <div style="max-width:520px;margin:40px auto;background:#ffffff;border-radius:16px;border:1px solid #e5e7eb;overflow:hidden;">
-    <div style="background:linear-gradient(135deg,#278fb6,#1a6d8a);padding:32px 24px;text-align:center;">
+    <div style="background:linear-gradient(135deg,#1C402E,#1a6d8a);padding:32px 24px;text-align:center;">
       <h1 style="color:#ffffff;font-size:22px;margin:0;">Account Approved ✅</h1>
     </div>
     <div style="padding:32px 24px;">
@@ -26,7 +26,7 @@ function getApprovedEmailHtml(fullName: string): string {
       </p>
       <div style="text-align:center;margin:24px 0;">
         <a href="${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/login"
-           style="display:inline-block;background:#278fb6;color:#ffffff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">
+           style="display:inline-block;background:#1C402E;color:#ffffff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">
           Log in to DocuLens
         </a>
       </div>

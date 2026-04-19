@@ -15,7 +15,7 @@ type Props = {
   accentColor?: string;
 };
 
-export default function RecentlyViewed({ theses, accentColor = "#278fb6" }: Props) {
+export default function RecentlyViewed({ theses, accentColor = "var(--theme-color)" }: Props) {
   const router = useRouter();
 
   // Format authors for display
@@ -51,14 +51,19 @@ export default function RecentlyViewed({ theses, accentColor = "#278fb6" }: Prop
   }
 
   return (
-    <Card className="bg-white rounded-lg shadow-md border border-slate-200 p-0 flex flex-col gap-0 overflow-hidden">
-      <CardHeader className="p-4 border-b border-slate-100 bg-slate-50/50 mb-0">
-        <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2 m-0">
-          <History className="w-5 h-5" />
-          Recently Viewed
-        </CardTitle>
+    <Card className="bg-white rounded-lg shadow-md border border-slate-200 p-0 flex flex-col gap-0 overflow-hidden h-[420px]">
+      <CardHeader className="p-4 border-b border-slate-100 bg-slate-50/50 mb-0 shrink-0">
+        <div className="flex flex-col gap-1">
+          <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2 m-0">
+            <History className="w-5 h-5" />
+            Recently Viewed
+          </CardTitle>
+          <p className="text-sm text-slate-500">
+            Your recently explored document history.
+          </p>
+        </div>
       </CardHeader>
-      <CardContent className="p-4 pt-4">
+      <CardContent className="p-4 pt-4 overflow-y-auto min-h-0 flex-1">
         <div className="space-y-3">
         {theses.map((item) => {
           const firstKeyword = item.keywords?.[0];

@@ -1,5 +1,4 @@
-"use client";
-
+import { Suspense } from "react";
 import Link from "next/link";
 import {
   GraduationCap,
@@ -9,7 +8,13 @@ import {
   Wrench,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import type { CollegeWithCount } from "@/server/categories/actions";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getCollegeCount } from "@/server/categories/actions";
+
+type StaticCollege = {
+  name: string;
+  fullName: string;
+};
 
 // Map college codes to Lucide icons
 function getCollegeIcon(collegeCode: string) {
@@ -27,23 +32,22 @@ function getCollegeIcon(collegeCode: string) {
 // Get color scheme for each college
 function getCollegeColor(collegeCode: string): string {
   const colorMap: Record<string, string> = {
-    CAS: "bg-purple-100 text-purple-600",
-    CCS: "bg-blue-100 text-blue-600",
-    CBAA: "bg-emerald-100 text-emerald-600",
-    COED: "bg-orange-100 text-orange-600",
+    CAS: "bg-slate-100 text-slate-600",
+    CCS: "bg-[#fbeaea] text-[#800000]", // Maroon
+    CBAA: "bg-yellow-100 text-yellow-600",
+    COED: "bg-blue-100 text-blue-600",
     COE: "bg-red-100 text-red-600",
+    COENG: "bg-red-100 text-red-600",
   };
 
   return colorMap[collegeCode] || "bg-gray-100 text-gray-600";
 }
 
 export default function Categories({
-  initialColleges,
+  colleges,
 }: {
-  initialColleges: CollegeWithCount[];
+  colleges: StaticCollege[];
 }) {
-  const colleges = initialColleges;
-
   if (colleges.length === 0) {
     return (
       <div className="text-center py-12">
@@ -78,9 +82,15 @@ export default function Categories({
                   <p className="text-xs text-gray-500 mb-1 truncate">
                     {college.fullName}
                   </p>
-                  <p className="text-sm text-gray-600">
-                    {college.count} Thesis{college.count !== 1 ? " Papers" : " Paper"}
-                  </p>
+                  <div className="text-sm text-gray-600">
+                    <Suspense
+                      fallback={
+                        <Skeleton className="h-4 w-24 inline-block align-middle" />
+                      }
+                    >
+                      <CollegeCountRenderer collegeCode={college.name} />
+                    </Suspense>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -88,5 +98,15 @@ export default function Categories({
         );
       })}
     </div>
+  );
+}
+
+async function CollegeCountRenderer({ collegeCode }: { collegeCode: string }) {
+  const count = await getCollegeCount(collegeCode);
+
+  return (
+    <>
+      {count} Thesis{count !== 1 ? " Papers" : " Paper"}
+    </>
   );
 }

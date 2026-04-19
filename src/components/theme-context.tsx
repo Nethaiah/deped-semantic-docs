@@ -22,13 +22,27 @@ export function ThemeProvider({
   role: string;
   children: React.ReactNode;
 }) {
-  const value = useMemo<ThemeContextValue>(
-    () => ({ role, theme: getThemeForRole(role) }),
-    [role],
-  );
+  const value = useMemo<ThemeContextValue>(() => {
+    return {
+      role,
+      theme: getThemeForRole(role),
+    };
+  }, [role]);
 
   return (
-    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>
+      <div
+        className="contents"
+        style={
+          {
+            "--theme-primary": value.theme.primary,
+            "--theme-primary-hover": value.theme.primaryHover,
+          } as React.CSSProperties
+        }
+      >
+        {children}
+      </div>
+    </ThemeContext.Provider>
   );
 }
 

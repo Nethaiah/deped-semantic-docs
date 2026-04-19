@@ -255,7 +255,7 @@ export default function Search() {
   }, [searchResults, sortBy]);
 
   return (
-    <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
+    <div className="p-4 md:p-8 bg-gray-50 min-h-full">
       {/* Header Section */}
       <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">

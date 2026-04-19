@@ -21,7 +21,7 @@ export const COLLEGE_DEPARTMENTS: Record<string, string[]> = {
 // College full names
 export const COLLEGE_FULL_NAMES: Record<string, string> = {
   CAS: "College of Arts and Sciences",
-  CCS: "College of Computer Studies",
+  CCS: "College of Computing Studies",
   CBAA: "College of Business Administration and Accountancy",
   COED: "College of Education",
   COE: "College of Engineering",

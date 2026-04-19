@@ -1,5 +1,4 @@
 import { supabaseStatic } from "@/lib/supabase/static";
-import { cacheLife, cacheTag } from "next/cache";
 import { COLLEGE_FULL_NAMES } from "./constants";
 
 export type CollegeWithCount = {
@@ -23,38 +22,61 @@ export type CollegeThesis = {
 
 /**
  * Get all colleges with their thesis counts.
- * Cached with 'hours' profile — college structure rarely changes.
+ * Fetch dynamically so counts always reflect the latest theses.
  */
 export async function getAllColleges(): Promise<CollegeWithCount[]> {
-  "use cache";
-  cacheTag("colleges");
-  cacheLife("hours");
-
   try {
     const supabase = supabaseStatic;
+    const colleges = await Promise.all(
+      Object.entries(COLLEGE_FULL_NAMES).map(async ([code, fullName]) => {
+        const { count, error } = await supabase
+          .from("theses")
+          .select("*", { count: "exact", head: true })
+          .eq("college", code);
 
-    // Get counts for each college
-    const colleges: CollegeWithCount[] = [];
+        if (error) {
+          console.error(`Error getting count for ${code}:`, error);
+        }
 
-    for (const [code, fullName] of Object.entries(COLLEGE_FULL_NAMES)) {
-      const { count, error } = await supabase
-        .from("theses")
-        .select("*", { count: "exact", head: true })
-        .eq("college", code);
-
-      if (!error) {
-        colleges.push({
+        return {
           name: code,
           fullName,
-          count: count || 0,
-        });
-      }
-    }
+          count: error ? 0 : count || 0,
+        };
+      })
+    );
 
     return colleges;
   } catch (error) {
     console.error("Error in getAllColleges:", error);
     return [];
+  }
+}
+
+/**
+ * Get a live count for a specific college.
+ */
+export async function getCollegeCount(collegeCode: string): Promise<number> {
+  try {
+    const supabase = supabaseStatic;
+    const { count, error } = await supabase
+      .from("theses")
+      .select("*", { count: "exact", head: true })
+      .eq("college", collegeCode);
+
+    if (error) {
+      if (!isPrerenderAbortError(error)) {
+        console.error(`Error getting count for ${collegeCode}:`, error);
+      }
+      return 0;
+    }
+
+    return count || 0;
+  } catch (error) {
+    if (!isPrerenderAbortError(error)) {
+      console.error(`Error in getCollegeCount for ${collegeCode}:`, error);
+    }
+    return 0;
   }
 }
 
@@ -67,7 +89,7 @@ export type CollegeFilters = {
 
 /**
  * Get paginated theses for a specific college with filters and sorting.
- * Cached with 'minutes' profile — thesis lists may change more frequently.
+ * Fetch dynamically so result counts stay exact on every request.
  */
 export async function getThesesByCollegePaginated(
   collegeCode: string,
@@ -76,10 +98,6 @@ export async function getThesesByCollegePaginated(
   filters: CollegeFilters = {},
   sort: "year_desc" | "year_asc" | "title_asc" | "title_desc" = "year_desc"
 ): Promise<{ data: CollegeThesis[]; total: number; error: string | null }> {
-  "use cache";
-  cacheTag("theses", `college-${collegeCode}`);
-  cacheLife("minutes");
-
   try {
     const supabase = supabaseStatic;
 
@@ -181,4 +199,22 @@ export async function getThesesByCollegePaginated(
       error: error instanceof Error ? error.message : "Unknown error",
     };
   }
+}
+
+function isPrerenderAbortError(error: unknown) {
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof error === "object" && error !== null && "message" in error
+        ? String(error.message)
+        : "";
+
+  return (
+    message.includes(
+      "During prerendering, fetch() rejects when the prerender is complete"
+    ) ||
+    message.includes(
+      "During prerendering, `cookies()` rejects when the prerender is complete"
+    )
+  );
 }

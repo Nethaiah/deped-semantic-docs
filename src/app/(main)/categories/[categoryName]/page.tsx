@@ -108,7 +108,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const departments = getDepartmentsForCollege(collegeCode);
 
   return (
-    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
+    <div className="p-5 lg:p-8 bg-gray-50 min-h-full">
       {/* Header — rendered directly into static shell (no skeleton needed) */}
       <div className="mb-6">
         <div className="mb-4">

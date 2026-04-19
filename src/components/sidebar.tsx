@@ -27,7 +27,7 @@ import {
 
 const menuItems = [
   { title: "Dashboard", icon: LayoutGrid, path: "/dashboard" },
-  { title: "Search", icon: Search, path: "/search" },
+  { title: "AI Search", icon: Search, path: "/search" },
   { title: "Categories", icon: Folder, path: "/categories" },
   { title: "Bookmark", icon: Bookmark, path: "/bookmarks" },
   { title: "Settings", icon: Settings, path: "/settings" },
@@ -78,7 +78,7 @@ export default function Sidebar({ children }: SidebarProps) {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="flex h-screen">
+      <div className="flex min-h-dvh bg-gray-50">
         {/* Backdrop for mobile overlay */}
         {isMobile && isMobileOpen && (
           <div
@@ -233,7 +233,7 @@ export default function Sidebar({ children }: SidebarProps) {
       {/* Main Content */}
       {children && (
         <main
-          className={`flex-1 overflow-auto bg-gray-50 transition-all duration-300 pt-[65px] h-screen ${
+          className={`box-border flex-1 min-w-0 overflow-x-hidden overflow-y-auto overscroll-y-contain bg-gray-50 transition-all duration-300 pt-[65px] h-dvh ${
             isMobile
               ? "ml-0" // Full width on mobile — no sidebar space
               : isDesktopExpanded

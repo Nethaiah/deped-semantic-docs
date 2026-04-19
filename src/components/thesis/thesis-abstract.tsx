@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { RAGApiService } from "@/lib/api/rag-api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -24,7 +24,18 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
   const [conversationHistory, setConversationHistory] = useState<
     Array<{ question: string; answer: string }>
   >([]);
+  const [pendingQuestion, setPendingQuestion] = useState<string | null>(null);
+  const latestMessageRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
+
+  const scrollToLatest = () => {
+    // Scroll the start of the latest message block to the top of the container
+    latestMessageRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  useEffect(() => {
+    scrollToLatest();
+  }, [conversationHistory, pendingQuestion]);
 
   const hasAbstract = abstract && abstract.trim().length > 0;
   const hasSummary = summary && summary.trim().length > 0;
@@ -41,6 +52,7 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
 
     const currentQuestion = question;
     setQuestion(""); // Clear input immediately
+    setPendingQuestion(currentQuestion);
 
     try {
       const result = await RAGApiService.documentQA({
@@ -50,16 +62,15 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
 
       setAnswer(result.answer);
 
-      // Add to conversation history
+      // Update history and clear pending state simultaneously to prevent UI flash
       setConversationHistory((prev) => [
         ...prev,
         { question: currentQuestion, answer: result.answer },
       ]);
+      setPendingQuestion(null);
 
-      // Log the interaction (fire-and-forget — don't block UI)
-      logThesisInteraction(thesisId, currentQuestion).catch((err) =>
-        console.error("Failed to log interaction:", err)
-      );
+      // Log the interaction so the UI updates with the new stats
+      await logThesisInteraction(thesisId, currentQuestion);
     } catch (err) {
       console.error("Thesis Q&A error:", err);
       setError(
@@ -70,6 +81,7 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
       setQuestion(currentQuestion); // Restore question on error
     } finally {
       setIsLoading(false);
+      setPendingQuestion(null);
     }
   };
 
@@ -141,65 +153,60 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
         )}
 
         {/* Conversation History */}
-        {conversationHistory.length > 0 && (
-          <div className="mb-4 space-y-4 max-h-96 overflow-y-auto">
-            {conversationHistory.map((item, idx) => (
-              <div key={idx} className="space-y-2">
-                {/* User Question */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-sm font-semibold text-blue-900 mb-1">
-                    Q: {item.question}
-                  </p>
-                </div>
-                {/* AI Answer */}
-                <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                      <span className="text-green-700 font-semibold text-xs">
-                        AI
+        {(conversationHistory.length > 0 || pendingQuestion) && (
+          <div className="mb-4 space-y-4 max-h-96 overflow-y-auto pr-2">
+            {conversationHistory.map((item, idx) => {
+              const isLatest = idx === conversationHistory.length - 1 && !pendingQuestion;
+              return (
+                <div 
+                  key={idx} 
+                  className="space-y-2"
+                  ref={isLatest ? latestMessageRef : null}
+                >
+                  {/* User Question */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-sm font-semibold text-blue-900 mb-1">
+                      Q: {item.question}
+                    </p>
+                  </div>
+                  {/* AI Answer */}
+                  <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
+                        <span className="text-green-700 font-semibold text-xs">
+                          AI
+                        </span>
+                      </div>
+                      <span className="text-xs font-semibold text-slate-700">
+                        Answer:
                       </span>
                     </div>
-                    <span className="text-xs font-semibold text-slate-700">
-                      Answer:
-                    </span>
-                  </div>
-                  <div className="prose prose-sm max-w-none text-slate-700 prose-p:text-justify prose-p:leading-relaxed prose-li:text-justify">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {item.answer}
-                    </ReactMarkdown>
+                    <div className="prose prose-sm max-w-none text-slate-700 text-justify prose-p:text-justify prose-p:leading-relaxed prose-li:text-justify prose-ul:text-justify prose-ol:text-justify">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {item.answer}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 </div>
+              );
+            })}
+            
+            {/* Pending Question */}
+            {pendingQuestion && (
+              <div className="space-y-2" ref={latestMessageRef}>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-sm font-semibold text-blue-900 mb-1">
+                    Q: {pendingQuestion}
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-4 flex items-center gap-3">
+                  <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                  <span className="text-sm text-slate-600">
+                    Getting answer from AI...
+                  </span>
+                </div>
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* Current Answer (Latest) */}
-        {answer && conversationHistory.length === 0 && (
-          <div className="mb-4 bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="text-green-700 font-semibold text-xs">AI</span>
-              </div>
-              <span className="text-sm font-semibold text-slate-700">
-                Answer:
-              </span>
-            </div>
-            <div className="prose prose-sm max-w-none text-slate-700 prose-p:text-justify prose-p:leading-relaxed prose-li:text-justify">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {answer}
-              </ReactMarkdown>
-            </div>
-          </div>
-        )}
-
-        {/* Loading State */}
-        {isLoading && (
-          <div className="mb-4 bg-slate-50 border border-slate-200 rounded-lg p-4 flex items-center gap-3">
-            <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
-            <span className="text-sm text-slate-600">
-              Getting answer from AI...
-            </span>
+            )}
           </div>
         )}
 

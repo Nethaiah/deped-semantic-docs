@@ -1,7 +1,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, XAxis, Cell } from "recharts";
+import { Area, AreaChart, XAxis, CartesianGrid } from "recharts";
 import React from "react";
 
 import {
@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/chart";
 import { Badge } from "@/components/ui/badge";
 
-export interface HighlightedBarChartProps {
+export interface HighlightedLineChartProps {
   data: {
     month: string;
     desktop: number; // We'll map 'uploads' to 'desktop' or make this dynamic
@@ -30,12 +30,12 @@ export interface HighlightedBarChartProps {
   description?: string;
 }
 
-export function HighlightedBarChart({ 
+export function HighlightedLineChart({ 
   data, 
   color = "var(--chart-1)",
-  title = "Bar Chart",
+  title = "Line Chart",
   description
-}: HighlightedBarChartProps) {
+}: HighlightedLineChartProps) {
   const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
 
   const chartConfig = {
@@ -51,8 +51,8 @@ export function HighlightedBarChart({
   }, [activeIndex, data]);
 
   return (
-    <Card className="border-none shadow-none">
-      <CardHeader className="p-0 mb-0 border-none">
+    <Card className="border-none shadow-none h-full flex flex-col bg-transparent rounded-none">
+      <CardHeader className="p-4 border-b border-slate-100 bg-slate-50/50 mb-0 shrink-0">
         <CardTitle className="flex items-center gap-2 text-lg font-bold text-slate-800">
           <TrendingUp className="w-5 h-5" />
           {title}
@@ -63,48 +63,48 @@ export function HighlightedBarChart({
             : description || "Monthly activity"}
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-0">
-        <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
-          <BarChart
+      <CardContent className="px-4 pb-4 pt-0 flex-1 min-h-0">
+        <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+          <AreaChart
             accessibilityLayer
             data={data}
+            margin={{ top: 10, left: 12, right: 12, bottom: 24 }}
+            onMouseMove={(e: any) => {
+              if (e.activeTooltipIndex !== undefined) {
+                setActiveIndex(e.activeTooltipIndex);
+              }
+            }}
             onMouseLeave={() => setActiveIndex(null)}
           >
-            <rect
-              x="0"
-              y="0"
-              width="100%"
-              height="100%"
-              fill="url(#highlighted-pattern-dots)"
-            />
             <defs>
-              <DottedBackgroundPattern />
+              <linearGradient id="colorDesktop" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={color} stopOpacity={0.3} />
+                <stop offset="95%" stopColor={color} stopOpacity={0} />
+              </linearGradient>
             </defs>
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
               dataKey="month"
               tickLine={false}
-              tickMargin={10}
               axisLine={false}
+              tickMargin={10}
               tickFormatter={(value) => value}
             />
             <ChartTooltip
-              cursor={false}
+              cursor={{ stroke: "rgba(0,0,0,0.1)", strokeWidth: 1 }}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="desktop" radius={4} fill={color}>
-              {data.map((_, index) => (
-                <Cell
-                  className="duration-200"
-                  key={`cell-${index}`}
-                  fillOpacity={
-                    activeIndex === null ? 1 : activeIndex === index ? 1 : 0.3
-                  }
-                  stroke={activeIndex === index ? color : ""}
-                  onMouseEnter={() => setActiveIndex(index)}
-                />
-              ))}
-            </Bar>
-          </BarChart>
+            <Area
+              type="monotone"
+              dataKey="desktop"
+              stroke={color}
+              strokeWidth={3}
+              fillOpacity={1}
+              fill="url(#colorDesktop)"
+              dot={{ fill: color, strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, strokeWidth: 0 }}
+            />
+          </AreaChart>
         </ChartContainer>
       </CardContent>
     </Card>

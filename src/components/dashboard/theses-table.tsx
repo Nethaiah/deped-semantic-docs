@@ -19,6 +19,10 @@ import ThesesFilterDialog from "@/components/dashboard/theses-filter-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import NumberedPagination from "@/components/shared/numbered-pagination";
 import { TruncatedText } from "@/components/ui/truncated-text";
+import { Badge } from "@/components/ui/badge";
+import { getBadgeVariant, getDynamicBadgeClasses } from "@/lib/badge-variants";
+import DynamicTags from "@/components/ui/dynamic-tags";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Thesis } from "@/server/theses/get-theses";
 import type { FilterOptions } from "@/server/theses/get-filter-options";
 
@@ -43,7 +47,7 @@ export default function ThesesTable({
   initialPage = 1,
   initialFilters = { yearFrom: "", yearTo: "", department: "", college: "", title: "" },
   filterOptions = { departments: [], colleges: [] },
-  accentColor = "#278fb6",
+  accentColor = "var(--theme-color)",
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -175,6 +179,9 @@ export default function ThesesTable({
                   Title
                 </TableHead>
                 <TableHead className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto">
+                  Tags
+                </TableHead>
+                <TableHead className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto">
                   Department
                 </TableHead>
                 <TableHead className="py-3 px-4 text-xs font-[800] text-slate-700 uppercase tracking-wide h-auto">
@@ -190,10 +197,13 @@ export default function ThesesTable({
                   <TableCell className="py-4 px-4 align-top w-[10%]">
                     <Skeleton className="h-5 w-14 rounded" />
                   </TableCell>
-                  <TableCell className="py-4 px-4 align-top w-[50%]">
+                  <TableCell className="py-4 px-4 align-top w-[40%]">
                     <Skeleton className="h-5 w-full max-w-[280px] rounded" />
                   </TableCell>
                   <TableCell className="py-4 px-4 align-top w-[20%]">
+                    <div className="flex gap-1"><Skeleton className="h-5 w-16 rounded-full" /><Skeleton className="h-5 w-12 rounded-full" /></div>
+                  </TableCell>
+                  <TableCell className="py-4 px-4 align-top w-[15%]">
                     <Skeleton className="h-4 w-32 rounded" />
                   </TableCell>
                   <TableCell className="py-4 px-4 align-top w-[20%]">
@@ -222,7 +232,11 @@ export default function ThesesTable({
                     </Link>
                   </TableCell>
 
-                  <TableCell className="py-4 px-4 text-md text-slate-600 align-top max-w-[200px] truncate" title={thesis.department}>
+                  <TableCell className="py-4 px-4 text-md align-middle min-w-[200px] max-w-[280px]">
+                    <DynamicTags tags={thesis.keywords || []} />
+                  </TableCell>
+
+                  <TableCell className="py-4 px-4 text-md text-slate-600 align-top max-w-[180px] truncate" title={thesis.department}>
                     <span className="text-slate-600 text-sm">
                       {thesis.department}
                     </span>
@@ -283,8 +297,14 @@ export default function ThesesTable({
 
                 <TruncatedText
                   text={thesis.title}
-                  className="font-semibold text-slate-800 mb-3 line-clamp-2 leading-tight text-left"
+                  className="font-semibold text-slate-800 mb-2 line-clamp-2 leading-tight text-left"
                 />
+
+                {thesis.keywords && thesis.keywords.length > 0 && (
+                  <div className="mb-3 w-full">
+                    <DynamicTags tags={thesis.keywords} />
+                  </div>
+                )}
 
                 <div className="space-y-2 text-sm text-slate-500">
                   <div className="flex items-start gap-2">

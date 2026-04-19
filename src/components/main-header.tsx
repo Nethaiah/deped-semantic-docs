@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { verifySession, getCurrentUserRole } from "@/lib/dal";
 import { getThemeForRole } from "@/lib/theme-config";
 import UserMenu from "./user-menu";
@@ -27,7 +28,7 @@ export default async function MainHeader() {
         {/* Left section: Hamburger (mobile) + Logo (desktop) */}
         <div className="flex items-center gap-2">
           <MobileMenuButton />
-          <div className="hidden lg:flex items-center gap-2">
+          <Link href="/dashboard" className="hidden lg:flex items-center gap-2 hover:opacity-90 transition-opacity">
             <Image
               src="/Logo.png"
               alt="DocuLens Logo"
@@ -39,11 +40,11 @@ export default async function MainHeader() {
             <span className="text-base font-bold tracking-tight text-[#f3f3f3]">
               DocuLens
             </span>
-          </div>
+          </Link>
         </div>
 
         {/* Center section: Logo (mobile only) */}
-        <div className="lg:hidden absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+        <Link href="/dashboard" className="lg:hidden absolute left-1/2 -translate-x-1/2 flex items-center gap-2 hover:opacity-90 transition-opacity">
           <Image
             src="/Logo.png"
             alt="DocuLens Logo"
@@ -55,7 +56,7 @@ export default async function MainHeader() {
           <span className="text-base font-bold tracking-tight text-[#f3f3f3]">
             DocuLens
           </span>
-        </div>
+        </Link>
 
         {/* Right section: User Menu */}
         <div className="flex items-center gap-1.5 sm:gap-2">

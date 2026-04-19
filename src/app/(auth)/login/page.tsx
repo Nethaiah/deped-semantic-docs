@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import AuthShell from "@/components/auth/auth-shell";
 import LoginForm from "@/components/auth/login-form";
 
 // Auth redirect for already-authenticated users is handled by the proxy (middleware).
@@ -8,8 +9,10 @@ import LoginForm from "@/components/auth/login-form";
 
 export default function Login() {
   return (
-    <Suspense fallback={null}>
-      <LoginForm />
-    </Suspense>
+    <AuthShell variant="login">
+      <Suspense fallback={null}>
+        <LoginForm />
+      </Suspense>
+    </AuthShell>
   );
 }

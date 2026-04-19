@@ -4,7 +4,7 @@
  * Single source of truth for all role-based colors.
  *
  * Admin  → teal  #008c8b
- * User   → blue  #278fb6
+ * User   → blue  #1C402E
  */
 
 export type Role = "admin" | "user";
@@ -34,11 +34,11 @@ export const roleThemes: Record<Role, ThemeColors> = {
     baseColor: "gray",
   },
   user: {
-    primary: "#278fb6",
-    primaryHover: "#1f7a9e",
-    primaryBgClass: "bg-[#278fb6]",
-    primaryHoverBgClass: "hover:bg-[#1f7a9e]",
-    primaryTextClass: "text-[#278fb6]",
+    primary: "#1C402E",
+    primaryHover: "#1C402E",
+    primaryBgClass: "bg-[#1C402E]",
+    primaryHoverBgClass: "hover:bg-[#1C402E]/90",
+    primaryTextClass: "text-[#1C402E]",
     baseColor: "slate",
   },
 };

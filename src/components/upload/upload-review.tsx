@@ -56,7 +56,8 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
   const [data, setData] = useState<ReviewData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [submittingAction, setSubmittingAction] = useState<"approve" | "reject" | null>(null);
+  const isSubmitting = submittingAction !== null;
   const [activeTab, setActiveTab] = useState("full_text");
 
   // Editable fields (pre-filled from extracted data)
@@ -102,7 +103,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
   }, [fetchReview]);
 
   const handleApprove = async () => {
-    setSubmitting(true);
+    setSubmittingAction("approve");
     try {
       const payload: ApprovePayload = {
         title: title.trim() || undefined,
@@ -133,12 +134,12 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
       const msg = err instanceof Error ? err.message : "Approval failed";
       toast.error(msg);
     } finally {
-      setSubmitting(false);
+      setSubmittingAction(null);
     }
   };
 
   const handleReject = async () => {
-    setSubmitting(true);
+    setSubmittingAction("reject");
     try {
       await UploadApiService.rejectUpload(uploadId, {
         reason: rejectReason.trim() || "Rejected by admin",
@@ -149,7 +150,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
       const msg = err instanceof Error ? err.message : "Rejection failed";
       toast.error(msg);
     } finally {
-      setSubmitting(false);
+      setSubmittingAction(null);
     }
   };
 
@@ -159,10 +160,24 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
   if (loading) {
     return (
       <div className="space-y-4">
-        <Skeleton className="h-8 w-48" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" disabled>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h2 className="text-lg font-semibold">Review Thesis Upload</h2>
+              <p className="text-sm text-muted-foreground">
+                Compare the PDF with extracted text and metadata, then approve or
+                reject.
+              </p>
+            </div>
+          </div>
+          <Skeleton className="h-6 w-24 rounded-full" />
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Skeleton className="h-[600px] rounded-lg" />
-          <Skeleton className="h-[600px] rounded-lg" />
+          <Skeleton className="h-[500px] lg:h-[700px] rounded-lg" />
+          <Skeleton className="h-[600px] lg:h-[700px] rounded-lg" />
         </div>
       </div>
     );
@@ -187,7 +202,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -206,16 +221,16 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
         </div>
         <Badge
           variant={data.status === "review_ready" ? "outline" : "secondary"}
-          className="text-xs"
+          className="text-xs w-fit"
         >
           {data.status.replace("_", " ").toUpperCase()}
         </Badge>
       </div>
 
       {/* Side-by-side layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-[700px]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:min-h-[700px]">
         {/* LEFT: PDF Viewer */}
-        <div className="rounded-lg border bg-card overflow-hidden flex flex-col" style={{ height: '700px' }}>
+        <div className="rounded-lg border bg-card overflow-hidden flex flex-col h-[500px] lg:h-[700px]">
           {pdfUrl ? (
             <PDFViewer
               file={pdfUrl}
@@ -255,7 +270,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                   id="review-title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  disabled={!isReviewable || submitting}
+                  disabled={!isReviewable || isSubmitting}
                   className="text-sm"
                 />
               </div>
@@ -269,7 +284,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                   value={authors}
                   onChange={(e) => setAuthors(e.target.value)}
                   placeholder="Comma-separated"
-                  disabled={!isReviewable || submitting}
+                  disabled={!isReviewable || isSubmitting}
                   className="text-sm"
                 />
               </div>
@@ -284,7 +299,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                     type="number"
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
-                    disabled={!isReviewable || submitting}
+                    disabled={!isReviewable || isSubmitting}
                     className="text-sm"
                   />
                 </div>
@@ -295,7 +310,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                   <Select
                     value={college}
                     onValueChange={setCollege}
-                    disabled={!isReviewable || submitting}
+                    disabled={!isReviewable || isSubmitting}
                   >
                     <SelectTrigger id="review-college" className="text-sm">
                       <SelectValue placeholder="Select" />
@@ -320,7 +335,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                     id="review-dept"
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
-                    disabled={!isReviewable || submitting}
+                    disabled={!isReviewable || isSubmitting}
                     className="text-sm"
                   />
                 </div>
@@ -332,7 +347,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                     id="review-advisor"
                     value={advisor}
                     onChange={(e) => setAdvisor(e.target.value)}
-                    disabled={!isReviewable || submitting}
+                    disabled={!isReviewable || isSubmitting}
                     className="text-sm"
                   />
                 </div>
@@ -347,7 +362,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                   value={keywords}
                   onChange={(e) => setKeywords(e.target.value)}
                   placeholder="Comma-separated keywords"
-                  disabled={!isReviewable || submitting}
+                  disabled={!isReviewable || isSubmitting}
                   className="text-sm"
                 />
               </div>
@@ -362,7 +377,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                 id="review-abstract"
                 value={abstract}
                 onChange={(e) => setAbstract(e.target.value)}
-                disabled={!isReviewable || submitting}
+                disabled={!isReviewable || isSubmitting}
                 rows={5}
                 className="text-sm resize-y"
               />
@@ -377,7 +392,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                 id="review-summary"
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
-                disabled={!isReviewable || submitting}
+                disabled={!isReviewable || isSubmitting}
                 rows={4}
                 className="text-sm resize-y"
               />
@@ -455,7 +470,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                   value={reviewNotes}
                   onChange={(e) => setReviewNotes(e.target.value)}
                   placeholder="Any notes about this review..."
-                  disabled={submitting}
+                  disabled={isSubmitting}
                   rows={2}
                   className="text-sm resize-y"
                 />
@@ -465,22 +480,22 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
 
           {/* Action Buttons */}
           {isReviewable && (
-            <div className="px-4 py-3 border-t bg-muted/30 flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            <div className="px-4 py-3 border-t bg-muted/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex w-full sm:w-auto items-center gap-2">
                 <Input
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
                   placeholder="Rejection reason..."
-                  className="text-sm w-48 h-8"
-                  disabled={submitting}
+                  className="text-sm flex-1 sm:w-48 h-8"
+                  disabled={isSubmitting}
                 />
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={handleReject}
-                  disabled={submitting}
+                  disabled={isSubmitting}
                 >
-                  {submitting ? (
+                  {submittingAction === "reject" ? (
                     <Loader2 className="h-3 w-3 animate-spin mr-1" />
                   ) : (
                     <XCircle className="h-3 w-3 mr-1" />
@@ -491,10 +506,10 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
               <Button
                 size="sm"
                 onClick={handleApprove}
-                disabled={submitting || !title.trim()}
-                className="bg-green-600 hover:bg-green-700 text-white"
+                disabled={isSubmitting || !title.trim()}
+                className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto"
               >
-                {submitting ? (
+                {submittingAction === "approve" ? (
                   <Loader2 className="h-3 w-3 animate-spin mr-1" />
                 ) : (
                   <CheckCircle2 className="h-3 w-3 mr-1" />

@@ -9,6 +9,7 @@ import ThesisAbstract from "@/components/thesis/thesis-abstract";
 import DocumentPDFViewer from "@/components/thesis/pdf-viewer/pdf-viewer";
 import SimilarTheses from "@/components/thesis/similar-theses";
 import ThesisEngagement from "@/components/thesis/thesis-engagement";
+import ThesisReviewNotes from "@/components/thesis/thesis-review-notes";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import {
@@ -146,11 +147,14 @@ async function ThesisMainContent({ thesisId }: { thesisId: string }) {
   if (!thesis) return null;
 
   return (
-    <ThesisAbstract
-      abstract={thesis.abstract}
-      summary={thesis.summary}
-      thesisId={thesis.thesisId}
-    />
+    <>
+      <ThesisReviewNotes notes={thesis.reviewNotes} />
+      <ThesisAbstract
+        abstract={thesis.abstract}
+        summary={thesis.summary}
+        thesisId={thesis.thesisId}
+      />
+    </>
   );
 }
 

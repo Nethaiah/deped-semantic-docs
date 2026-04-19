@@ -12,7 +12,7 @@ function LayoutSkeleton() {
   return (
     <div className="min-h-screen bg-muted/30 flex items-center justify-center">
       <div className="flex flex-col items-center gap-4 text-muted-foreground">
-        <Spinner className="size-8 text-[#278fb6]" />
+        <Spinner className="size-8 text-[#1C402E]" />
         <p className="text-sm font-medium">Validating session...</p>
       </div>
     </div>

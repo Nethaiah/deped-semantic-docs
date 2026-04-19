@@ -45,7 +45,7 @@ async function ResultsSection({
 /* ── Page ── */
 export default function BookmarksPage({ searchParams }: Props) {
   return (
-    <div className="p-5 lg:p-8 bg-gray-50 min-h-screen">
+    <div className="p-5 lg:p-8 bg-gray-50 min-h-full">
       {/* Header — renders instantly (Part of Static Shell) */}
       <div className="mb-6">
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">

@@ -252,9 +252,9 @@ export function ArchiveDataTable<TData, TValue>({
   return (
     <div className="w-full">
       {/* ── Toolbar: Search + Sort + College Filter + Column Visibility ── */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         {/* Search */}
-        <div className="relative flex-1 max-w-sm w-full">
+        <div className="relative w-full flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Search archived theses…"
@@ -264,7 +264,7 @@ export function ArchiveDataTable<TData, TValue>({
           />
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:ml-auto sm:w-auto">
           {/* College filter */}
           {colleges.length > 0 && (
             <Select

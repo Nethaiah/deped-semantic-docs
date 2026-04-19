@@ -1,4 +1,5 @@
 import PublicHeader from "@/components/public-header";
+import ScrollToTopButton from "@/components/public/scroll-to-top-button";
 
 export default function PublicLayout({
   children,
@@ -11,6 +12,7 @@ export default function PublicLayout({
       <main>
         {children}
       </main>
+      <ScrollToTopButton />
     </>
   );
 }
