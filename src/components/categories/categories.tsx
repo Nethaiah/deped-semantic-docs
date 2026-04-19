@@ -106,7 +106,7 @@ async function CollegeCountRenderer({ collegeCode }: { collegeCode: string }) {
 
   return (
     <>
-      {count} Thesis{count !== 1 ? " Papers" : " Paper"}
+      {count} Research{count !== 1 ? " Papers" : " Paper"}
     </>
   );
 }
