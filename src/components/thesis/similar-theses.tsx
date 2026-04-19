@@ -34,7 +34,7 @@ export default function SimilarTheses({ similar }: Props) {
   return (
     <Card className="rounded-xl border-gray-200 p-0 gap-0">
       <CardContent className="p-4 sm:p-5">
-        <h4 className="font-bold text-slate-800 mb-3 sm:mb-4">Related Theses</h4>
+        <h4 className="font-bold text-slate-800 mb-3 sm:mb-4">Related Research Papers</h4>
         <div className="space-y-3">
         {similar.map((thesis) => (
           <Link

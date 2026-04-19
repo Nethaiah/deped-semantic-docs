@@ -14,7 +14,7 @@ const steps = [
   },
   {
     step: "02",
-    title: "Search by keyword or topic",
+    title: "Search by topic, not just keywords",
     lead: "Instead of opening documents one by one, users can",
     highlight: "search a thesis using keywords",
     tail: "to surface relevant papers faster and narrow their focus quickly.",

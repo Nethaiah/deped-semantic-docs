@@ -22,7 +22,7 @@ export default function MonthlyActivity({ data, accentColor = "var(--theme-color
       <HighlightedLineChart
         data={currentData}
         title="Monthly Activity"
-        description="New theses added over the last 6 months."
+        description="New research papers added over the last 6 months."
         color={accentColor}
       />
     </Card>

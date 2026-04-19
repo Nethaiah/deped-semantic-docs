@@ -15,10 +15,10 @@ export default function CategoriesPage() {
       {/* Header Section — renders instantly */}
       <div className="mb-8">
         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-          Browse by College
+          Browse by Colleges
         </h1>
         <p className="text-sm text-gray-600">
-          Explore thesis papers organized by college and department.
+          Explore research papers organized by college and department.
         </p>
       </div>
 

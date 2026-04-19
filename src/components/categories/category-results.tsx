@@ -77,7 +77,7 @@ export default function CategoryResults({
         {hasAny ? (
           <span>
             Showing {(page - 1) * pageSize + 1} –{" "}
-            {Math.min(page * pageSize, total)} of {total} thesis papers
+            {Math.min(page * pageSize, total)} of {total} research papers
             {currentFilters.department && (
               <>
                 {" "}
@@ -89,7 +89,7 @@ export default function CategoryResults({
             )}
           </span>
         ) : (
-          <span>No thesis papers found</span>
+          <span>No research papers found</span>
         )}
       </div>
 
@@ -190,7 +190,7 @@ export default function CategoryResults({
               <SearchIcon className="h-12 w-12 mx-auto" />
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No thesis papers found
+              No research papers found
             </h3>
             <p className="text-sm text-gray-500">
               Try adjusting your search query or filters

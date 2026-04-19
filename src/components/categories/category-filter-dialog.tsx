@@ -51,9 +51,9 @@ export default function CollegeFilterDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Filter Thesis Papers</DialogTitle>
+          <DialogTitle>Filter Research Papers</DialogTitle>
           <DialogDescription className="sr-only">
-            Filter the thesis papers by specifying year and department.
+            Filter the research papers by specifying year and department.
           </DialogDescription>
         </DialogHeader>
 

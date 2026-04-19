@@ -88,7 +88,7 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
   return (
     <Card className="rounded-xl border-gray-200 p-0 gap-0">
       <CardContent className="p-4 sm:p-5">
-        <h3 className="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Thesis Overview</h3>
+        <h3 className="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Research Overview</h3>
         <p className="text-sm text-slate-500 mb-2 sm:mb-4">
           {hasContent
             ? "Abstract and summary of the research."
@@ -141,7 +141,7 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
       <div className={hasAbstract || hasSummary ? "mt-6 border-t pt-6" : ""}>
         <h4 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
           <MessageSquare className="h-5 w-5" />
-          Ask Questions About This Thesis
+          Ask Questions About This Research Paper
         </h4>
 
         {/* Error Message */}

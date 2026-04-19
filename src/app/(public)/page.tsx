@@ -56,12 +56,12 @@ export default function Home() {
       <section className="border-y border-[#b8dcc5] bg-[#dff3e6] py-10 sm:py-12 md:py-16">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
           <h2 className="mb-3 text-xl font-bold text-[#123a29] sm:mb-4 sm:text-2xl md:text-3xl">
-            Hundreds of research papers. One system.
+            Numerous research papers. One platform.
           </h2>
           <div className="mx-auto mb-6 h-1 w-20 rounded-full bg-[#1c402e] shadow-[0_0_20px_rgba(125,255,155,0.45)] sm:w-28" />
           <p className="text-base leading-relaxed text-[#1c402e]/82 sm:text-lg">
             Students, faculty, and researchers at Laguna University deal with
-            hundreds of theses, capstones, and studies. Finding the right paper,
+            numerous theses, capstones, and other research papers. Finding the right paper,
             understanding its key findings, and seeing related works should not
             take hours of searching.
           </p>
@@ -98,7 +98,6 @@ export default function Home() {
             <h3 className="text-xl font-bold leading-snug text-gray-900 sm:text-2xl md:text-3xl">
               For Every Student,{" "}
               <span className="font-medium text-gray-400">
-                Every Faculty Member,
                 <br className="hidden sm:block" />
                 Every Researcher at LU.
               </span>

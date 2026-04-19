@@ -43,7 +43,7 @@ async function DashboardDescription() {
   const isAdmin = userRole?.isAdmin || false;
   return isAdmin
     ? "system repository, including users and system metrics."
-    : "theses repository, including document metrics and recent uploads.";
+    : "research papers repository, including document metrics and recent uploads.";
 }
 
 async function DashboardPortalPill() {
@@ -69,7 +69,7 @@ async function DashboardStatsBar() {
           {stats.totalTheses}
         </p>
         <p className="text-xs text-white/80 font-bold tracking-wide">
-          Total Theses
+          Total Research Papers
         </p>
       </div>
       <div className="px-6 py-6 flex flex-col items-center justify-center">

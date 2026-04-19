@@ -28,7 +28,7 @@ import {
 const menuItems = [
   { title: "Dashboard", icon: LayoutGrid, path: "/dashboard" },
   { title: "AI Search", icon: Search, path: "/search" },
-  { title: "Categories", icon: Folder, path: "/categories" },
+  { title: "Colleges", icon: Folder, path: "/categories" },
   { title: "Bookmark", icon: Bookmark, path: "/bookmarks" },
   { title: "Settings", icon: Settings, path: "/settings" },
 ];
