@@ -1,12 +1,26 @@
-import { Suspense } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { verifySession } from "@/lib/dal";
 import { FileQuestion, Home, LayoutDashboard } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { createClient } from "@/lib/supabase/client";
 
-async function NotFoundContent() {
-  const { user } = await verifySession();
+export default function NotFound() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      // getSession() checks local browser storage and is almost instantaneous 
+      // compared to getUser() which makes a database network call.
+      const { data } = await supabase.auth.getSession();
+      setIsAuthenticated(!!data.session);
+      setIsLoading(false);
+    };
+    checkAuth();
+  }, []);
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-50/50 p-4 sm:p-6 lg:p-8">
@@ -26,56 +40,39 @@ async function NotFoundContent() {
             We couldn't find the page you're looking for. It might have been moved or doesn't exist.
           </p>
 
-          <div className="w-full flex flex-col gap-3">
-            <Link
-              href={user ? "/dashboard" : "/"}
-              className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#087830] text-white rounded-xl hover:bg-[#065a24] transition-all font-semibold shadow-sm focus:ring-2 focus:ring-[#087830] focus:ring-offset-1"
-            >
-              {user ? (
-                <>
-                  <LayoutDashboard className="h-5 w-5" />
-                  Return to Dashboard
-                </>
-              ) : (
-                <>
-                  <Home className="h-5 w-5" />
-                  Return Home
-                </>
-              )}
-            </Link>
-
-            {!user && (
-              <div className="text-sm font-medium text-gray-500 mt-2">
-                Have an account?{" "}
-                <Link href="/login" className="text-[#087830] hover:text-[#065a24] hover:underline transition-colors">
-                  Log in here
+          <div className="w-full flex flex-col gap-3 min-h-[80px]">
+            {!isLoading && (
+              <>
+                <Link
+                  href={isAuthenticated ? "/dashboard" : "/"}
+                  className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#087830] text-white rounded-xl hover:bg-[#065a24] transition-all font-semibold shadow-sm focus:ring-2 focus:ring-[#087830] focus:ring-offset-1"
+                >
+                  {isAuthenticated ? (
+                    <>
+                      <LayoutDashboard className="h-5 w-5" />
+                      Return to Dashboard
+                    </>
+                  ) : (
+                    <>
+                      <Home className="h-5 w-5" />
+                      Return Home
+                    </>
+                  )}
                 </Link>
-              </div>
+
+                {!isAuthenticated && (
+                  <div className="text-sm font-medium text-gray-500 mt-2">
+                    Have an account?{" "}
+                    <Link href="/login" className="text-[#087830] hover:text-[#065a24] hover:underline transition-colors">
+                      Log in here
+                    </Link>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </CardContent>
       </Card>
     </div>
-  );
-}
-
-function NotFoundSkeleton() {
-  return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-50/50 p-4">
-      <div className="max-w-md w-full bg-white rounded-xl p-10 text-center">
-        <Skeleton className="h-20 w-20 rounded-full mx-auto mb-6" />
-        <Skeleton className="h-12 w-24 mx-auto mb-2 rounded" />
-        <Skeleton className="h-8 w-48 mx-auto mb-3 rounded" />
-        <Skeleton className="h-12 w-full rounded-xl" />
-      </div>
-    </div>
-  );
-}
-
-export default function NotFound() {
-  return (
-    <Suspense fallback={<NotFoundSkeleton />}>
-      <NotFoundContent />
-    </Suspense>
   );
 }
