@@ -57,9 +57,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UserStatus, UserRecord } from "./columns";
+import { UserRecord } from "./columns";
 import { useTheme } from "@/components/theme-context";
 import { updateUserStatus, type StatusAction } from "@/server/user-management/update-user-status";
+import { reactivateUser } from "@/server/user-management/reactivate-user";
 import { Spinner } from "@/components/ui/spinner";
 import type { UserStats } from "@/server/user-management/get-users";
 
@@ -71,16 +72,10 @@ interface DataTableProps<TData, TValue> {
   pageSize: number;
   currentQuery: string;
   currentStatus: string;
+  currentLifecycle: string;
   currentSort: string;
   stats: UserStats;
 }
-
-const STATUS_TABS: { label: string; value: UserStatus | "all" }[] = [
-  { label: "All", value: "all" },
-  { label: "Pending", value: "pending" },
-  { label: "Approved", value: "approved" },
-  { label: "Rejected", value: "rejected" },
-];
 
 export function UserDataTable<TData, TValue>({
   columns,
@@ -90,6 +85,7 @@ export function UserDataTable<TData, TValue>({
   pageSize,
   currentQuery,
   currentStatus,
+  currentLifecycle,
   currentSort,
   stats,
 }: DataTableProps<TData, TValue>) {
@@ -106,6 +102,7 @@ export function UserDataTable<TData, TValue>({
   const [isPending, startTransition] = useTransition();
   const [batchApproveOpen, setBatchApproveOpen] = React.useState(false);
   const [batchRejectOpen, setBatchRejectOpen] = React.useState(false);
+  const [reactivateTarget, setReactivateTarget] = React.useState<UserRecord | null>(null);
   const [isProcessing, setIsProcessing] = React.useState(false);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -197,6 +194,30 @@ export function UserDataTable<TData, TValue>({
     });
   }, [router]);
 
+  const handleReactivate = React.useCallback(async (user: UserRecord) => {
+    setIsProcessing(true);
+    startTransition(async () => {
+      try {
+        const result = await reactivateUser({ userId: user.id });
+        if (result.error) {
+          toast.error(result.error, { duration: 5000 });
+        } else {
+          toast.success("Account reactivated", {
+            description: result.failedEmails
+              ? "The account was restored, but the reactivation email failed to send."
+              : "The user can sign in again and a reactivation email was sent.",
+          });
+          router.refresh();
+        }
+      } catch {
+        toast.error("An unexpected error occurred", { duration: 5000 });
+      } finally {
+        setIsProcessing(false);
+        setReactivateTarget(null);
+      }
+    });
+  }, [router]);
+
   const table = useReactTable({
     data,
     columns,
@@ -209,6 +230,7 @@ export function UserDataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     meta: {
       onAction: handleStatusAction,
+      onReactivate: setReactivateTarget,
     },
   });
 
@@ -249,14 +271,30 @@ export function UserDataTable<TData, TValue>({
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent>
-              {STATUS_TABS.map((tab) => {
-                const count = tab.value === "all" ? stats.total : stats[tab.value as keyof typeof stats];
-                return (
-                  <SelectItem key={tab.value} value={tab.value}>
-                    {tab.label} ({count})
-                  </SelectItem>
-                );
-              })}
+              <SelectItem value="all">All ({stats.total})</SelectItem>
+              <SelectItem value="pending">Pending ({stats.pending})</SelectItem>
+              <SelectItem value="approved">Approved ({stats.approved})</SelectItem>
+              <SelectItem value="rejected">Rejected ({stats.rejected})</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={currentLifecycle}
+            onValueChange={(val) => {
+              updateParams({ lifecycle: val === "all" ? "" : val, page: "1" });
+              setRowSelection({});
+            }}
+          >
+            <SelectTrigger
+              size="sm"
+              className="w-[160px] border-gray-200 text-xs"
+            >
+              <SelectValue placeholder="All Accounts" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Accounts ({stats.total})</SelectItem>
+              <SelectItem value="active">Active ({stats.total - stats.deactivated})</SelectItem>
+              <SelectItem value="deleted">Deleted ({stats.deactivated})</SelectItem>
             </SelectContent>
           </Select>
 
@@ -291,6 +329,8 @@ export function UserDataTable<TData, TValue>({
                       ? "Student ID"
                       : col.id === "full_name"
                       ? "Full Name"
+                      : col.id === "account_state"
+                      ? "Account"
                       : col.id === "created_at"
                       ? "Joined"
                       : col.id}
@@ -553,6 +593,34 @@ export function UserDataTable<TData, TValue>({
                 </div>
               ) : (
                 `Reject ${selectedCount}`
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!reactivateTarget} onOpenChange={(open) => !open && setReactivateTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reactivate Account</AlertDialogTitle>
+            <AlertDialogDescription>
+              Restore <span className="font-semibold text-gray-900">{reactivateTarget?.full_name || reactivateTarget?.email || "this user"}</span> and allow them to sign in again. A reactivation email will be sent automatically.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isProcessing}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => reactivateTarget && handleReactivate(reactivateTarget)}
+              disabled={isProcessing}
+              className="bg-[#008c8b] hover:bg-[#008c8b]/90 text-white"
+            >
+              {isProcessing ? (
+                <div className="flex items-center gap-2">
+                  <Spinner className="size-4" />
+                  Restoring...
+                </div>
+              ) : (
+                "Reactivate account"
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

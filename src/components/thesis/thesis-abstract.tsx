@@ -252,6 +252,14 @@ export default function ThesisAbstract({ abstract, summary, thesisId }: Props) {
             based on its content.
           </p>
         )}
+
+        {/* Disclaimer */}
+        <div className="mt-3 flex items-start gap-2 bg-blue-50/50 p-3 rounded-lg border border-blue-100/50">
+          <AlertCircle className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+          <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">
+            <strong className="font-medium text-slate-600">Disclaimer:</strong> The AI may occasionally hallucinate or misinterpret information. Please double-check generated answers against the original document.
+          </p>
+        </div>
       </div>
       </CardContent>
     </Card>

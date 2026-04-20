@@ -38,7 +38,7 @@ export async function updateUserStatus({
 	// Fetch user details for email notifications before updating
 	const { data: usersToUpdate, error: fetchError } = await supabase
 		.from("users")
-		.select("id, email, full_name, status")
+		.select("id, email, full_name, status, is_deactivated")
 		.in("id", userIds);
 
 	if (fetchError || !usersToUpdate?.length) {
@@ -46,10 +46,10 @@ export async function updateUserStatus({
 	}
 
 	// Filter out users already in the target status
-	const usersToChange = usersToUpdate.filter((u) => u.status !== status);
+	const usersToChange = usersToUpdate.filter((u) => !u.is_deactivated && u.status !== status);
 
 	if (!usersToChange.length) {
-		return { error: `All selected users are already ${status}` };
+		return { error: `No active users are eligible to be marked as ${status}` };
 	}
 
 	// Batch update status

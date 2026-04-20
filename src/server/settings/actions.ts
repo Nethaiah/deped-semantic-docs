@@ -1,8 +1,15 @@
 "use server";
 
 import { verifySession } from "@/lib/dal";
-import { profileSchema, passwordSchema, type ProfileSchema, type PasswordSchema } from "@/lib/zodSchema";
-import { revalidatePath } from "next/cache";
+import {
+  deleteAccountSchema,
+  profileSchema,
+  passwordSchema,
+  type DeleteAccountSchema,
+  type ProfileSchema,
+  type PasswordSchema,
+} from "@/lib/zodSchema";
+import { revalidatePath, updateTag } from "next/cache";
 
 export async function updateProfile(data: ProfileSchema) {
   const { isAuth, user, supabase, error } = await verifySession();
@@ -64,6 +71,64 @@ export async function updatePassword(data: PasswordSchema) {
   if (updateError) {
     return { error: updateError.message };
   }
+
+  return { success: true };
+}
+
+export async function deleteAccount(data: DeleteAccountSchema) {
+  const { isAuth, user, supabase, error } = await verifySession();
+
+  if (!isAuth || !user) {
+    return { error };
+  }
+
+  const result = deleteAccountSchema.safeParse(data);
+
+  if (!result.success) {
+    return { error: result.error.flatten().fieldErrors.confirmation?.[0] || "Invalid confirmation" };
+  }
+
+  const { data: userRecord, error: fetchError } = await supabase
+    .from("users")
+    .select("role, status, is_deactivated")
+    .eq("id", user.id)
+    .single();
+
+  if (fetchError || !userRecord) {
+    return { error: "Unable to load account details" };
+  }
+
+  if (userRecord.role !== "user") {
+    return { error: "Only standard user accounts can be deleted from settings" };
+  }
+
+  if (userRecord.status !== "approved") {
+    return { error: "Only approved accounts can be deleted" };
+  }
+
+  if (userRecord.is_deactivated) {
+    return { error: "This account is already deleted" };
+  }
+
+  const timestamp = new Date().toISOString();
+  const { error: updateError } = await supabase
+    .from("users")
+    .update({
+      is_deactivated: true,
+      deactivated_at: timestamp,
+      reactivated_at: null,
+      updated_at: timestamp,
+    })
+    .eq("id", user.id);
+
+  if (updateError) {
+    return { error: updateError.message };
+  }
+
+  await supabase.auth.signOut();
+
+  revalidatePath("/settings");
+  updateTag("users");
 
   return { success: true };
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -17,6 +18,19 @@ type Props = {
 
 export default function RecentlyViewed({ theses, accentColor = "var(--theme-color)" }: Props) {
   const router = useRouter();
+  const hasMountedRef = useRef(false);
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
+
+    startTransition(() => {
+      router.refresh();
+    });
+  }, [router]);
 
   // Format authors for display
   const formatAuthors = (authors: string[]) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef, type Table } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Check, X, Copy, ShieldCheck, User, Loader2 } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Check, X, Copy, ShieldCheck, User, Loader2, RotateCcw } from "lucide-react";
 import { useState, useTransition, useEffect } from "react";
 import { toast } from "sonner";
 import { updateUserRole } from "@/server/user-management/update-user-role";
@@ -39,6 +39,7 @@ import {
 
 export type UserStatus = "pending" | "approved" | "rejected";
 export type UserRole = "admin" | "user";
+export type AccountLifecycle = "active" | "deleted";
 
 import type { UserRecord } from "@/server/user-management/get-users";
 export type { UserRecord };
@@ -50,6 +51,14 @@ const statusConfig: Record<
   pending: { label: "Pending", variant: "warning", appearance: "light" },
   approved: { label: "Approved", variant: "success", appearance: "light" },
   rejected: { label: "Rejected", variant: "destructive", appearance: "light" },
+};
+
+const lifecycleConfig: Record<
+  AccountLifecycle,
+  { label: string; variant: "secondary" | "destructive"; appearance: "light" }
+> = {
+  active: { label: "Active", variant: "secondary", appearance: "light" },
+  deleted: { label: "Deleted", variant: "destructive", appearance: "light" },
 };
 
 function RoleCell({ row }: { row: { original: UserRecord } }) {
@@ -304,6 +313,25 @@ export const columns: ColumnDef<UserRecord>[] = [
     },
   },
 
+  // ── Account State ───────────────────────────────────────────────────────────
+  {
+    id: "account_state",
+    header: () => (
+      <span className="text-xs font-semibold text-gray-600">Account</span>
+    ),
+    cell: ({ row }) => {
+      const lifecycle: AccountLifecycle = row.original.is_deactivated ? "deleted" : "active";
+      const cfg = lifecycleConfig[lifecycle];
+
+      return (
+        <Badge variant={cfg.variant} appearance={cfg.appearance} size="md" shape="circle">
+          {cfg.label}
+        </Badge>
+      );
+    },
+    enableSorting: false,
+  },
+
   // ── Created At ───────────────────────────────────────────────────────────────
   {
     accessorKey: "created_at",
@@ -340,7 +368,10 @@ export const columns: ColumnDef<UserRecord>[] = [
     cell: ({ row, table }) => {
       const user = row.original;
       // Access the onAction callback from table meta
-      const meta = table.options.meta as { onAction?: (userIds: string[], status: "approved" | "rejected") => void } | undefined;
+      const meta = table.options.meta as {
+        onAction?: (userIds: string[], status: "approved" | "rejected") => void;
+        onReactivate?: (user: UserRecord) => void;
+      } | undefined;
 
       return (
         <DropdownMenu>
@@ -353,7 +384,18 @@ export const columns: ColumnDef<UserRecord>[] = [
           <DropdownMenuContent align="end" className="w-44">
             <DropdownMenuLabel className="text-xs text-gray-500">Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {user.status !== "approved" && (
+            {user.is_deactivated ? (
+              <>
+                <DropdownMenuItem
+                  className="gap-2 text-sm cursor-pointer text-teal-700 focus:text-teal-700 focus:bg-teal-50"
+                  onClick={() => meta?.onReactivate?.(user)}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  Reactivate
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            ) : user.status !== "approved" ? (
               <>
                 <DropdownMenuItem
                   className="gap-2 text-sm cursor-pointer text-green-700 focus:text-green-700 focus:bg-green-50"
@@ -374,7 +416,7 @@ export const columns: ColumnDef<UserRecord>[] = [
                 )}
                 <DropdownMenuSeparator />
               </>
-            )}
+            ) : null}
             <DropdownMenuItem
               className="gap-2 text-sm cursor-pointer"
               onClick={() => navigator.clipboard.writeText(user.email || "")}

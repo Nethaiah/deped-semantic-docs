@@ -14,7 +14,7 @@ export async function login({ studentId, password }: { studentId: string; passwo
 	// Look up the user's email by student_id
 	const { data: userRecord, error: lookupError } = await supabase
 		.from("users")
-		.select("email, status")
+		.select("email, status, is_deactivated")
 		.eq("student_id", parsed.data.studentId)
 		.single();
 
@@ -29,6 +29,13 @@ export async function login({ studentId, password }: { studentId: string; passwo
 
 	if (userRecord.status === "rejected") {
 		return { error: "Your account has been rejected. Please contact an administrator." };
+	}
+
+	if (userRecord.is_deactivated) {
+		return {
+			error:
+				"This account is no longer available. Contact an administrator if you believe this is a mistake.",
+		};
 	}
 
 	// Proceed with Supabase auth
