@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings2, User, Lock, Loader2 } from "lucide-react";
+import { User, Lock, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -11,6 +11,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Card,
   CardContent,
@@ -28,7 +38,7 @@ import {
   type ProfileSchema,
   type PasswordSchema,
 } from "@/lib/zodSchema";
-import { updateProfile, updatePassword } from "@/server/settings/actions";
+import { deleteAccount, updateProfile, updatePassword } from "@/server/settings/actions";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -256,10 +266,133 @@ function PasswordForm({ setOpen, theme }: { setOpen: (open: boolean) => void; th
   );
 }
 
+function DeleteAccountAction({ theme }: { theme: ThemeColors }) {
+  const router = useRouter();
+  const [confirmation, setConfirmation] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const isConfirmValid = confirmation.trim() === "DELETE";
+
+  async function handleDeleteAccount() {
+    setIsDeleting(true);
+    let didDelete = false;
+    try {
+      const result = await deleteAccount({ confirmation });
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      toast.success("Your account has been deleted.");
+      didDelete = true;
+      router.replace("/login");
+      router.refresh();
+    } finally {
+      setIsDeleting(false);
+      if (didDelete) {
+        setDialogOpen(false);
+        setConfirmation("");
+      }
+    }
+  }
+
+  return (
+    <AlertDialog
+      open={dialogOpen}
+      onOpenChange={(open) => {
+        setDialogOpen(open);
+        if (!open) {
+          setConfirmation("");
+        }
+      }}
+    >
+      <AlertDialogTriggerButton onClick={() => setDialogOpen(true)} />
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete Account</AlertDialogTitle>
+          <AlertDialogDescription className="space-y-3">
+            <span className="block">
+              This will delete your DocuLens account and immediately remove your access to the platform.
+            </span>
+            <span className="block">
+              To continue, type <strong>DELETE</strong> below.
+            </span>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <div className="space-y-2">
+          <Label htmlFor="delete-confirmation">Confirmation</Label>
+          <Input
+            id="delete-confirmation"
+            value={confirmation}
+            onChange={(event) => setConfirmation(event.target.value)}
+            placeholder='Type "DELETE"'
+            disabled={isDeleting}
+          />
+        </div>
+
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleDeleteAccount}
+            disabled={!isConfirmValid || isDeleting}
+            className="bg-red-600 hover:bg-red-700 text-white"
+          >
+            {isDeleting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              "Delete account"
+            )}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+function AlertDialogTriggerButton({ onClick }: { onClick: () => void }) {
+  return (
+    <Button variant="destructive" size="sm" className="w-full sm:w-auto" onClick={onClick}>
+      Delete Account
+    </Button>
+  );
+}
+
 export default function Settings() {
   const { theme } = useTheme();
   const [profileOpen, setProfileOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
+  const [accountRole, setAccountRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadRole() {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setAccountRole(null);
+        return;
+      }
+
+      const { data } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      setAccountRole(data?.role || "user");
+    }
+
+    loadRole();
+  }, []);
 
   return (
     <div className="space-y-8 p-6 lg:p-8 w-full">
@@ -325,6 +458,20 @@ export default function Settings() {
             }
           />
       </SettingsSection>
+
+      {accountRole === "user" && (
+        <SettingsSection
+          title="Danger Zone"
+          description="Delete your account and remove your access to DocuLens."
+        >
+          <SettingItem
+            icon={Trash2}
+            title="Delete Account"
+            description="This permanently removes your access until an administrator restores the account."
+            action={<DeleteAccountAction theme={theme} />}
+          />
+        </SettingsSection>
+      )}
     </div>
   );
 }

@@ -33,7 +33,7 @@ export const getCurrentUserRole = cache(async () => {
 
   const { data } = await session.supabase
     .from("users")
-    .select("role, full_name")
+    .select("role, full_name, status, is_deactivated")
     .eq("id", session.user.id)
     .single();
 
@@ -42,5 +42,7 @@ export const getCurrentUserRole = cache(async () => {
     role,
     fullName: data?.full_name || session.user.user_metadata?.full_name || "",
     isAdmin: role === "admin",
+    status: data?.status || "pending",
+    isDeactivated: data?.is_deactivated ?? false,
   };
 });

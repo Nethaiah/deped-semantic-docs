@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogOutIcon, SettingsIcon, Bell, Info, Loader2, X, ChevronLeft } from "lucide-react";
@@ -144,12 +144,20 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
     return notifications.filter((n) => new Date(n.created_at) > lastReadTimestamp).length;
   }, [notifications, lastReadTimestamp]);
 
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   // Handle Dropdown Open Change
   const handleOpenChange = useCallback((open: boolean) => {
     setIsOpen(open);
     if (!open) {
       // Reset view to main menu when closing
-      setTimeout(() => setView("menu"), 300);
+      timeoutRef.current = setTimeout(() => setView("menu"), 300);
+    } else {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      // Ensure the menu view always defaults to "menu" when opened via the Avatar trigger
+      setView("menu");
     }
   }, []);
 
@@ -164,7 +172,7 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
   };
 
   const handleNotificationClick = (link: string | null) => {
-    setIsOpen(false);
+    handleOpenChange(false);
     if (link) {
       router.push(link);
     }
@@ -176,6 +184,9 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
         {/* Notification Bell Trigger */}
         <button
           onClick={(e) => {
+            if (timeoutRef.current) {
+              clearTimeout(timeoutRef.current);
+            }
             setIsOpen(true);
             openNotifications(e as any);
           }}
@@ -249,7 +260,7 @@ export default function UserMenu({ name, email, image }: UserMenuProps) {
             <div className="flex flex-col h-full bg-white">
               <div className="flex items-center justify-between border-b px-4 py-3 sticky top-0 bg-white z-10">
                 <h4 className="font-semibold text-sm text-slate-800">Notifications</h4>
-                <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="h-8 w-8 p-0 cursor-pointer text-muted-foreground hover:bg-slate-100 hover:text-slate-900 rounded-full transition-colors">
+                <Button variant="ghost" size="sm" onClick={() => handleOpenChange(false)} className="h-8 w-8 p-0 cursor-pointer text-muted-foreground hover:bg-slate-100 hover:text-slate-900 rounded-full transition-colors">
                   <X className="h-4 w-4" />
                 </Button>
               </div>

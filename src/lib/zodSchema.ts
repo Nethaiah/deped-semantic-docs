@@ -62,3 +62,11 @@ export const passwordSchema = z.object({
 });
 
 export type PasswordSchema = z.infer<typeof passwordSchema>;
+
+export const deleteAccountSchema = z.object({
+  confirmation: z.string().trim().refine((value) => value === "DELETE", {
+    message: 'Type "DELETE" to confirm',
+  }),
+});
+
+export type DeleteAccountSchema = z.infer<typeof deleteAccountSchema>;

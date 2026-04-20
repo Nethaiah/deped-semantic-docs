@@ -22,11 +22,16 @@ async function UserManagementData({ searchParams }: Props) {
 
   const query = Array.isArray(sp.q) ? sp.q[0] : sp.q;
   const statusParam = Array.isArray(sp.status) ? sp.status[0] : sp.status;
+  const lifecycleParam = Array.isArray(sp.lifecycle) ? sp.lifecycle[0] : sp.lifecycle;
   const sortParam = Array.isArray(sp.sort) ? sp.sort[0] : sp.sort;
 
   const validStatuses = ["all", "pending", "approved", "rejected"];
   const status = validStatuses.includes(statusParam || "")
     ? statusParam
+    : "all";
+  const validLifecycles = ["all", "active", "deleted"];
+  const lifecycle = validLifecycles.includes(lifecycleParam || "")
+    ? lifecycleParam
     : "all";
 
   const validSorts = [
@@ -45,14 +50,14 @@ async function UserManagementData({ searchParams }: Props) {
 
   // Fetch data in parallel
   const [{ data: users, total }, stats] = await Promise.all([
-    getUsersPaginated(page, pageSize, query, status, sort),
+    getUsersPaginated(page, pageSize, query, status, lifecycle, sort),
     getUserStats(),
   ]);
 
   return (
     <>
       {/* Quick stat cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 mb-6">
         {[
           {
             label: "Total Users",
@@ -82,6 +87,13 @@ async function UserManagementData({ searchParams }: Props) {
             colorBg: "bg-red-50",
             border: "border-red-200",
           },
+          {
+            label: "Deleted",
+            value: stats.deactivated,
+            colorText: "text-slate-700",
+            colorBg: "bg-slate-100",
+            border: "border-slate-300",
+          },
         ].map((stat) => (
           <div
             key={stat.label}
@@ -104,6 +116,7 @@ async function UserManagementData({ searchParams }: Props) {
         pageSize={pageSize}
         currentQuery={query || ""}
         currentStatus={status || "all"}
+        currentLifecycle={lifecycle || "all"}
         currentSort={sort || "created_at_desc"}
         stats={stats}
       />

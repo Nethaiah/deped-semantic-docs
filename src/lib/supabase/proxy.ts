@@ -47,35 +47,38 @@ export async function updateSession(request: NextRequest) {
                        request.nextUrl.pathname.startsWith('/archive') || 
                        request.nextUrl.pathname.startsWith('/review');
 
-  // Authenticated user trying to visit auth pages → instant redirect to dashboard
-  // But NOT reset-password — that route needs to be accessible after recovery code exchange.
-  // The reset-password page component handles its own session validation.
-  if (user && isAuthRoute) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
-  }
-
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  // Combined status + role check (single DB query for protected routes)
-  if (user && isProtectedRoute) {
+  if (user && (isAuthRoute || isProtectedRoute)) {
     const { data: userData } = await supabase
       .from("users")
-      .select("role, status")
+      .select("role, status, is_deactivated")
       .eq("id", user.id)
       .single();
 
-    // Block unapproved users from all protected routes
-    if (userData && userData.status !== "approved") {
+    const isBlockedAccount = !userData || userData.status !== "approved" || userData.is_deactivated;
+
+    if (isBlockedAccount) {
       await supabase.auth.signOut();
-      const url = request.nextUrl.clone();
-      url.pathname = '/login';
-      return NextResponse.redirect(url);
+
+      if (isProtectedRoute) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/login';
+        return NextResponse.redirect(url);
+      }
+
+      return supabaseResponse;
+    }
+
+    // Authenticated active user trying to visit auth pages → instant redirect to dashboard
+    if (isAuthRoute) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/dashboard'
+      return NextResponse.redirect(url)
     }
 
     // Block non-admin users from admin routes
