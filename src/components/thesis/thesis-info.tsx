@@ -68,7 +68,7 @@ export default function ThesisInfoSidebar({ thesis }: Props) {
         {thesis.advisor && (
           <div className="flex items-start gap-3 text-slate-600">
             <BookOpen className="h-4 w-4 mt-0.5 flex-shrink-0" />
-            <span>Advisor: {thesis.advisor}</span>
+            <span>Adviser: {thesis.advisor}</span>
           </div>
         )}
 

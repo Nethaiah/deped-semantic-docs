@@ -341,7 +341,7 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="review-advisor" className="text-xs flex items-center gap-1">
-                    <UserCheck className="h-3 w-3" /> Advisor
+                    <UserCheck className="h-3 w-3" /> Adviser
                   </Label>
                   <Input
                     id="review-advisor"

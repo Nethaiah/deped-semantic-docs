@@ -41,7 +41,7 @@ import { toast } from "sonner";
 
 const STATUS_CONFIG: Record<
   string,
-  { label: string; variant: "primary" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }
+  { label: string; variant: "primary" | "secondary" | "destructive" | "outline"; icon: React.ReactNode; className?: string }
 > = {
   pending: {
     label: "Pending",
@@ -57,6 +57,7 @@ const STATUS_CONFIG: Record<
     label: "Ready for Review",
     variant: "outline",
     icon: <Eye className="h-3 w-3" />,
+    className: "border-green-500 text-green-600 bg-green-50 dark:bg-green-950/30 dark:text-green-400 dark:border-green-700",
   },
   completed: {
     label: "Completed",
@@ -316,7 +317,7 @@ export default function UploadStatus() {
                           <Button
                             variant="default"
                             size="sm"
-                            className="h-7 text-xs"
+                            className="h-7 text-xs bg-green-600 hover:bg-green-700 text-white dark:bg-green-700 dark:hover:bg-green-600"
                             onClick={() => handleReview(item.id)}
                           >
                             <Eye className="h-3 w-3 mr-1" /> Review

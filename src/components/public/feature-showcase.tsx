@@ -143,7 +143,7 @@ export default function FeatureShowcase() {
       <div className="absolute left-[-8rem] top-28 h-64 w-64 rounded-full bg-[#d5efe0] blur-3xl" />
       <div className="absolute bottom-12 right-[-6rem] h-56 w-56 rounded-full bg-[#e5f5eb] blur-3xl" />
 
-      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+      <div className="relative mx-auto max-w-6xl px-6 sm:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#1c402e]/70">
             Features
@@ -191,7 +191,7 @@ export default function FeatureShowcase() {
                 >
                   <div className="absolute left-0 top-0 hidden h-full w-px bg-[linear-gradient(180deg,rgba(28,64,46,0.24),rgba(28,64,46,0.04),transparent)] md:block" />
 
-                  <div className="mx-auto flex max-w-[44rem] flex-col items-start text-left md:pl-8">
+                  <div className="mx-auto flex max-w-[44rem] flex-col items-start text-left px-2 sm:px-0 md:pl-8">
                     <div className="flex items-start justify-center gap-4 md:hidden">
                       <span
                         className={`text-5xl font-black leading-none tracking-[-0.09em] text-[#1c402e] transition-all duration-500 ${

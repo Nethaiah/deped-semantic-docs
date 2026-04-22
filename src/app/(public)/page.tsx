@@ -10,7 +10,7 @@ export default function Home() {
     "bg-[linear-gradient(145deg,#071a12_0%,#0d2d20_52%,#123a29_100%)]";
 
   const heroContent = (
-    <div className="relative flex flex-col items-center">
+    <div className="relative flex flex-col items-center w-full px-2 sm:px-0">
       <div className="inline-flex items-center justify-center gap-2 rounded-full border border-[#b8dcc5] bg-[#dff3e6] px-4 py-1.5 text-xs font-bold text-[#1c402e] shadow-sm transition-all hover:bg-[#e8f7ed]">
         Laguna University Research Archives
       </div>
@@ -24,7 +24,7 @@ export default function Home() {
         organize, and discover research papers
       </h1>
 
-      <div className="relative">
+      <div className="relative w-full max-w-full overflow-hidden">
         <CollegeMarquee />
       </div>
     </div>
@@ -39,7 +39,7 @@ export default function Home() {
         <div className="auth-light-grid absolute inset-0 opacity-100" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0)_38%,rgba(255,255,255,0.2)_100%)]" />
 
-        <div className="mx-auto flex max-w-5xl flex-col items-center px-4 pb-3 pt-28 text-center sm:px-6 sm:pb-5 sm:pt-24 lg:hidden">
+        <div className="mx-auto flex max-w-5xl flex-col items-center px-6 pb-3 pt-28 text-center sm:px-8 sm:pb-5 sm:pt-24 lg:hidden">
           {heroContent}
         </div>
 
@@ -57,7 +57,7 @@ export default function Home() {
           </div>
 
           <div className="absolute inset-0 z-10 hidden items-start justify-center lg:flex">
-            <div className="mx-auto flex w-full max-w-5xl origin-top flex-col items-center px-4 pb-8 pt-24 text-center lg:scale-[0.88] sm:px-6 xl:scale-[0.94] min-[1500px]:scale-100 min-[1500px]:pb-10 min-[1500px]:pt-28 xl:min-[1500px]:pt-36">
+            <div className="mx-auto flex w-full max-w-5xl origin-top flex-col items-center px-6 pb-8 pt-24 text-center lg:scale-[0.88] sm:px-8 xl:scale-[0.94] min-[1500px]:scale-100 min-[1500px]:pb-10 min-[1500px]:pt-28 xl:min-[1500px]:pt-36">
               {heroContent}
             </div>
           </div>
@@ -68,7 +68,7 @@ export default function Home() {
         id="hero-next"
         className="mt-8 border-y border-[#b8dcc5] bg-[#dff3e6] py-10 sm:mt-10 sm:py-12 md:mt-14 md:py-16"
       >
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
+        <div className="mx-auto max-w-4xl px-6 text-center sm:px-8">
           <h2 className="mb-3 text-xl font-bold text-[#123a29] sm:mb-4 sm:text-2xl md:text-3xl">
             Numerous research papers. One platform.
           </h2>
@@ -86,7 +86,7 @@ export default function Home() {
         id="about"
         className="relative overflow-hidden bg-white py-16 sm:py-20 md:py-28"
       >
-        <div className="mx-auto mb-12 max-w-4xl px-4 text-center sm:mb-16 sm:px-6 md:mb-20">
+        <div className="mx-auto mb-12 max-w-4xl px-6 text-center sm:mb-16 sm:px-8 md:mb-20">
           <h2 className="mb-4 text-2xl font-bold leading-tight text-gray-900 sm:mb-6 sm:text-3xl md:text-4xl lg:text-[2.75rem]">
             Built by Researchers.
             <br />
@@ -99,7 +99,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="mx-auto grid max-w-5xl grid-cols-1 items-start gap-8 px-4 sm:gap-12 sm:px-6 md:grid-cols-[1fr_1.2fr] lg:gap-20">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 items-start gap-8 px-6 sm:gap-12 sm:px-8 md:grid-cols-[1fr_1.2fr] lg:gap-20">
           <div>
             <div className="mb-4 flex items-center gap-3 sm:mb-6">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1c402e]">
@@ -151,7 +151,7 @@ export default function Home() {
       >
         <div className="auth-dot-grid absolute inset-0 opacity-40" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(125,255,155,0.14),transparent_58%)]" />
-        <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="relative mx-auto max-w-6xl px-6 sm:px-8">
           <div className="grid gap-10 md:grid-cols-[1.15fr_0.85fr] md:items-start">
             <div className="max-w-md text-left">
               <div className="flex items-center justify-start gap-3">
@@ -178,7 +178,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-6 text-left sm:gap-8">
+            <div className="grid grid-cols-1 gap-8 text-left sm:grid-cols-2 sm:gap-8">
               <div>
                 <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#7dff9b]">
                   Quick Links

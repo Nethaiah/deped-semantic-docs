@@ -52,7 +52,7 @@ export default function BookmarkControls({
         <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           type="text"
-          placeholder="Search by title, department, college, advisor..."
+          placeholder="Search by title, department, college, adviser..."
           value={query || ""}
           onChange={(e) =>
             setQuery(e.target.value, {
