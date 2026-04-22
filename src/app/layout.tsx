@@ -13,8 +13,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "DocuLens - DepEd Semantic Documents",
-  description: "Comprehensive retrieval of DepEd memoranda and policies",
+  title: "DocuLens",
+  description: "Comprehensive retrieval of Laguna University Research Papers",
 };
 
 export default function RootLayout({
