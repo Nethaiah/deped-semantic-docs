@@ -129,7 +129,7 @@ async function ThesisSidebar({ thesisId }: { thesisId: string }) {
 
   return (
     <div className="space-y-6">
-      <ThesisReviewNotes notes={thesis.reviewNotes} />
+      {isAdmin && <ThesisReviewNotes notes={thesis.reviewNotes} />}
       <ThesisInfoSidebar thesis={thesis} />
       <ThesisActions
         sourcePath={thesis.sourcePath}
