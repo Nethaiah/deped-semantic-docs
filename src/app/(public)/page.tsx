@@ -6,54 +6,68 @@ import CollegeMarquee from "@/components/public/college-marquee";
 import SmoothFooterLink from "@/components/public/smooth-footer-link";
 
 export default function Home() {
+  const sharedSurface =
+    "bg-[linear-gradient(145deg,#071a12_0%,#0d2d20_52%,#123a29_100%)]";
+
   const heroContent = (
-    <>
-      <div className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-100 bg-white/60 px-4 py-1.5 text-xs font-bold text-[#1c402e] shadow-[0_2px_10px_-3px_rgba(0,0,0,0.08)] backdrop-blur transition-all hover:bg-white hover:shadow-md">
+    <div className="relative flex flex-col items-center">
+      <div className="inline-flex items-center justify-center gap-2 rounded-full border border-[#b8dcc5] bg-[#dff3e6] px-4 py-1.5 text-xs font-bold text-[#1c402e] shadow-sm transition-all hover:bg-[#e8f7ed]">
         Laguna University Research Archives
       </div>
 
-      <h1 className="mt-6 w-full max-w-3xl text-lg font-medium leading-snug tracking-tight text-gray-900 sm:text-xl md:text-2xl lg:text-3xl">
+      <h1 className="relative mt-6 w-full max-w-4xl text-xl font-medium leading-snug tracking-tight text-gray-900 sm:text-2xl md:text-[1.7rem] lg:text-[2.15rem]">
         The intelligent platform to read,{" "}
-        <span className="relative mx-1 inline-block rounded border border-green-200/50 bg-[#d1e7d8] px-1.5 text-gray-900 shadow-sm">
+        <span className="relative mx-1 inline-block rounded border border-green-200/50 bg-[#d1e7d8] px-1.5 text-[#123a29] shadow-sm">
           summarize,
         </span>{" "}
         <br className="hidden md:block" />
         organize, and discover research papers
       </h1>
 
-      <CollegeMarquee />
-    </>
+      <div className="relative">
+        <CollegeMarquee />
+      </div>
+    </div>
   );
 
   return (
-    <div id="top" className="min-h-screen bg-white">
-      <section className="w-full bg-white">
-        <div className="mx-auto flex max-w-5xl flex-col items-center px-4 pb-8 pt-20 text-center sm:px-6 lg:hidden">
+    <div id="top" className="min-h-screen bg-[#f5fbf7]">
+      <section
+        className="relative isolate overflow-hidden border-b border-[#d9e9df] bg-[linear-gradient(180deg,#f5fff7_0%,#eef9f1_48%,#f9fdf9_100%)]"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(189,245,170,0.28),transparent_52%)]" />
+        <div className="auth-light-grid absolute inset-0 opacity-100" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0)_38%,rgba(255,255,255,0.2)_100%)]" />
+
+        <div className="mx-auto flex max-w-5xl flex-col items-center px-4 pb-3 pt-28 text-center sm:px-6 sm:pb-5 sm:pt-24 lg:hidden">
           {heroContent}
         </div>
 
-        <div className="relative overflow-hidden bg-white">
+        <div className="relative overflow-hidden">
           <div className="flex w-full justify-center">
             <Image
-              src="/LUBG9.png"
+              src="/LUBG11.png"
               alt="Laguna University Campus"
-              width={1920}
-              height={1080}
+              width={2048}
+              height={1373}
               sizes="100vw"
-              className="h-[18rem] w-full object-cover object-[center_16%] sm:h-[24rem] md:h-[30rem] lg:h-auto lg:max-w-[1920px] lg:object-contain lg:object-center"
+              className="relative z-[2] h-[18rem] w-full object-cover object-[center_16%] sm:h-[24rem] md:h-[30rem] lg:h-auto lg:max-w-[1920px] lg:object-contain lg:object-center"
               priority
             />
           </div>
 
           <div className="absolute inset-0 z-10 hidden items-start justify-center lg:flex">
-            <div className="mx-auto flex w-full max-w-5xl flex-col items-center px-4 pb-10 pt-28 text-center sm:px-6 xl:pt-36">
+            <div className="mx-auto flex w-full max-w-5xl origin-top flex-col items-center px-4 pb-8 pt-24 text-center lg:scale-[0.88] sm:px-6 xl:scale-[0.94] min-[1500px]:scale-100 min-[1500px]:pb-10 min-[1500px]:pt-28 xl:min-[1500px]:pt-36">
               {heroContent}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-y border-[#b8dcc5] bg-[#dff3e6] py-10 sm:py-12 md:py-16">
+      <section
+        id="hero-next"
+        className="mt-8 border-y border-[#b8dcc5] bg-[#dff3e6] py-10 sm:mt-10 sm:py-12 md:mt-14 md:py-16"
+      >
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
           <h2 className="mb-3 text-xl font-bold text-[#123a29] sm:mb-4 sm:text-2xl md:text-3xl">
             Numerous research papers. One platform.
@@ -132,7 +146,9 @@ export default function Home() {
 
       <FeatureShowcase />
 
-      <footer className="relative overflow-hidden border-t border-[#0b2619] bg-[linear-gradient(145deg,#071a12_0%,#0d2d20_52%,#123a29_100%)] py-8 sm:py-12">
+      <footer
+        className={`relative overflow-hidden border-t border-[#0b2619] py-8 sm:py-12 ${sharedSurface}`}
+      >
         <div className="auth-dot-grid absolute inset-0 opacity-40" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(125,255,155,0.14),transparent_58%)]" />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">

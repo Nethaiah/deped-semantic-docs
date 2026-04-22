@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 const steps = [
   {
     step: "01",
+    image: "/dashboard.png",
     title: "Browse available theses",
     lead: "Users can immediately",
     highlight: "look for available theses",
@@ -14,6 +15,7 @@ const steps = [
   },
   {
     step: "02",
+    image: "/AiSearch.png",
     title: "Search by topic, not just keywords",
     lead: "Instead of opening documents one by one, users can",
     highlight: "search a thesis using keywords",
@@ -22,6 +24,7 @@ const steps = [
   },
   {
     step: "03",
+    image: "/Category.png",
     title: "See documents grouped by category",
     lead: "Users can also explore research through",
     highlight: "organized categories",
@@ -30,6 +33,7 @@ const steps = [
   },
   {
     step: "04",
+    image: "/ResearchDetail.png",
     title: "Read the thesis details and summary",
     lead: "After selecting a paper, users can view the thesis details and quickly understand it through",
     highlight: "the summarized version",
@@ -38,6 +42,7 @@ const steps = [
   },
   {
     step: "05",
+    image: "/AskResearch.png",
     title: "Ask questions about the selected topic",
     lead: "Once the user opens a thesis, the system lets them",
     highlight: "ask questions about the selected topic",
@@ -145,8 +150,8 @@ export default function HowItWorksSection() {
                             <span className="h-2.5 w-2.5 rounded-full bg-[#7dff9b]" />
                           </div>
                           <Image
-                            src="/dashboard.png"
-                            alt={`How it works step ${item.step} preview`}
+                            src={item.image}
+                            alt={`${item.title} preview`}
                             width={1360}
                             height={768}
                             className="h-auto w-full object-cover"
