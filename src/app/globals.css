@@ -170,12 +170,19 @@
   }
 
   .auth-light-grid {
-    background-image: radial-gradient(
+    background-image:
+      radial-gradient(
+        circle at 1px 1px,
+        rgba(205, 255, 128, 0.42) 2.2px,
+        transparent 0
+      ),
+      radial-gradient(
       circle at 1px 1px,
-      rgba(28, 64, 46, 0.08) 1px,
+      rgba(28, 64, 46, 0.18) 1.15px,
       transparent 0
     );
-    background-size: 22px 22px;
+    background-size: 20px 20px, 20px 20px;
+    filter: drop-shadow(0 0 6px rgba(181, 255, 110, 0.24));
   }
 
   .auth-shimmer {

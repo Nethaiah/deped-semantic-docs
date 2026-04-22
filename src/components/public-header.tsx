@@ -1,6 +1,5 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
 import Image from "next/image";
 import PublicAuthButton from "./public-auth-button";
 
@@ -36,8 +35,8 @@ export default function PublicHeader() {
   }
 
   return (
-    <nav className="fixed top-0 z-[1220] w-full border-b border-white/20 bg-white/40 backdrop-blur-md">
-      <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3 max-w-7xl mx-auto relative">
+    <nav className="fixed top-0 z-[1220] w-full border-b border-[#b8dcc5] bg-[#dff3e6]">
+      <div className="relative mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 sm:px-6 sm:py-3">
         {/* Left section: Logo */}
         <button
           type="button"
@@ -51,7 +50,7 @@ export default function PublicHeader() {
             height={28}
             className="object-contain"
           />
-          <span className="text-xl font-black tracking-tighter text-[#1c402e] drop-shadow-sm uppercase">
+          <span className="text-xl font-black tracking-tighter text-[#123a29] drop-shadow-sm">
             DocuLens
           </span>
         </button>
@@ -61,21 +60,21 @@ export default function PublicHeader() {
           <button
             type="button"
             onClick={refreshLandingPage}
-            className="text-sm font-medium text-gray-700 transition-colors drop-shadow-sm hover:text-gray-900 cursor-pointer"
+            className="cursor-pointer text-sm font-medium text-[#123a29] transition-colors hover:text-[#0d2d20]"
           >
             Home
           </button>
           <button
             type="button"
             onClick={() => scrollToSection("about")}
-            className="text-sm font-medium text-gray-700 transition-colors drop-shadow-sm hover:text-gray-900 cursor-pointer"
+            className="cursor-pointer text-sm font-medium text-[#123a29] transition-colors hover:text-[#0d2d20]"
           >
             About
           </button>
           <button
             type="button"
             onClick={() => scrollToSection("features")}
-            className="text-sm font-medium text-gray-700 transition-colors drop-shadow-sm hover:text-gray-900 cursor-pointer"
+            className="cursor-pointer text-sm font-medium text-[#123a29] transition-colors hover:text-[#0d2d20]"
           >
             Features
           </button>

@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 const steps = [
   {
     step: "01",
+    image: "/dashboard.png",
     title: "Browse available research papers",
     lead: "Users can immediately",
     highlight: "look for available research papers",
@@ -14,6 +15,7 @@ const steps = [
   },
   {
     step: "02",
+    image: "/AiSearch.png",
     title: "Search by topic, not just keywords",
     lead: "Instead of opening documents one by one, users can",
     highlight: "search a thesis using important concepts and topics",
@@ -22,6 +24,7 @@ const steps = [
   },
   {
     step: "03",
+    image: "/Category.png",
     title: "See research papers grouped by category",
     lead: "Users can also explore research through",
     highlight: "organized categories",
@@ -30,6 +33,7 @@ const steps = [
   },
   {
     step: "04",
+    image: "/AskResearch.png",
     title: "Read the research paper details and summary",
     lead: "After selecting a paper, users can view the research paper details and quickly understand it through",
     highlight: "the summarized and simplified version",
@@ -38,6 +42,7 @@ const steps = [
   },
   {
     step: "05",
+    image: "/ResearchDetail.png",
     title: "Ask questions about the selected research paper",
     lead: "Once the user opens a research paper, the system lets them",
     highlight: "ask questions about the selected research paper",
@@ -225,8 +230,8 @@ export default function FeatureShowcase() {
                     >
                       <div className="relative mx-auto w-full max-w-[38rem]">
                         <Image
-                          src="/dashboard.png"
-                          alt={`Feature step ${item.step} preview`}
+                          src={item.image}
+                          alt={`${item.title} preview`}
                           width={1360}
                           height={768}
                           className="h-auto w-full object-cover"

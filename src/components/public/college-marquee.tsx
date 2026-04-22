@@ -13,9 +13,16 @@ const colleges = [
 // Double the list — one visible set + one buffer for seamless wrap
 const items = [...colleges, ...colleges];
 
-export default function CollegeMarquee() {
+type CollegeMarqueeProps = {
+  theme?: "light" | "dark";
+};
+
+export default function CollegeMarquee({
+  theme = "light",
+}: CollegeMarqueeProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [centerIndex, setCenterIndex] = useState(-1);
+  const isDark = theme === "dark";
 
   useEffect(() => {
     const track = trackRef.current;
@@ -66,7 +73,11 @@ export default function CollegeMarquee() {
 
   return (
     <div className="flex flex-col items-center mt-6 w-full max-w-2xl">
-      <span className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-8 text-center w-full">
+      <span
+        className={`mb-8 w-full text-center text-sm font-semibold tracking-[0.2em] uppercase ${
+          isDark ? "text-[#c8e7d2]/72" : "text-gray-500"
+        }`}
+      >
         COLLEGE DEPARTMENTS
       </span>
       <div
@@ -86,8 +97,12 @@ export default function CollegeMarquee() {
               key={idx}
               className={`text-2xl ${college.font} transition-all duration-500 ease-out select-none shrink-0 ${
                 centerIndex === idx
-                  ? "text-gray-900 scale-110 opacity-100"
-                  : "text-gray-500 scale-100 opacity-40"
+                  ? isDark
+                    ? "scale-110 text-[#f3fff6] opacity-100 drop-shadow-[0_0_14px_rgba(125,255,155,0.18)]"
+                    : "scale-110 text-gray-900 opacity-100"
+                  : isDark
+                    ? "scale-100 text-[#a6cfb5] opacity-45"
+                    : "scale-100 text-gray-500 opacity-40"
               }`}
             >
               {college.name}
