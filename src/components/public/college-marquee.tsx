@@ -72,7 +72,7 @@ export default function CollegeMarquee({
   }, []);
 
   return (
-    <div className="flex flex-col items-center mt-6 w-full max-w-2xl">
+    <div className="flex flex-col items-center mt-6 w-full max-w-2xl mx-auto">
       <span
         className={`mb-8 w-full text-center text-sm font-semibold tracking-[0.2em] uppercase ${
           isDark ? "text-[#c8e7d2]/72" : "text-gray-500"
