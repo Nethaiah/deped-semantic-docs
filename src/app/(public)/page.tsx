@@ -1,4 +1,4 @@
-import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { Facebook, MapPin } from "lucide-react";
 import FeatureShowcase from "@/components/public/feature-showcase";
@@ -9,58 +9,65 @@ export default function Home() {
   const sharedSurface =
     "bg-[linear-gradient(145deg,#071a12_0%,#0d2d20_52%,#123a29_100%)]";
 
-  const heroContent = (
-    <div className="relative flex flex-col items-center w-full px-2 sm:px-0">
-      <div className="inline-flex items-center justify-center gap-2 rounded-full border border-[#b8dcc5] bg-[#dff3e6] px-4 py-1.5 text-xs font-bold text-[#1c402e] shadow-sm transition-all hover:bg-[#e8f7ed]">
-        Laguna University Research Archives
-      </div>
-
-      <h1 className="relative mt-6 w-full max-w-4xl text-xl font-medium leading-snug tracking-tight text-gray-900 sm:text-2xl md:text-[1.7rem] lg:text-[2.15rem]">
-        The intelligent platform to read,{" "}
-        <span className="relative mx-1 inline-block rounded border border-green-200/50 bg-[#d1e7d8] px-1.5 text-[#123a29] shadow-sm">
-          summarize,
-        </span>{" "}
-        <br className="hidden md:block" />
-        organize, and discover research papers
-      </h1>
-
-      <div className="relative w-full max-w-full overflow-hidden">
-        <CollegeMarquee />
-      </div>
-    </div>
-  );
-
   return (
     <div id="top" className="min-h-screen bg-[#f5fbf7]">
       <section
-        className="relative isolate overflow-hidden border-b border-[#d9e9df] bg-[linear-gradient(180deg,#f5fff7_0%,#eef9f1_48%,#f9fdf9_100%)]"
+        className="relative isolate overflow-hidden  border-[#d9e9df] bg-[linear-gradient(180deg,#f5fff7_0%,#eef9f1_48%,#f9fdf9_100%)]"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(189,245,170,0.28),transparent_52%)]" />
         <div className="auth-light-grid absolute inset-0 opacity-100" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0)_38%,rgba(255,255,255,0.2)_100%)]" />
 
-        <div className="mx-auto flex max-w-5xl flex-col items-center px-6 pb-3 pt-28 text-center sm:px-8 sm:pb-5 sm:pt-24 lg:hidden">
-          {heroContent}
-        </div>
+        <div className="relative mx-auto grid w-full max-w-7xl gap-8 px-4 pb-16 pt-24 sm:px-6 sm:pb-20 sm:pt-20 md:gap-10 md:pb-24 lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:gap-12 lg:pb-28 lg:pt-28">
+          <div className="relative order-2 z-10 max-w-2xl text-center lg:order-1 lg:text-left">
+            <div className="inline-flex items-center justify-center gap-2 rounded-full border border-[#b8dcc5] bg-[#dff3e6] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-[#1c402e] shadow-sm lg:justify-start">
+              Laguna University Research Archives
+            </div>
 
-        <div className="relative overflow-hidden">
-          <div className="flex w-full justify-center">
-            <Image
-              src="/LUBG11.png"
-              alt="Laguna University Campus"
-              width={2048}
-              height={1373}
-              sizes="100vw"
-              className="relative z-[2] h-[18rem] w-full object-cover object-[center_16%] sm:h-[24rem] md:h-[30rem] lg:h-auto lg:max-w-[1920px] lg:object-contain lg:object-center"
-              priority
-            />
-          </div>
+            <h1 className="mt-5 text-[1.7rem] font-semibold leading-[1.12] tracking-tight text-[#123a29] sm:text-[2rem] md:text-[2.45rem] lg:text-[2.8rem]">
+              The intelligent platform to read,{" "}
+              <span className="relative mx-1 inline-block rounded border border-green-200/50 bg-[#d1e7d8] px-1.5 text-[#123a29] shadow-sm">
+                summarize,
+              </span>{" "}
+              <br className="hidden md:block" />
+              organize, and discover research papers
+            </h1>
 
-          <div className="absolute inset-0 z-10 hidden items-start justify-center lg:flex">
-            <div className="mx-auto flex w-full max-w-5xl origin-top flex-col items-center px-6 pb-8 pt-24 text-center lg:scale-[0.88] sm:px-8 xl:scale-[0.94] min-[1500px]:scale-100 min-[1500px]:pb-10 min-[1500px]:pt-28 xl:min-[1500px]:pt-36">
-              {heroContent}
+            <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-[#355646] sm:text-base sm:leading-7 lg:mx-0">
+              DocuLens helps Laguna University students, faculty, and
+              researchers organize archives, understand findings, and discover
+              related studies without the usual hours of manual digging.
+            </p>
+
+            <div className="mt-6 flex justify-center lg:justify-start">
+              <Link
+                href="/register"
+                className="inline-flex items-center rounded-full bg-[#1c402e] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1c402e]/95 sm:px-6 sm:py-3"
+              >
+                Get started
+              </Link>
             </div>
           </div>
+
+          <div className="relative order-1 z-10 hidden lg:order-2 lg:block">
+            <div className="relative mx-auto lg:flex lg:h-[34rem] lg:w-full lg:max-w-[38rem] lg:items-center lg:justify-center">
+              <Image
+                src="/RDCLOGO.png"
+                alt="Research and Development Center Logo"
+                width={1040}
+                height={1040}
+                className="lg:h-[32rem] lg:w-[32rem] object-contain"
+                sizes="512px"
+                priority
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative z-20 -mt-8 overflow-hidden bg-transparent pt-6 pb-8 sm:-mt-10 sm:pt-8 sm:pb-10 md:-mt-12 md:pb-12">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+          <CollegeMarquee />
         </div>
       </section>
 

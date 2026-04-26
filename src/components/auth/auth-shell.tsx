@@ -109,6 +109,17 @@ export default function AuthShell({
         <div className="grid min-h-[min(700px,calc(100vh-6rem))] lg:grid-cols-[1.04fr_0.96fr]">
           <div className="relative isolate overflow-hidden bg-[linear-gradient(160deg,#0f2d1d_0%,#155437_48%,#20865a_100%)] px-5 py-5 text-white sm:px-6 sm:py-6 lg:px-8 lg:py-7">
             <div className="auth-dot-grid absolute inset-0 opacity-40" />
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <Image
+                src="/LULOGO1.png"
+                alt=""
+                width={560}
+                height={560}
+                className="h-[18rem] w-[18rem] object-contain opacity-[0.08] sm:h-[22rem] sm:w-[22rem] lg:h-[30rem] lg:w-[30rem]"
+                aria-hidden="true"
+                priority
+              />
+            </div>
 
             <div className="relative flex h-full flex-col">
               <div className="flex items-start justify-between gap-4">

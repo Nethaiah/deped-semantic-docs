@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { SearchParams } from "nuqs/server";
+import Image from "next/image";
 import { thesesFilterParamsCache } from "@/lib/search-params";
 import { getThemeForRole } from "@/lib/theme-config";
 import { getCurrentUserRole } from "@/lib/dal";
@@ -174,15 +175,39 @@ async function CollegeInteractionsSection() {
   return <CollegeInteractions data={data} accentColor={theme.primary} />;
 }
 
-function DashboardHeader() {
+async function DashboardHeader() {
+  const userRole = await getCurrentUserRole();
+  const isUserTheme = (userRole?.role || "user") !== "admin";
+
   return (
     <div
       className="relative overflow-hidden rounded-[2rem] border border-white/5 p-6 shadow-xl sm:p-10"
       style={{ backgroundColor: "var(--theme-primary)" }}
     >
-      <div className="pointer-events-none absolute -bottom-[400px] -right-[200px] h-[800px] w-[800px] rounded-full bg-white/18 blur-[140px]" />
-      <div className="pointer-events-none absolute -bottom-[200px] -right-[100px] h-[450px] w-[450px] rounded-full bg-white/20 blur-[100px]" />
-      <div className="pointer-events-none absolute -bottom-[80px] -right-[50px] h-[250px] w-[250px] rounded-full bg-white/16 blur-[80px]" />
+      <div
+        className="pointer-events-none absolute -bottom-[400px] -right-[200px] h-[800px] w-[800px] rounded-full blur-[140px]"
+        style={{
+          backgroundColor: isUserTheme
+            ? "rgba(255, 211, 92, 0.2)"
+            : "rgba(255, 255, 255, 0.18)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute -bottom-[200px] -right-[100px] h-[450px] w-[450px] rounded-full blur-[100px]"
+        style={{
+          backgroundColor: isUserTheme
+            ? "rgba(255, 224, 130, 0.22)"
+            : "rgba(255, 255, 255, 0.2)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute -bottom-[80px] -right-[50px] h-[250px] w-[250px] rounded-full blur-[80px]"
+        style={{
+          backgroundColor: isUserTheme
+            ? "rgba(255, 241, 170, 0.18)"
+            : "rgba(255, 255, 255, 0.16)",
+        }}
+      />
       <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] bg-white/5 rounded-full pointer-events-none" />
       <div className="absolute -top-48 -right-48 w-[550px] h-[550px] bg-white/5 rounded-full pointer-events-none" />
 
@@ -190,8 +215,15 @@ function DashboardHeader() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20 shadow-inner">
-                <span className="text-white font-bold text-sm">D</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 p-1 shadow-inner">
+                <Image
+                  src="/LULOGO1.png"
+                  alt="Laguna University Logo"
+                  width={24}
+                  height={24}
+                  className="h-6 w-6 object-contain"
+                  priority
+                />
               </div>
               <span className="text-xs font-bold tracking-[0.2em] uppercase text-white/90">
                 DASHBOARD
