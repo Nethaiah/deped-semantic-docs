@@ -1,46 +1,32 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import {
-  GraduationCap,
-  Briefcase,
-  Building2,
-  BookOpen,
-  Wrench,
-} from "lucide-react";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCollegeCount } from "@/server/categories/actions";
+import casLogo from "../../../public/CASLOGO1.png";
+import ccsLogo from "../../../public/CCSLOGO1.png";
+import cbaaLogo from "../../../public/CBAALOGO1.png";
+import coedLogo from "../../../public/COEDLOGO1.png";
+import coeLogo from "../../../public/COELOGO1.png";
+import luLogo from "../../../public/LULOGO1.png";
 
 type StaticCollege = {
   name: string;
   fullName: string;
 };
 
-// Map college codes to Lucide icons
-function getCollegeIcon(collegeCode: string) {
-  const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-    CAS: BookOpen,
-    CCS: Building2,
-    CBAA: Briefcase,
-    COED: GraduationCap,
-    COE: Wrench,
+function getCollegeLogo(collegeCode: string) {
+  const logoMap = {
+    CAS: casLogo,
+    CCS: ccsLogo,
+    CBAA: cbaaLogo,
+    COED: coedLogo,
+    COE: coeLogo,
+    COENG: coeLogo,
   };
 
-  return iconMap[collegeCode] || GraduationCap;
-}
-
-// Get color scheme for each college
-function getCollegeColor(collegeCode: string): string {
-  const colorMap: Record<string, string> = {
-    CAS: "bg-slate-100 text-slate-600",
-    CCS: "bg-[#fbeaea] text-[#800000]", // Maroon
-    CBAA: "bg-yellow-100 text-yellow-600",
-    COED: "bg-blue-100 text-blue-600",
-    COE: "bg-red-100 text-red-600",
-    COENG: "bg-red-100 text-red-600",
-  };
-
-  return colorMap[collegeCode] || "bg-gray-100 text-gray-600";
+  return logoMap[collegeCode as keyof typeof logoMap] || luLogo;
 }
 
 export default function Categories({
@@ -59,8 +45,7 @@ export default function Categories({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
       {colleges.map((college) => {
-        const Icon = getCollegeIcon(college.name);
-        const colorClass = getCollegeColor(college.name);
+        const logoSrc = getCollegeLogo(college.name);
 
         return (
           <Link
@@ -70,10 +55,16 @@ export default function Categories({
           >
             <Card className="flex-row items-center gap-4 px-4 sm:px-6 py-4 rounded-2xl border-gray-100 hover:shadow-md transition-shadow cursor-pointer overflow-hidden">
               <CardContent className="flex items-center gap-4 p-0 min-w-0 flex-1">
-                <div
-                  className={`flex-shrink-0 p-3 sm:p-4 rounded-xl ${colorClass} group-hover:scale-110 transition-transform`}
-                >
-                  <Icon className="w-6 h-6 sm:w-8 sm:h-8" />
+                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border border-gray-100 bg-white p-2 shadow-sm transition-transform group-hover:scale-110 sm:h-16 sm:w-16 sm:p-2.5">
+                  <Image
+                    src={logoSrc}
+                    alt={`${college.fullName} logo`}
+                    width={64}
+                    height={64}
+                    className="h-full w-full object-contain"
+                    sizes="64px"
+                    priority={false}
+                  />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="text-md font-bold text-[#333]">

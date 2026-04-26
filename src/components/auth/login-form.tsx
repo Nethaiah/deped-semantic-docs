@@ -68,7 +68,7 @@ export default function LoginForm() {
     });
 
     if (result?.error) {
-      toast.error(result.error || "Invalid student ID or password", {
+      toast.error(result.error || "Invalid user ID or password", {
         duration: 5000,
         position: "bottom-right",
       });
@@ -112,7 +112,7 @@ export default function LoginForm() {
           Welcome back
         </h2>
         <p className="mt-1.5 text-sm leading-5 text-gray-600">
-          Enter your student ID and password to continue to your account.
+          Enter your user ID and password to continue to your account.
         </p>
       </div>
 
@@ -126,7 +126,7 @@ export default function LoginForm() {
                 htmlFor="studentId"
                 className="text-sm font-semibold text-gray-700"
               >
-                Student ID
+                User ID
               </FieldLabel>
               <InputGroup className={neutralInputClass}>
                 <InputGroupAddon align="inline-start">

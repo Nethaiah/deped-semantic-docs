@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 const colleges = [
-  { name: "CAS", font: "font-serif font-bold" },
-  { name: "COED", font: "font-sans font-medium tracking-tight" },
-  { name: "CCS", font: "font-black tracking-tighter" },
-  { name: "CBAA", font: "font-mono font-bold tracking-tight" },
-  { name: "COENG", font: "font-semibold uppercase tracking-widest" },
+  { name: "CAS", logo: "/CASLOGO1.png", font: "font-serif font-bold" },
+  { name: "COED", logo: "/COEDLOGO1.png", font: "font-sans font-medium tracking-tight" },
+  { name: "CCS", logo: "/CCSLOGO1.png", font: "font-black tracking-tighter" },
+  { name: "CBAA", logo: "/CBAALOGO1.png", font: "font-mono font-bold tracking-tight" },
+  { name: "COENG", logo: "/COELOGO1.png", font: "font-semibold uppercase tracking-widest" },
 ];
 
 // Double the list — one visible set + one buffer for seamless wrap
@@ -72,16 +73,16 @@ export default function CollegeMarquee({
   }, []);
 
   return (
-    <div className="flex flex-col items-center mt-6 w-full max-w-2xl mx-auto">
+    <div className="mx-auto flex w-full max-w-5xl flex-col items-center">
       <span
-        className={`mb-8 w-full text-center text-sm font-semibold tracking-[0.2em] uppercase ${
+        className={`mb-6 w-full text-center text-[0.92rem] font-semibold tracking-[0.2em] uppercase sm:mb-8 sm:text-[1.05rem] ${
           isDark ? "text-[#c8e7d2]/72" : "text-gray-500"
         }`}
       >
         COLLEGE DEPARTMENTS
       </span>
       <div
-        className="w-full overflow-hidden relative"
+        className="relative w-full overflow-x-hidden overflow-y-visible py-4 sm:py-6"
         style={{
           maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
           WebkitMaskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
@@ -89,23 +90,51 @@ export default function CollegeMarquee({
       >
         <div
           ref={trackRef}
-          className="flex items-center gap-12 whitespace-nowrap will-change-transform"
+          className="flex items-center gap-8 whitespace-nowrap will-change-transform sm:gap-10 md:gap-12"
           style={{ width: "max-content" }}
         >
           {items.map((college, idx) => (
             <div
               key={idx}
-              className={`text-2xl ${college.font} transition-all duration-500 ease-out select-none shrink-0 ${
+              className={`flex w-24 shrink-0 select-none flex-col items-center gap-2.5 transition-all duration-500 ease-out sm:w-28 sm:gap-3 md:w-32 md:gap-4 ${
                 centerIndex === idx
                   ? isDark
-                    ? "scale-110 text-[#f3fff6] opacity-100 drop-shadow-[0_0_14px_rgba(125,255,155,0.18)]"
-                    : "scale-110 text-gray-900 opacity-100"
+                    ? "scale-105 opacity-100 drop-shadow-[0_0_18px_rgba(125,255,155,0.2)]"
+                    : "scale-105 opacity-100"
                   : isDark
-                    ? "scale-100 text-[#a6cfb5] opacity-45"
-                    : "scale-100 text-gray-500 opacity-40"
+                    ? "scale-100 opacity-45"
+                    : "scale-100 opacity-45"
               }`}
             >
-              {college.name}
+              <div className="flex h-16 w-16 items-center justify-center sm:h-20 sm:w-20 md:h-24 md:w-24">
+                <Image
+                  src={college.logo}
+                  alt={`${college.name} logo`}
+                  width={96}
+                  height={96}
+                  className={`h-16 w-16 object-contain sm:h-20 sm:w-20 md:h-24 md:w-24 ${
+                    centerIndex === idx
+                      ? isDark
+                        ? "drop-shadow-[0_8px_18px_rgba(125,255,155,0.18)]"
+                        : "drop-shadow-[0_10px_18px_rgba(18,58,41,0.12)]"
+                      : ""
+                  }`}
+                  sizes="(max-width: 639px) 64px, (max-width: 767px) 80px, 96px"
+                />
+              </div>
+              <div
+                className={`text-[0.82rem] sm:text-[0.9rem] md:text-[0.98rem] ${college.font} ${
+                  centerIndex === idx
+                    ? isDark
+                      ? "text-[#f3fff6]"
+                      : "text-[#183628]"
+                    : isDark
+                      ? "text-[#a6cfb5]"
+                      : "text-gray-500"
+                }`}
+              >
+                {college.name}
+              </div>
             </div>
           ))}
         </div>

@@ -6,7 +6,7 @@ import { loginSchema } from "@/lib/zodSchema";
 export async function login({ studentId, password }: { studentId: string; password: string }) {
 	const parsed = loginSchema.safeParse({ studentId, password });
 	if (!parsed.success) {
-		return { error: "Invalid student ID or password" };
+		return { error: "Invalid User ID or password" };
 	}
 
 	const supabase = await createClient();
@@ -19,7 +19,7 @@ export async function login({ studentId, password }: { studentId: string; passwo
 		.single();
 
 	if (lookupError || !userRecord?.email) {
-		return { error: "Invalid student ID or password" };
+		return { error: "Invalid user ID or password" };
 	}
 
 	// Check approval status BEFORE attempting auth (fail fast)
@@ -46,7 +46,7 @@ export async function login({ studentId, password }: { studentId: string; passwo
 
 	if (error) {
 		if (error.message?.toLowerCase().includes("invalid")) {
-			return { error: "Invalid student ID or password" };
+			return { error: "Invalid user ID or password" };
 		}
 		if (error.message?.toLowerCase().includes("email not confirmed")) {
 			return { error: "Please verify your email before signing in" };

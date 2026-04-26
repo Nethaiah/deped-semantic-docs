@@ -248,7 +248,7 @@ export function UserDataTable<TData, TValue>({
         <div className="relative w-full flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search by name, email, student ID..."
+            placeholder="Search by name, email, user ID..."
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             className="pl-9 bg-white border-gray-200 focus:border-gray-400 focus:ring-gray-400/20 text-sm"
@@ -326,7 +326,7 @@ export function UserDataTable<TData, TValue>({
                     onCheckedChange={(value) => col.toggleVisibility(!!value)}
                   >
                     {col.id === "student_id"
-                      ? "Student ID"
+                      ? "User ID"
                       : col.id === "full_name"
                       ? "Full Name"
                       : col.id === "account_state"
