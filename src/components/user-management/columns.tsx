@@ -219,7 +219,7 @@ export const columns: ColumnDef<UserRecord>[] = [
     enableHiding: false,
   },
 
-  // ── Student ID ───────────────────────────────────────────────────────────
+  // ── User ID ───────────────────────────────────────────────────────────
   {
     accessorKey: "student_id",
     header: ({ column }) => (
@@ -229,7 +229,7 @@ export const columns: ColumnDef<UserRecord>[] = [
         className="-ml-3 h-8 text-xs font-semibold text-gray-600 hover:text-gray-900"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Student ID
+        User ID
         <ArrowUpDown className="ml-1.5 h-3.5 w-3.5" />
       </Button>
     ),

@@ -30,7 +30,7 @@ export async function register({
 		.single();
 
 	if (existingStudentId) {
-		return { error: "Student ID already registered" };
+		return { error: "User ID already registered" };
 	}
 
 	// Check if user exists in public.users table

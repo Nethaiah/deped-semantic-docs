@@ -152,7 +152,7 @@ export default function RegisterForm() {
                   htmlFor="studentId"
                   className="text-sm font-semibold text-gray-700"
                 >
-                  Student ID
+                  User ID
                 </FieldLabel>
                 <InputGroup className={authInputClass}>
                   <InputGroupAddon align="inline-start">

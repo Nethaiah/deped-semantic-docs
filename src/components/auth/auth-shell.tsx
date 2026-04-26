@@ -56,7 +56,7 @@ const shellContent: Record<
     steps: [
       {
         title: "Sign in to your account",
-        description: "Use your current student ID and password to continue.",
+        description: "Use your current User ID and password to continue.",
       },
       {
         title: "Resume your search",
@@ -77,7 +77,7 @@ const shellContent: Record<
     steps: [
       {
         title: "Create your account",
-        description: "Register with your student ID, full name, and campus email.",
+        description: "Register with your User ID, full name, and campus email.",
       },
       {
         title: "Verify your email",
