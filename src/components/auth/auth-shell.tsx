@@ -49,10 +49,10 @@ const shellContent: Record<
 > = {
   login: {
     badge: "Secure access",
-    title: "Research smarter, not harder",
+    title: "",
     description:
-      "Search, review, and organize documents in one focused workspace built for Laguna University researchers.",
-    highlight: "Fast sign-in, familiar flow",
+      "",
+    highlight: "",
     steps: [
       {
         title: "Sign in to your account",
@@ -70,10 +70,10 @@ const shellContent: Record<
   },
   register: {
     badge: "Create your account",
-    title: "Get started with a smarter way to explore research",
+    title: "",
     description:
-      "Dive into university literature with tools built to keep your thinking sharp and organized.",
-    highlight: "Built for students and faculty",
+      "",
+    highlight: "",
     steps: [
       {
         title: "Create your account",
