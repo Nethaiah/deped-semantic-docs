@@ -161,8 +161,6 @@ export default function ThesesTable({
             onValuesChange={setFormFilters}
             onApply={onApplyFilters}
             onReset={onResetFilters}
-            departments={filterOptions.departments}
-            colleges={filterOptions.colleges}
           />
         </div>
       </CardHeader>

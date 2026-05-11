@@ -1,35 +1,20 @@
-// College to departments mapping
-export const COLLEGE_DEPARTMENTS: Record<string, string[]> = {
-  CAS: ["Communication", "Psychology"],
-  CCS: ["Computer Science", "Information Technology"],
-  CBAA: [
-    "Accountancy",
-    "Accounting Information Systems",
-    "Entrepreneurship",
-    "Tourism Management",
-  ],
-  COED: [
-    "Secondary Education Major in Science",
-    "Secondary Education Major in Mathematics",
-    "Secondary Education Major in English",
-    "Secondary Education Major in PE",
-    "Elementary Education",
-  ],
-  COE: ["Mechanical Engineering"],
-};
-
-// College full names
-export const COLLEGE_FULL_NAMES: Record<string, string> = {
-  CAS: "College of Arts and Sciences",
-  CCS: "College of Computing Studies",
-  CBAA: "College of Business Administration and Accountancy",
-  COED: "College of Education",
-  COE: "College of Engineering",
-};
-
 /**
- * Get departments for a specific college
+ * Backwards-compatible re-exports of the colleges/departments taxonomy.
+ *
+ * The previous constants (``COLLEGE_DEPARTMENTS`` / ``COLLEGE_FULL_NAMES``)
+ * have been replaced by the ``colleges`` and ``departments`` tables in
+ * Supabase.  Use the helpers in ``./taxonomy`` for new code.
+ *
+ * The async helpers below are kept so existing imports keep compiling
+ * while the call sites are migrated.
  */
-export function getDepartmentsForCollege(collegeCode: string): string[] {
-  return COLLEGE_DEPARTMENTS[collegeCode] || [];
-}
+
+export {
+  getDepartmentsForCollege,
+  getCollegeFullNames,
+  getCollegeDepartments,
+  getTaxonomy,
+  TAXONOMY_CACHE_TAG,
+  type CollegeRow,
+  type DepartmentRow,
+} from "./taxonomy";

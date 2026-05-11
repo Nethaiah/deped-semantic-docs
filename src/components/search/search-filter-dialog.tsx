@@ -19,30 +19,11 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTheme } from "@/components/theme-context";
+import { useTaxonomy } from "@/hooks/use-taxonomy";
 
 export type SearchMode = "rag" | "keyword";
-
-// College to Department mapping
-const COLLEGE_DEPARTMENTS: Record<string, string[]> = {
-  CAS: ["Communication", "Psychology"],
-  CCS: ["Computer Science", "Information Technology"],
-  CBAA: [
-    "Accountancy",
-    "Accounting Information Systems",
-    "Entrepreneurship",
-    "Tourism Management",
-  ],
-  COED: [
-    "Secondary Education Major in Science",
-    "Secondary Education Major in Mathematics",
-    "Secondary Education Major in English",
-    "Secondary Education Major in PE",
-    "Elementary Education",
-  ],
-  COE: ["Mechanical Engineering"],
-};
 
 export type SearchFilterValues = {
   yearFrom: string;
@@ -83,9 +64,17 @@ export default function SearchFilterDialog({
 
   const filtersDisabled = localValues.searchMode === "rag";
 
-  // Get departments based on selected college
+  const { taxonomy } = useTaxonomy();
+  const collegeDepartments = useMemo(() => {
+    const map: Record<string, string[]> = {};
+    for (const c of taxonomy) {
+      map[c.code] = c.departments.map((d) => d.name);
+    }
+    return map;
+  }, [taxonomy]);
+
   const availableDepartments = localValues.college
-    ? COLLEGE_DEPARTMENTS[localValues.college] || []
+    ? collegeDepartments[localValues.college] || []
     : [];
 
   const isDepartmentDisabled = !localValues.college || filtersDisabled;
@@ -223,9 +212,9 @@ export default function SearchFilterDialog({
                   <SelectItem value="_all" className="cursor-pointer">
                     All Colleges
                   </SelectItem>
-                  {Object.keys(COLLEGE_DEPARTMENTS).map((col) => (
-                    <SelectItem key={col} value={col} className="cursor-pointer">
-                      {col}
+                  {taxonomy.map((c) => (
+                    <SelectItem key={c.code} value={c.code} className="cursor-pointer">
+                      {c.code}
                     </SelectItem>
                   ))}
                 </SelectContent>

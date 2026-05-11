@@ -38,14 +38,7 @@ import {
   type ApprovePayload,
 } from "@/lib/api/rag-api";
 import { toast } from "sonner";
-
-const COLLEGES = [
-  { code: "CCS", name: "College of Computing Studies" },
-  { code: "COED", name: "College of Education" },
-  { code: "CAS", name: "College of Arts and Sciences" },
-  { code: "CBAA", name: "College of Business Administration and Accountancy" },
-  { code: "COE", name: "College of Engineering" },
-];
+import { useTaxonomy } from "@/hooks/use-taxonomy";
 
 interface UploadReviewProps {
   uploadId: string;
@@ -72,6 +65,12 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
   const [summary, setSummary] = useState("");
   const [reviewNotes, setReviewNotes] = useState("");
   const [rejectReason, setRejectReason] = useState("");
+
+  const { taxonomy } = useTaxonomy();
+  const departmentsForCollege = college
+    ? taxonomy.find((c) => c.code === college)?.departments.map((d) => d.name) ?? []
+    : [];
+  const departmentInList = !!department && departmentsForCollege.includes(department);
 
   const fetchReview = useCallback(async () => {
     try {
@@ -309,14 +308,19 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                   </Label>
                   <Select
                     value={college}
-                    onValueChange={setCollege}
+                    onValueChange={(val) => {
+                      setCollege(val);
+                      // Clear department when college changes so the
+                      // dropdown doesn't show a value that no longer fits.
+                      setDepartment("");
+                    }}
                     disabled={!isReviewable || isSubmitting}
                   >
                     <SelectTrigger id="review-college" className="text-sm">
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
                     <SelectContent>
-                      {COLLEGES.map((c) => (
+                      {taxonomy.map((c) => (
                         <SelectItem key={c.code} value={c.code}>
                           {c.code}
                         </SelectItem>
@@ -331,13 +335,32 @@ export default function UploadReview({ uploadId }: UploadReviewProps) {
                   <Label htmlFor="review-dept" className="text-xs flex items-center gap-1">
                     <Building2 className="h-3 w-3" /> Department
                   </Label>
-                  <Input
-                    id="review-dept"
+                  <Select
                     value={department}
-                    onChange={(e) => setDepartment(e.target.value)}
-                    disabled={!isReviewable || isSubmitting}
-                    className="text-sm"
-                  />
+                    onValueChange={setDepartment}
+                    disabled={!isReviewable || isSubmitting || !college}
+                  >
+                    <SelectTrigger id="review-dept" className="text-sm">
+                      <SelectValue
+                        placeholder={college ? "Select department" : "Select college first"}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {departmentsForCollege.map((d) => (
+                        <SelectItem key={d} value={d}>
+                          {d}
+                        </SelectItem>
+                      ))}
+                      {/* Fallback: keep the AI-extracted value selectable
+                          even when it does not match the current
+                          taxonomy (e.g., college changed since extraction). */}
+                      {department && !departmentInList && (
+                        <SelectItem value={department} className="italic text-amber-700">
+                          {department} (unrecognised)
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="review-advisor" className="text-xs flex items-center gap-1">

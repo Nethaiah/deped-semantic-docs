@@ -1,5 +1,5 @@
 import { supabaseStatic } from "@/lib/supabase/static";
-import { COLLEGE_FULL_NAMES } from "./constants";
+import { getTaxonomy } from "./taxonomy";
 
 export type CollegeWithCount = {
   name: string;
@@ -27,20 +27,21 @@ export type CollegeThesis = {
 export async function getAllColleges(): Promise<CollegeWithCount[]> {
   try {
     const supabase = supabaseStatic;
+    const taxonomy = await getTaxonomy();
     const colleges = await Promise.all(
-      Object.entries(COLLEGE_FULL_NAMES).map(async ([code, fullName]) => {
+      taxonomy.map(async (c) => {
         const { count, error } = await supabase
           .from("theses")
           .select("*", { count: "exact", head: true })
-          .eq("college", code);
+          .eq("college", c.code);
 
         if (error) {
-          console.error(`Error getting count for ${code}:`, error);
+          console.error(`Error getting count for ${c.code}:`, error);
         }
 
         return {
-          name: code,
-          fullName,
+          name: c.code,
+          fullName: c.full_name,
           count: error ? 0 : count || 0,
         };
       })

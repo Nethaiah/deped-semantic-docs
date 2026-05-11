@@ -12,8 +12,9 @@ import {
 } from "@/server/categories/actions";
 import {
   getDepartmentsForCollege,
-  COLLEGE_FULL_NAMES,
-} from "@/server/categories/constants";
+  getCollegeFullNames,
+  getTaxonomy,
+} from "@/server/categories/taxonomy";
 import { checkBookmark } from "@/server/bookmarks/check-bookmark";
 
 type Props = {
@@ -94,9 +95,8 @@ async function ResultsSection({
 
 // Generate static params so the route segment and header are prebuilt into the static shell
 export async function generateStaticParams() {
-  return Object.keys(COLLEGE_FULL_NAMES).map((collegeCode) => ({
-    categoryName: collegeCode,
-  }));
+  const taxonomy = await getTaxonomy();
+  return taxonomy.map((c) => ({ categoryName: c.code }));
 }
 
 /* ── Page — fully static shell, everything dynamic is in Suspense ── */
@@ -104,8 +104,11 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   // Awaiting params here is SAFE because generateStaticParams prebuilds it!
   const { categoryName } = await params;
   const collegeCode = decodeURIComponent(categoryName);
-  const collegeName = COLLEGE_FULL_NAMES[collegeCode] || collegeCode;
-  const departments = getDepartmentsForCollege(collegeCode);
+  const [fullNames, departments] = await Promise.all([
+    getCollegeFullNames(),
+    getDepartmentsForCollege(collegeCode),
+  ]);
+  const collegeName = fullNames[collegeCode] || collegeCode;
 
   return (
     <div className="p-5 lg:p-8 bg-gray-50 flex-1 w-full flex flex-col">
