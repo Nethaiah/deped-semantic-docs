@@ -74,3 +74,5 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 _(Note: The Python FastAPI backend should be running concurrently to serve ML requests like embedding generation and RAG queries)._
+
+
